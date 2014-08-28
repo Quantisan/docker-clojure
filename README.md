@@ -1,6 +1,6 @@
 # docker-clojure
 
-This is the Dockerfile for the [official Docker image for Clojure](https://registry.hub.docker.com/_/clojure/). It is automatically
+This is the repository for the [official Docker image for Clojure](https://registry.hub.docker.com/_/clojure/). It is automatically
 pulled and built by Stackbrew into the Docker registry. This image runs on OpenJDK 7 and
 includes Leiningen.
 
