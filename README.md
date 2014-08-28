@@ -1,6 +1,7 @@
 # docker-clojure
 
-A Docker image for developing Clojure code. This image runs on OpenJDK 7 and
+This is the Dockerfile for the [official Docker image for Clojure](https://registry.hub.docker.com/_/clojure/). It is automatically
+pulled and built by Stackbrew into the Docker registry. This image runs on OpenJDK 7 and
 includes Leiningen.
 
 Note that for production, simply use the `java` image and run compiled Clojure
