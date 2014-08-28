@@ -7,7 +7,9 @@ includes Leiningen.
 Note that for production, simply use the `java` image and run compiled Clojure
 code as regular JAR so that Leiningen doesn't need to be running.
 
-## Example
+## Examples
+
+### Interactive Shell
 
 Run an interactive shell from this image.
 
@@ -22,3 +24,7 @@ lein new hello-world
 cd hello-world
 lein repl
 ```
+
+### Isolated Development with [Fig](http://www.fig.sh/)
+
+See [this repository for instruction and example](https://github.com/Quantisan/clojure-getting-started).
