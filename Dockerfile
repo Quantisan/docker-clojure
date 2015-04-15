@@ -23,7 +23,6 @@ RUN chmod 0755 $LEIN_INSTALL/lein
 RUN wget --quiet https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.zip
 RUN wget --quiet https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.zip.asc
 
-# see http://dev.eclipse.org/mhonarc/lists/jetty-users/msg05220.html
 RUN gpg --keyserver pool.sks-keyservers.net --recv-keys \
 	296F37E451F91ED1783E402792893DA43FC33005
 RUN echo "Verifying Jar file signature ..."
