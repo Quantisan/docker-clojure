@@ -1,4 +1,4 @@
-FROM java:7
+FROM java:8
 MAINTAINER Paul Lam <paul@quantisan.com>
 
 ENV LEIN_VERSION=2.5.1
