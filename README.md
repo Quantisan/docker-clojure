@@ -2,7 +2,7 @@
 
 This is the repository for the [official Docker image for Clojure](https://registry.hub.docker.com/_/clojure/).
 It is automatically pulled and built by Stackbrew into the Docker registry.
-This image runs on OpenJDK 7 and includes Leiningen.
+This image runs on OpenJDK 8 and includes Leiningen.
 
 ## Examples
 
