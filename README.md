@@ -22,6 +22,34 @@ cd hello-world
 lein repl
 ```
 
+## `clojure:onbuild`
+
+This image makes building derivative images easier. For most use cases, creating a Dockerfile in the base of your project directory with the line `FROM clojure:onbuild` will be enough to create a stand-alone image for your project.
+
+## Pull or build this image
+
+```
+docker build --rm -t clojure:onbuild onbuild
+```
+
+## Create a `Dockerfile` in your Clojure app project
+
+```
+FROM clojure:onbuild
+CMD ["lein", "run"]
+```
+
+Put this file in the root of your app.
+
+This image includes multiple `ONBUILD` triggers which should be all you need to bootstrap most applications. The build will `COPY . /usr/src/app` and `RUN lein deps`
+
+You can then build and run the CLojure image:
+
+```
+docker build -t my-clojure-app .
+docker run -it --rm --name running-clojure-app my-clojure-app
+```
+
 ### Isolated Development with [Fig](http://www.fig.sh/)
 
 See [this repository for instruction and example](https://github.com/Quantisan/clojure-getting-started).
