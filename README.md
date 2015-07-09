@@ -22,17 +22,17 @@ cd hello-world
 lein repl
 ```
 
-## `clojure:onbuild`
+### `clojure:onbuild`
 
 This image makes building derivative images easier. For most use cases, creating a Dockerfile in the base of your project directory with the line `FROM clojure:onbuild` will be enough to create a stand-alone image for your project.
 
-## Pull or build this image
+#### Pull or build this image
 
 ```
 docker build --rm -t clojure:onbuild onbuild
 ```
 
-## Create a `Dockerfile` in your Clojure app project
+#### Create a `Dockerfile` in your Clojure app project
 
 ```
 FROM clojure:onbuild
