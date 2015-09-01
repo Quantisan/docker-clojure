@@ -23,7 +23,7 @@ RUN mkdir -p $LEIN_INSTALL \
   && wget --quiet https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.zip \
   && wget --quiet https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.zip.asc \
 
-  && gpg --keyserver pool.sks-keyservers.net --recv-key 05696D78 \
+  && gpg --keyserver pool.sks-keyservers.net --recv-key 2E708FB2FCECA07FF8184E275A92E04305696D78 \
   && echo "Verifying Jar file signature ..." \
   && gpg --verify leiningen-$LEIN_VERSION-standalone.zip.asc \
 
