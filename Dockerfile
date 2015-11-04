@@ -1,7 +1,7 @@
 FROM java:8
 MAINTAINER Paul Lam <paul@quantisan.com>
 
-ENV LEIN_VERSION=2.5.2
+ENV LEIN_VERSION=2.5.3
 ENV LEIN_INSTALL=/usr/local/bin/
 
 WORKDIR /tmp
@@ -10,7 +10,7 @@ WORKDIR /tmp
 RUN mkdir -p $LEIN_INSTALL \
   && wget --quiet https://github.com/technomancy/leiningen/archive/$LEIN_VERSION.tar.gz \
   && echo "Comparing archive checksum ..." \
-  && echo "f286d3e61fec48ad2d52af1d8f23debc77cf7581 *$LEIN_VERSION.tar.gz" | sha1sum -c - \
+  && echo "871d2e308076d2e9edf457cffc9d15996c8d003e *$LEIN_VERSION.tar.gz" | sha1sum -c - \
 
   && mkdir ./leiningen \
   && tar -xzf $LEIN_VERSION.tar.gz  -C ./leiningen/ --strip-components=1 \
