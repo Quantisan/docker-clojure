@@ -29,7 +29,10 @@ RUN mkdir -p $LEIN_INSTALL \
 
 # Put the jar where lein script expects
   && rm leiningen-$LEIN_VERSION-standalone.zip.asc \
-  && mv leiningen-$LEIN_VERSION-standalone.zip /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar
+  && mv leiningen-$LEIN_VERSION-standalone.zip /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar \
+
+# Some REPLs (e.g., Figwheel) necessitate a readline wrapper.
+  &&  apt-get update && apt-get install rlfe && rm -rf /var/lib/apt/lists/*
 
 ENV PATH=$PATH:$LEIN_INSTALL
 ENV LEIN_ROOT 1
