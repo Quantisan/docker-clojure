@@ -1,7 +1,7 @@
 FROM java:8-alpine
 MAINTAINER Paul Lam <paul@quantisan.com>
 
-ENV LEIN_VERSION=2.5.3
+ENV LEIN_VERSION=2.6.1
 ENV LEIN_INSTALL=/usr/local/bin/
 
 WORKDIR /tmp
@@ -13,7 +13,7 @@ RUN apk add --update tar gnupg bash && rm -rf /var/cache/apk/*
 RUN mkdir -p $LEIN_INSTALL \
   && wget -q https://github.com/technomancy/leiningen/archive/$LEIN_VERSION.tar.gz \
   && echo "Comparing archive checksum ..." \
-  && echo "871d2e308076d2e9edf457cffc9d15996c8d003e *$LEIN_VERSION.tar.gz" | sha1sum -c - \
+  && echo "f7643a14fd8a4d5c19eeb416db8ea549d8d2c18a *$LEIN_VERSION.tar.gz" | sha1sum -c - \
 
   && mkdir ./leiningen \
   && tar -xzf $LEIN_VERSION.tar.gz  -C ./leiningen/ --strip-components=1 \
