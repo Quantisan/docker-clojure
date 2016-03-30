@@ -1,5 +1,5 @@
 FROM java:8-alpine
-MAINTAINER Paul Lam <paul@quantisan.com>
+MAINTAINER Wes Morgan <wesmorgan@icloud.com>
 
 ENV LEIN_VERSION=2.6.1
 ENV LEIN_INSTALL=/usr/local/bin/
