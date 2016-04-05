@@ -33,11 +33,7 @@ RUN mkdir -p $LEIN_INSTALL \
 # Put the jar where lein script expects
   && rm leiningen-$LEIN_VERSION-standalone.zip.asc \
   && mkdir -p /usr/share/java \
-  && mv leiningen-$LEIN_VERSION-standalone.zip /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar \
-
-# Some REPLs (e.g., Figwheel) necessitate a readline wrapper.
-  && apk add rlwrap --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted \
-  && rm -rf /var/cache/apk/*
+  && mv leiningen-$LEIN_VERSION-standalone.zip /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar
 
 ENV PATH=$PATH:$LEIN_INSTALL
 ENV LEIN_ROOT 1
