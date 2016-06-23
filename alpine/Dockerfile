@@ -1,4 +1,4 @@
-FROM java:8-alpine
+FROM java:8u92-alpine
 MAINTAINER Wes Morgan <wesmorgan@icloud.com>
 
 ENV LEIN_VERSION=2.6.1
@@ -7,7 +7,7 @@ ENV LEIN_INSTALL=/usr/local/bin/
 WORKDIR /tmp
 
 # Install real tar as BusyBox's doesn't support --strip-components
-RUN apk add --update tar gnupg bash && rm -rf /var/cache/apk/*
+RUN apk add --update tar gnupg bash openssl && rm -rf /var/cache/apk/*
 
 # Download the whole repo as an archive
 RUN mkdir -p $LEIN_INSTALL \
