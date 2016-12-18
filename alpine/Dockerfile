@@ -1,4 +1,4 @@
-FROM openjdk:8u92-alpine
+FROM openjdk:8u111-alpine
 MAINTAINER Wes Morgan <wesmorgan@icloud.com>
 
 ENV LEIN_VERSION=2.7.1
