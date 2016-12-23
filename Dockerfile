@@ -2,7 +2,7 @@ FROM openjdk:8
 MAINTAINER Paul Lam <paul@quantisan.com>
 
 ARG BUILD_TOOL=lein
-ARG TOOL_VERSION
+ARG TOOL_VERSION=2.7.1
 ENV TOOL_INSTALL=/usr/local/bin/
 
 WORKDIR /tmp
