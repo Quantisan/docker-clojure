@@ -26,6 +26,10 @@ lein repl
 
 This image makes building derivative images easier. For most use cases, creating a Dockerfile in the base of your project directory with the line `FROM clojure:onbuild` will be enough to create a stand-alone image for your project.
 
+### `clojure:alpine` & `clojure:alpine-onbuild`
+
+These images are based on the minimalist Alpine Linux distribution and are much smaller than the default (Debian-based) images. If your app can run in them, they will be much faster to transfer and take up much less space.
+
 #### Pull or build this image
 
 ```
