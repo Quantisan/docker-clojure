@@ -10,6 +10,7 @@ fi
 
 if [[ $DOCKER_TAG == "lein-"* || $DOCKER_TAG == "boot-"* ]]; then
   TOOL_VERSION=${DOCKER_TAG#*-}
+  TOOL_VERSION=${TOOL_VERSION%-*}
 fi
 
 BUILD_CMD="docker build -t $IMAGE_NAME \
