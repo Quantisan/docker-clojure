@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -e
+
+if [[ $DOCKER_TAG == "boot"* ]]; then
+  BUILD_TOOL=boot
+else
+  BUILD_TOOL=lein
+fi
+
+if [[ $DOCKER_TAG == *"alpine"* ]]; then
+  NEW_TAG="${BUILD_TOOL}-alpine"
+else
+  NEW_TAG=$BUILD_TOOL
+fi
+
+docker tag $IMAGE_NAME $DOCKER_REPO:$NEW_TAG
+docker push $DOCKER_REPO:$NEW_TAG

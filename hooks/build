@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -e
+
+if [[ $DOCKER_TAG == "boot"* ]]; then
+  BUILD_TOOL=boot
+else
+  BUILD_TOOL=lein
+fi
+
+TOOL_VERSION=${DOCKER_TAG#*-}
+
+docker build -t $IMAGE_NAME \
+             --build-arg BUILD_TOOL=$BUILD_TOOL \
+             --build-arg TOOL_VERSION=$TOOL_VERSION \
+             $BUILD_PATH
