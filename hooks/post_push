@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -ex
 
 if [[ $DOCKER_TAG == "boot"* ]]; then
   BUILD_TOOL=boot
@@ -8,10 +8,12 @@ else
   BUILD_TOOL=lein
 fi
 
-if [[ $DOCKER_TAG == *"alpine"* ]]; then
-  NEW_TAG="${BUILD_TOOL}-alpine"
-else
-  NEW_TAG=$BUILD_TOOL
+if [[ $DOCKER_TAG == "lein"* || $DOCKER_TAG == "boot"* ]]; then
+  if [[ $DOCKER_TAG == *"alpine"* ]]; then
+    NEW_TAG="${BUILD_TOOL}-alpine"
+  else
+    NEW_TAG=$BUILD_TOOL
+  fi
 fi
 
 docker tag $IMAGE_NAME $DOCKER_REPO:$NEW_TAG

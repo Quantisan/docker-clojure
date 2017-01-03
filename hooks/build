@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -ex
 
 if [[ $DOCKER_TAG == "boot"* ]]; then
   BUILD_TOOL=boot
@@ -8,9 +8,13 @@ else
   BUILD_TOOL=lein
 fi
 
-TOOL_VERSION=${DOCKER_TAG#*-}
+if [[ $DOCKER_TAG == "lein-"* || $DOCKER_TAG == "boot-"* ]]; then
+  TOOL_VERSION=${DOCKER_TAG#*-}
+fi
 
-docker build -t $IMAGE_NAME \
-             --build-arg BUILD_TOOL=$BUILD_TOOL \
-             --build-arg TOOL_VERSION=$TOOL_VERSION \
-             $BUILD_PATH
+BUILD_CMD="docker build -t $IMAGE_NAME \
+  --build-arg BUILD_TOOL=$BUILD_TOOL \
+  $(if [[ -n $TOOL_VERSION ]]; then echo --build-arg TOOL_VERSION=$TOOL_VERSION; fi) \
+  $BUILD_PATH"
+
+$BUILD_CMD
