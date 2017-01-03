@@ -53,10 +53,6 @@ docker build -t my-clojure-app .
 docker run -it --rm --name running-clojure-app my-clojure-app
 ```
 
-### Isolated Development with [Fig](http://www.fig.sh/)
-
-See [this repository for instruction and example](https://github.com/Quantisan/clojure-getting-started).
-
 ### ClojureScript Development with [Figwheel](https://github.com/bhauman/lein-figwheel) ###
 
 Run Figwheel to automatically load your ClojureScript changes into your running browser window.
