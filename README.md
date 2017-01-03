@@ -40,7 +40,6 @@ docker build --rm -t clojure:onbuild onbuild
 
 ```
 FROM clojure:onbuild
-CMD ["lein", "run"]
 ```
 
 Put this file in the root of your app.
