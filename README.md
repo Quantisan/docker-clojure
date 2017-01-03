@@ -46,7 +46,7 @@ Put this file in the root of your app.
 
 This image includes multiple `ONBUILD` triggers which should be all you need to bootstrap most applications. The build will `COPY . /usr/src/app` and `RUN lein deps`
 
-You can then build and run the CLojure image:
+You can then build and run the Clojure image:
 
 ```
 docker build -t my-clojure-app .
