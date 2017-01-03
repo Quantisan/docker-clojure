@@ -67,11 +67,10 @@ docker run --rm -it \
   -v "$HOME"/.m2:/root/.m2 \
   -p 3449:3449 \
   clojure \
-  rlfe lein figwheel
+  lein figwheel
 ```
 
 Notes:
 - Mounts $HOME/.m2 for caching Maven jars.
 - Exposes port 3449 (the default port for Figwheel) so the client code running in your browser can connect to it.
-- Wraps Figwheel's REPL in `rlfe` so command history and standard key combinations are available
 - If you're using a virtual machine, be sure to set Figwheel's `:websocket-url` option in your project.clj to something that makes sense (e.g., `ws://192.168.99.100:3449/figwheel-ws`).
