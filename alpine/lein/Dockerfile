@@ -1,3 +1,9 @@
+#
+# NOTE: THIS DOCKERFILE IS GENERATED VIA "update.sh"
+#
+# PLEASE DO NOT EDIT IT DIRECTLY.
+#
+
 FROM openjdk:8-alpine
 MAINTAINER Wes Morgan <wesmorgan@icloud.com>
 
@@ -6,7 +12,6 @@ ENV LEIN_INSTALL=/usr/local/bin/
 
 WORKDIR /tmp
 
-# Install real tar as BusyBox's doesn't support --strip-components
 RUN apk add --update tar gnupg bash openssl && rm -rf /var/cache/apk/*
 
 # Download the whole repo as an archive
