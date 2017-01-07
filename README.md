@@ -88,7 +88,9 @@ Notes:
 
 ## Builds
 
-The choice between leiningen and boot is determined at build-time via the BUILD_TOOL build arg. It defaults to `lein` if not set. You can also specify the version of the build tool you'd like to install via the TOOL_VERSION build arg.
+Except for the `onbuild` variants, the Dockerfiles are generated from the `Dockerfile-lein.template` and `Dockerfile-boot.template` files by the `update.sh` script.
+
+If you want to modify them (for example, to build in a different version of lein or boot), edit the template(s) and then run `./update.sh`. Then the example `docker build ...` commands below will do what you want.
 
 ### Build examples
 
