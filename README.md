@@ -92,6 +92,8 @@ Except for the `onbuild` variants, the Dockerfiles are generated from the `Docke
 
 If you want to modify them (for example, to build in a different version of lein or boot), edit the template(s) and then run `./update.sh`. Then the example `docker build ...` commands below will do what you want.
 
+Note that the `update.sh` script requires bash version 4+ to run.
+
 ### Build examples
 
 #### Debian-based leiningen
