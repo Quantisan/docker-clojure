@@ -78,7 +78,7 @@ docker run --rm -it \
   -v "$HOME"/.m2:/root/.m2 \
   -p 3449:3449 \
   clojure \
-  lein figwheel
+  sh -c 'sleep 1; rlwrap lein figwheel'
 ```
 
 Notes:

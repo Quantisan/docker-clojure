@@ -41,4 +41,7 @@ RUN mkdir -p $LEIN_INSTALL \
 ENV PATH=$PATH:$LEIN_INSTALL
 ENV LEIN_ROOT 1
 
+# Some REPLs (e.g., Figwheel) necessitate a readline wrapper.
+RUN apt-get update && apt-get install -y rlwrap && rm -rf /var/lib/apt/lists/*
+
 RUN lein
