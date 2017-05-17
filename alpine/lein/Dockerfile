@@ -43,4 +43,15 @@ RUN mkdir -p $LEIN_INSTALL \
 ENV PATH=$PATH:$LEIN_INSTALL
 ENV LEIN_ROOT 1
 
+# Some REPLs (e.g., Figwheel) necessitate a readline wrapper.
+RUN apk --no-cache add gcc ncurses-dev libc-dev readline-dev make \
+  && cd /tmp \
+  && wget https://github.com/hanslub42/rlwrap/releases/download/v0.43/rlwrap-0.43.tar.gz \
+  && tar -xzvf rlwrap-0.43.tar.gz \
+  && cd rlwrap-0.43 \
+  && ./configure \
+  && make install \
+  && rm -rf rlwrap-0.43 \
+  && apk del gcc ncurses-dev libc-dev readline-dev make
+
 RUN lein

@@ -63,5 +63,11 @@ for variant in "${variants[@]}"; do
       sed -i '' '/^%%ALPINE%%/d' "$dir/Dockerfile"
       sed -i '' '/^$/N;/^\n$/D' "$dir/Dockerfile"
     fi
+    if [ "$base_variant" = "debian" ]; then
+      sed -i '' 's/^%%DEBIAN%% //g' "$dir/Dockerfile"
+    else
+      sed -i '' '/^%%DEBIAN%%/d' "$dir/Dockerfile"
+      sed -i '' '/^$/N;/^\n$/D' "$dir/Dockerfile"
+    fi
   )
 done
