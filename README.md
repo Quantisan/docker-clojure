@@ -87,7 +87,7 @@ docker build -t clojure:lein-2.7.1 debian/lein
 #### Debian-based boot
 
 ```
-docker build -t clojure:boot-2.7.1 debian/boot
+docker build -t clojure:boot-2.7.2 debian/boot
 ```
 
 #### Alpine-based leiningen
@@ -99,5 +99,5 @@ docker build -t clojure:lein-2.7.1-alpine alpine/lein
 #### Alpine-based boot
 
 ```
-docker build -t clojure:boot-2.7.1-alpine alpine/boot
+docker build -t clojure:boot-2.7.2-alpine alpine/boot
 ```
