@@ -16,13 +16,10 @@ RUN apk add --update tar gnupg bash openssl && rm -rf /var/cache/apk/*
 
 # Download the whole repo as an archive
 RUN mkdir -p $LEIN_INSTALL \
-  && wget -q https://github.com/technomancy/leiningen/archive/$LEIN_VERSION.tar.gz \
-  && echo "Comparing archive checksum ..." \
-  && echo "6fe90ca265f43f574f665a9146a443574280928e *$LEIN_VERSION.tar.gz" | sha1sum -c - \
-  && mkdir ./leiningen \
-  && tar -xzf $LEIN_VERSION.tar.gz  -C ./leiningen/ --strip-components=1 \
-  && mv leiningen/bin/lein-pkg $LEIN_INSTALL/lein \
-  && rm -rf $LEIN_VERSION.tar.gz ./leiningen \
+  && wget -q https://raw.githubusercontent.com/technomancy/leiningen/$LEIN_VERSION/bin/lein-pkg \
+  && echo "Comparing lein-pkg checksum ..." \
+  && echo "2efff6ca3a77d66d041d705abf7a92cb7efafabb *lein-pkg" | sha1sum -c - \
+  && mv lein-pkg $LEIN_INSTALL/lein \
   && chmod 0755 $LEIN_INSTALL/lein \
   && wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.zip \
   && wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.zip.asc \
