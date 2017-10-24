@@ -7,33 +7,23 @@
 FROM openjdk:8
 MAINTAINER Paul Lam <paul@quantisan.com>
 
-ENV LEIN_VERSION=2.7.1
+ENV LEIN_VERSION=2.8.0
 ENV LEIN_INSTALL=/usr/local/bin/
 
 WORKDIR /tmp
 
 # Download the whole repo as an archive
 RUN mkdir -p $LEIN_INSTALL \
-  && wget -q https://github.com/technomancy/leiningen/archive/$LEIN_VERSION.tar.gz \
-  && echo "Comparing archive checksum ..." \
-  && echo "876221e884780c865c2ce5c9aa5675a7cae9f215 *$LEIN_VERSION.tar.gz" | sha1sum -c - \
-
-  && mkdir ./leiningen \
-  && tar -xzf $LEIN_VERSION.tar.gz  -C ./leiningen/ --strip-components=1 \
-  && mv leiningen/bin/lein-pkg $LEIN_INSTALL/lein \
-  && rm -rf $LEIN_VERSION.tar.gz ./leiningen \
-
+  && wget -q https://raw.githubusercontent.com/technomancy/leiningen/$LEIN_VERSION/bin/lein-pkg \
+  && echo "Comparing lein-pkg checksum ..." \
+  && echo "2efff6ca3a77d66d041d705abf7a92cb7efafabb *lein-pkg" | sha1sum -c - \
+  && mv lein-pkg $LEIN_INSTALL/lein \
   && chmod 0755 $LEIN_INSTALL/lein \
-
-# Download and verify Lein stand-alone jar
   && wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.zip \
   && wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.zip.asc \
-
-  && gpg --keyserver pool.sks-keyservers.net --recv-key 2E708FB2FCECA07FF8184E275A92E04305696D78 \
+  && gpg --keyserver pool.sks-keyservers.net --recv-key 2B72BF956E23DE5E830D50F6002AF007D1A7CC18 \
   && echo "Verifying Jar file signature ..." \
   && gpg --verify leiningen-$LEIN_VERSION-standalone.zip.asc \
-
-# Put the jar where lein script expects
   && rm leiningen-$LEIN_VERSION-standalone.zip.asc \
   && mkdir -p /usr/share/java \
   && mv leiningen-$LEIN_VERSION-standalone.zip /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar
