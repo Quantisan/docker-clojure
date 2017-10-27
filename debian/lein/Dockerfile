@@ -7,7 +7,7 @@
 FROM openjdk:8
 MAINTAINER Paul Lam <paul@quantisan.com>
 
-ENV LEIN_VERSION=2.8.0
+ENV LEIN_VERSION=2.8.1
 ENV LEIN_INSTALL=/usr/local/bin/
 
 WORKDIR /tmp
@@ -16,7 +16,7 @@ WORKDIR /tmp
 RUN mkdir -p $LEIN_INSTALL \
   && wget -q https://raw.githubusercontent.com/technomancy/leiningen/$LEIN_VERSION/bin/lein-pkg \
   && echo "Comparing lein-pkg checksum ..." \
-  && echo "2efff6ca3a77d66d041d705abf7a92cb7efafabb *lein-pkg" | sha1sum -c - \
+  && echo "019faa5f91a463bf9742c3634ee32fb3db8c47f0 *lein-pkg" | sha1sum -c - \
   && mv lein-pkg $LEIN_INSTALL/lein \
   && chmod 0755 $LEIN_INSTALL/lein \
   && wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.zip \
