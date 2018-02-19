@@ -5,7 +5,7 @@
 #
 
 FROM openjdk:8
-MAINTAINER Paul Lam <paul@quantisan.com>
+LABEL maintainer="Paul Lam <paul@quantisan.com>"
 
 ENV LEIN_VERSION=2.8.1
 ENV LEIN_INSTALL=/usr/local/bin/
