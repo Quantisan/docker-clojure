@@ -81,7 +81,7 @@ Note that the `update.sh` script requires bash version 4+ to run.
 #### Debian-based leiningen
 
 ```
-docker build -t clojure:lein-2.7.1 debian/lein
+docker build -t clojure:lein-2.8.1 debian/lein
 ```
 
 #### Debian-based boot
@@ -93,7 +93,7 @@ docker build -t clojure:boot-2.7.2 debian/boot
 #### Alpine-based leiningen
 
 ```
-docker build -t clojure:lein-2.7.1-alpine alpine/lein
+docker build -t clojure:lein-2.8.1-alpine alpine/lein
 ```
 
 #### Alpine-based boot
