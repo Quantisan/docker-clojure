@@ -76,6 +76,12 @@ If you want to modify them (for example, to build in a different version of lein
 
 Note that the `update.sh` script requires bash version 4+ to run.
 
+If you then want to build all of the non-onbuild images, run the
+`build-images.sh` script. This will tag them as shown in the
+examples below. So if you want to push any of them to your own
+Docker repo, run something like this after building:
+`docker tag clojure:lein-2.8.1 my-repo/clojure:lein-2.8.1`.
+
 ### Build examples
 
 #### Debian-based leiningen
