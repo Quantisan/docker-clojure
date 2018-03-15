@@ -13,11 +13,14 @@ OPENJDK_VERSION=8
 
 PAUL='Paul Lam <paul@quantisan.com>'
 WES='Wes Morgan <wesmorgan@icloud.com>'
+DLG='Kirill Chernyshov <delaguardo@gmail.com>'
 
 declare -A maintainers=(
   [debian/lein]=$PAUL
   [debian/boot]=$WES
   [alpine]=$WES
+  [alpine/tools-deps]=$DLG
+  [debian/tools-deps]=$DLG
 )
 
 
@@ -55,13 +58,13 @@ for variant in "${variants[@]}"; do
   maintainer=${maintainers[$variant]:-${maintainers[$base_variant]}}
   { generated_warning; cat "$template"; } > "$dir/Dockerfile"
   ( set -x
-    sed -i '' 's!%%BASE_TAG%%!'"$openjdk_version"'!g' "$dir/Dockerfile"
-    sed -i '' 's!%%MAINTAINER%%!'"$maintainer"'!g' "$dir/Dockerfile"
+    sed -i 's!%%BASE_TAG%%!'"$openjdk_version"'!g' "$dir/Dockerfile"
+    sed -i 's!%%MAINTAINER%%!'"$maintainer"'!g' "$dir/Dockerfile"
     if [ "$base_variant" = "alpine" ]; then
-      sed -i '' 's/^%%ALPINE%% //g' "$dir/Dockerfile"
+      sed -i 's/^%%ALPINE%% //g' "$dir/Dockerfile"
     else
-      sed -i '' '/^%%ALPINE%%/d' "$dir/Dockerfile"
-      sed -i '' '/^$/N;/^\n$/D' "$dir/Dockerfile"
+      sed -i '/^%%ALPINE%%/d' "$dir/Dockerfile"
+      sed -i '/^$/N;/^\n$/D' "$dir/Dockerfile"
     fi
   )
 done
