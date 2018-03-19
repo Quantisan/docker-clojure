@@ -5,7 +5,7 @@
 #
 
 FROM openjdk:8-alpine
-MAINTAINER Wes Morgan <wesmorgan@icloud.com>
+LABEL maintainer="Wes Morgan <wesmorgan@icloud.com>"
 
 ENV BOOT_VERSION=2.7.2
 ENV BOOT_INSTALL=/usr/local/bin/

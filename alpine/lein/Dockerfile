@@ -5,7 +5,7 @@
 #
 
 FROM openjdk:8-alpine
-MAINTAINER Wes Morgan <wesmorgan@icloud.com>
+LABEL maintainer="Wes Morgan <wesmorgan@icloud.com>"
 
 ENV LEIN_VERSION=2.8.1
 ENV LEIN_INSTALL=/usr/local/bin/
