@@ -96,6 +96,12 @@ docker build -t clojure:lein-2.8.1 debian/lein
 docker build -t clojure:boot-2.7.2 debian/boot
 ```
 
+#### Debian-based tools-deps
+
+```
+docker build -t clojure:tools-deps debian/tools-deps
+```
+
 #### Alpine-based leiningen
 
 ```
@@ -106,4 +112,10 @@ docker build -t clojure:lein-2.8.1-alpine alpine/lein
 
 ```
 docker build -t clojure:boot-2.7.2-alpine alpine/boot
+```
+
+#### Alpine-based tools-deps
+
+```
+docker build -t clojure:tools-deps-alpine alpine/tools-deps
 ```
