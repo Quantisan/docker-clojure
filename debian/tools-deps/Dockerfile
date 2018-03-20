@@ -5,7 +5,7 @@
 #
 
 FROM openjdk:8
-MAINTAINER Kirill Chernyshov <delaguardo@gmail.com>
+LABEL mainteiner="Kirill Chernyshov <delaguardo@gmail.com>"
 
 ENV CLOJURE_VERSION=1.9.0.358
 
