@@ -23,14 +23,9 @@ declare -A maintainers=(
   [debian/tools-deps]=$DLG
 )
 
-
 # Dockerfile generator
 
-variants=( "$@" )
-if [ ${#variants[@]} -eq 0 ]; then
-  variants=( */*/ )
-fi
-variants=( "${variants[@]%/}" )
+source ./variants.sh
 
 generated_warning() {
   cat <<EOH
@@ -46,22 +41,23 @@ EOH
 for variant in "${variants[@]}"; do
   openjdk_version=$OPENJDK_VERSION
   dir="$variant"
-  base_variant=${variant%/*}
-  build_tool=${variant#*/}
+  bv=$(base_variant $variant)
+  bt=$(build_tool $variant)
+  bt_version=$(build_tool_version $bt)
   echo "Generating Dockerfile for $dir"
   [ -d "$dir" ] || continue
-  template="Dockerfile-$build_tool.template"
-  echo "Using template $template"
-  if [ "$base_variant" != "debian" ]; then
-    openjdk_version="${openjdk_version}-${base_variant}"
+  template="Dockerfile-$bt.template"
+  #echo "Using template $template"
+  if [ "$bv" != "debian" ]; then
+    openjdk_version="${openjdk_version}-${bv}"
   fi
-  maintainer=${maintainers[$variant]:-${maintainers[$base_variant]}}
+  maintainer=${maintainers[$variant]:-${maintainers[$bv]}}
   { generated_warning; cat "$template"; } > "$dir/Dockerfile"
-  ( set -x
-    sed -i 's!%%BASE_TAG%%!'"$openjdk_version"'!g' "$dir/Dockerfile"
-    sed -i 's!%%MAINTAINER%%!'"$maintainer"'!g' "$dir/Dockerfile"
-    if [ "$base_variant" = "alpine" ]; then
-      sed -i 's/^%%ALPINE%% //g' "$dir/Dockerfile"
+  ( sed -i '' 's!%%BASE_TAG%%!'"$openjdk_version"'!g' "$dir/Dockerfile"
+    sed -i '' 's!%%MAINTAINER%%!'"$maintainer"'!g' "$dir/Dockerfile"
+    sed -i '' 's!%%BUILD_TOOL_VERSION%%!'"$bt_version"'!g' "$dir/Dockerfile"
+    if [ "$bv" = "alpine" ]; then
+      sed -i '' 's/^%%ALPINE%% //g' "$dir/Dockerfile"
     else
       sed -i '/^%%ALPINE%%/d' "$dir/Dockerfile"
       sed -i '/^$/N;/^\n$/D' "$dir/Dockerfile"
