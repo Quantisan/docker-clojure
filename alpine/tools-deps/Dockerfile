@@ -11,9 +11,10 @@ ENV CLOJURE_VERSION=1.9.0.358
 
 WORKDIR /tmp
 
-RUN wget https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh
-    && chmod +x linux-install-$CLOJURE_VERSION.sh
-    && ./linux-install-$CLOJURE_VERSION.sh
-    && clojure -e "(clojure-version)"
+RUN apk add --update bash curl && rm -rf /var/cache/apk/*
 
-RUN clojure
+RUN wget https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh \
+    && chmod +x linux-install-$CLOJURE_VERSION.sh \
+    && ./linux-install-$CLOJURE_VERSION.sh
+
+RUN clojure -e "(clojure-version)"
