@@ -53,14 +53,14 @@ for variant in "${variants[@]}"; do
   fi
   maintainer=${maintainers[$variant]:-${maintainers[$bv]}}
   { generated_warning; cat "$template"; } > "$dir/Dockerfile"
-  ( sed -i '' 's!%%BASE_TAG%%!'"$openjdk_version"'!g' "$dir/Dockerfile"
-    sed -i '' 's!%%MAINTAINER%%!'"$maintainer"'!g' "$dir/Dockerfile"
-    sed -i '' 's!%%BUILD_TOOL_VERSION%%!'"$bt_version"'!g' "$dir/Dockerfile"
+  ( sed -i 's!%%BASE_TAG%%!'"$openjdk_version"'!g' "$dir/Dockerfile"
+    sed -i 's!%%MAINTAINER%%!'"$maintainer"'!g' "$dir/Dockerfile"
+    sed -i 's!%%BUILD_TOOL_VERSION%%!'"$bt_version"'!g' "$dir/Dockerfile"
     if [ "$bv" = "alpine" ]; then
-      sed -i '' 's/^%%ALPINE%% //g' "$dir/Dockerfile"
+      sed -i 's/^%%ALPINE%% //g' "$dir/Dockerfile"
     else
-      sed -i '' '/^%%ALPINE%%/d' "$dir/Dockerfile"
-      sed -i '' '/^$/N;/^\n$/D' "$dir/Dockerfile"
+      sed -i '/^%%ALPINE%%/d' "$dir/Dockerfile"
+      sed -i '/^$/N;/^\n$/D' "$dir/Dockerfile"
     fi
   )
 done
