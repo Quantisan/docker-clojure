@@ -59,8 +59,8 @@ for variant in "${variants[@]}"; do
     if [ "$bv" = "alpine" ]; then
       sed -i '' 's/^%%ALPINE%% //g' "$dir/Dockerfile"
     else
-      sed -i '/^%%ALPINE%%/d' "$dir/Dockerfile"
-      sed -i '/^$/N;/^\n$/D' "$dir/Dockerfile"
+      sed -i '' '/^%%ALPINE%%/d' "$dir/Dockerfile"
+      sed -i '' '/^$/N;/^\n$/D' "$dir/Dockerfile"
     fi
   )
 done
