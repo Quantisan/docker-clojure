@@ -1,5 +1,5 @@
 FROM openjdk:%%BASE_TAG%%
-LABEL mainteiner="%%MAINTAINER%%"
+LABEL maintainer="%%MAINTAINER%%"
 
 ENV CLOJURE_VERSION=%%BUILD_TOOL_VERSION%%
 
