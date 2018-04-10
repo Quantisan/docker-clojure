@@ -38,16 +38,6 @@ generated_warning() {
 EOH
 }
 
-get_sed_inplace_argument() {
-    echo "foo" > /tmp/sed_check
-    if sed -i"" "s/foo/bar/g" /tmp/sed_check 2>/dev/null; then
-        echo "-i .bak"
-    else
-        echo "-i.bak"
-    fi
-    rm /tmp/sed_check
-}
-
 for variant in "${variants[@]}"; do
   openjdk_version=$OPENJDK_VERSION
   dir="$variant"
@@ -61,17 +51,16 @@ for variant in "${variants[@]}"; do
   if [ "$bv" != "debian" ]; then
     openjdk_version="${openjdk_version}-${bv}"
   fi
-  sed_inplace_arg=$(get_sed_inplace_argument)
   maintainer=${maintainers[$variant]:-${maintainers[$bv]}}
   { generated_warning; cat "$template"; } > "$dir/Dockerfile"
-  ( sed "$sed_inplace_arg" 's!%%BASE_TAG%%!'"$openjdk_version"'!g' "$dir/Dockerfile"
-    sed "$sed_inplace_arg" 's!%%MAINTAINER%%!'"$maintainer"'!g' "$dir/Dockerfile"
-    sed "$sed_inplace_arg" 's!%%BUILD_TOOL_VERSION%%!'"$bt_version"'!g' "$dir/Dockerfile"
+  ( sed -i.bak 's!%%BASE_TAG%%!'"$openjdk_version"'!g' "$dir/Dockerfile"
+    sed -i.bak 's!%%MAINTAINER%%!'"$maintainer"'!g' "$dir/Dockerfile"
+    sed -i.bak 's!%%BUILD_TOOL_VERSION%%!'"$bt_version"'!g' "$dir/Dockerfile"
     if [ "$bv" = "alpine" ]; then
-      sed "$sed_inplace_arg" 's/^%%ALPINE%% //g' "$dir/Dockerfile"
+      sed -i.bak 's/^%%ALPINE%% //g' "$dir/Dockerfile"
     else
-        sed "$sed_inplace_arg" '/^%%ALPINE%%/d' "$dir/Dockerfile"
-        sed "$sed_inplace_arg" '/^$/N;/^\n$/D' "$dir/Dockerfile"
+        sed -i.bak '/^%%ALPINE%%/d' "$dir/Dockerfile"
+        sed -i.bak '/^$/N;/^\n$/D' "$dir/Dockerfile"
     fi
   )
   find . -name "*.bak" -type f -delete
