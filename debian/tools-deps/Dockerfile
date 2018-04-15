@@ -7,7 +7,7 @@
 FROM openjdk:8
 LABEL maintainer="Kirill Chernyshov <delaguardo@gmail.com>"
 
-ENV CLOJURE_VERSION=1.9.0.358
+ENV CLOJURE_VERSION=1.9.0.375
 
 WORKDIR /tmp
 
