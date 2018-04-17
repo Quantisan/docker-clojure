@@ -2,11 +2,11 @@
 
 This is the repository for the [official Docker image for Clojure](https://registry.hub.docker.com/_/clojure/).
 It is automatically pulled and built by Stackbrew into the Docker registry.
-This image runs on OpenJDK 8 and includes [Leiningen](http://leiningen.org) or [boot](http://boot-clj.com) (see below for tags and building instructions).
+This image runs on OpenJDK 8 and includes [Leiningen](http://leiningen.org), [boot](http://boot-clj.com) or [tools-deps](https://clojure.org/reference/deps_and_cli) (see below for tags and building instructions).
 
-## Leiningen vs. boot
+## Leiningen vs. boot vs. tools-deps
 
-The version tags on these images look like `lein-N.N.N(-alpine)` and `boot-N.N.N(-alpine)`. These refer to which version of leiningen or boot is packaged in the image (because they can then install and use any version of Clojure at runtime). The default `latest` (or `lein`, `lein-alpine`) images will always have a recent version of leiningen installed. If you want boot, specify either `clojure:boot`, `clojure:boot-alpine`, or `clojure:boot-N.N.N` / `clojure:boot-N.N.N-alpine` (where `N.N.N` is the version of boot you want installed).
+The version tags on these images look like `lein-N.N.N(-alpine)`, `boot-N.N.N(-alpine)` and `tools-deps(-alpine)`. These refer to which version of leiningen, boot or tools-deps is packaged in the image (because they can then install and use any version of Clojure at runtime). The default `latest` (or `lein`, `lein-alpine`) images will always have a recent version of leiningen installed. If you want boot, specify either `clojure:boot` / `clojure:boot-alpine` or `clojure:boot-N.N.N` / `clojure:boot-N.N.N-alpine`. (where `N.N.N` is the version of boot you want installed). If you want to use tools-deps, specify either `clojure:tools-deps` or `clojure:tools-deps-alpine`.
 
 ## Alpine vs. Debian
 
@@ -96,6 +96,12 @@ docker build -t clojure:lein-2.8.1 debian/lein
 docker build -t clojure:boot-2.7.2 debian/boot
 ```
 
+#### Debian-based tools-deps
+
+```
+docker build -t clojure:tools-deps debian/tools-deps
+```
+
 #### Alpine-based leiningen
 
 ```
@@ -106,4 +112,10 @@ docker build -t clojure:lein-2.8.1-alpine alpine/lein
 
 ```
 docker build -t clojure:boot-2.7.2-alpine alpine/boot
+```
+
+#### Alpine-based tools-deps
+
+```
+docker build -t clojure:tools-deps-alpine alpine/tools-deps
 ```
