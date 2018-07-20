@@ -3,7 +3,7 @@
 declare -A versions=(
   [lein]=2.8.1
   [boot]=2.7.2
-  [tools-deps]=1.9.0.381
+  [tools-deps]=1.9.0.391
 )
 
 variants=( "$@" )
