@@ -13,5 +13,5 @@ source ./variants.sh
 for variant in "${variants[@]}"; do
   image_name=$(image_name $variant)
   echo "Building $image_name in $variant"
-  docker build -t $image_name $variant
+  docker build --pull -t $image_name $variant
 done
