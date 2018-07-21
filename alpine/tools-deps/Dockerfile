@@ -11,7 +11,8 @@ ENV CLOJURE_VERSION=1.9.0.391
 
 WORKDIR /tmp
 
-RUN apk add --update bash curl && rm -rf /var/cache/apk/*
+RUN echo '@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories && \
+  apk add --update --no-cache bash curl rlwrap@testing
 
 RUN wget https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh \
     && chmod +x linux-install-$CLOJURE_VERSION.sh \

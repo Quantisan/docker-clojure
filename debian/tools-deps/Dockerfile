@@ -11,6 +11,8 @@ ENV CLOJURE_VERSION=1.9.0.391
 
 WORKDIR /tmp
 
+RUN apt-get update && apt-get install rlwrap
+
 RUN wget https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh \
     && chmod +x linux-install-$CLOJURE_VERSION.sh \
     && ./linux-install-$CLOJURE_VERSION.sh
