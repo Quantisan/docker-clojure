@@ -12,7 +12,7 @@ ENV BOOT_INSTALL=/usr/local/bin/
 
 WORKDIR /tmp
 
-RUN apk add --update bash openssl && rm -rf /var/cache/apk/*
+RUN apk add --update --no-cache bash openssl
 
 # NOTE: BOOT_VERSION tells the boot.sh script which version of boot to install
 # on its first run. We always download version 2.7.2 of boot.sh because it is

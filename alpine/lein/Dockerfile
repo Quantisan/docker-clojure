@@ -12,7 +12,7 @@ ENV LEIN_INSTALL=/usr/local/bin/
 
 WORKDIR /tmp
 
-RUN apk add --update tar gnupg bash openssl && rm -rf /var/cache/apk/*
+RUN apk add --update --no-cache tar gnupg bash openssl
 
 # Download the whole repo as an archive
 RUN mkdir -p $LEIN_INSTALL \
