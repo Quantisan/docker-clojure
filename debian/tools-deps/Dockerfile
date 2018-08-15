@@ -7,9 +7,11 @@
 FROM openjdk:8
 LABEL maintainer="Kirill Chernyshov <delaguardo@gmail.com>"
 
-ENV CLOJURE_VERSION=1.9.0.381
+ENV CLOJURE_VERSION=1.9.0.391
 
 WORKDIR /tmp
+
+RUN apt-get update && apt-get install rlwrap
 
 RUN wget https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh \
     && chmod +x linux-install-$CLOJURE_VERSION.sh \

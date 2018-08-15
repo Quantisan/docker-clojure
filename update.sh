@@ -58,9 +58,16 @@ for variant in "${variants[@]}"; do
     sed -i.bak 's!%%BUILD_TOOL_VERSION%%!'"$bt_version"'!g' "$dir/Dockerfile"
     if [ "$bv" = "alpine" ]; then
       sed -i.bak 's/^%%ALPINE%% //g' "$dir/Dockerfile"
+      sed -i.bak '/^%%DEBIAN%%/d' "$dir/Dockerfile"
+      sed -i.bak '/^$/N;/^\n$/D' "$dir/Dockerfile"
+    elif [ "$bv" = "debian" ]; then
+      sed -i.bak 's/^%%DEBIAN%% //g' "$dir/Dockerfile"
+      sed -i.bak '/^%%ALPINE%%/d' "$dir/Dockerfile"
+      sed -i.bak '/^$/N;/^\n$/D' "$dir/Dockerfile"
     else
-        sed -i.bak '/^%%ALPINE%%/d' "$dir/Dockerfile"
-        sed -i.bak '/^$/N;/^\n$/D' "$dir/Dockerfile"
+      sed -i.bak '/^%%ALPINE%%/d' "$dir/Dockerfile"
+      sed -i.bak '/^%%DEBIAN%%/d' "$dir/Dockerfile"
+      sed -i.bak '/^$/N;/^\n$/D' "$dir/Dockerfile"
     fi
   )
   find . -name "*.bak" -type f -delete
