@@ -2,7 +2,7 @@
 
 declare -A versions=(
   [lein]=2.8.1
-  [boot]=2.7.2
+  [boot]=2.8.1
   [tools-deps]=1.9.0.391
 )
 
