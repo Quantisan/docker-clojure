@@ -39,7 +39,7 @@
     (= distro "alpine")
     (:wes maintainers)))
 
-(defn exclude? [variant]
+(defn exclude? [exclusions variant]
   (some (fn [exclusion]
           (every? (fn [[k v]]
                     (= v (get variant k)))
@@ -81,14 +81,15 @@
           (print out)))))
   (println))
 
-(defn image-variants []
-  (map variant-map
-       (combo/cartesian-product base-images distros (keys build-tools))))
+(defn image-variants [base-images distros build-tools]
+  (->> (combo/cartesian-product base-images distros build-tools)
+       (map variant-map)
+       set))
 
 (defn build-images [variants]
   (println "Building images")
   (doseq [variant variants]
-    (when-not (exclude? variant)
+    (when-not (exclude? exclusions variant)
       (build-image variant))))
 
 (defn generate-dockerfile [variant]
@@ -98,10 +99,10 @@
     (assoc variant :dockerfile filename)))
 
 (defn generate-dockerfiles []
-  (let [variants (image-variants)]
+  (let [variants (image-variants base-images distros (keys build-tools))]
     (remove nil?
             (for [variant variants]
-              (when-not (exclude? variant)
+              (when-not (exclude? exclusions variant)
                 (generate-dockerfile variant))))))
 
 (defn -main [& args]

@@ -65,3 +65,8 @@ build. Often this just means installing the `clojure` package for your system.
 
 The `./build-images.sh` script will generate the Dockerfiles and build all of
 the images.
+
+## Tests
+
+The `docker-clojure` build tool has a test suite that can be run via the
+`./test.sh` script. 
