@@ -67,12 +67,10 @@
         (assoc :docker-tag (docker-tag base))
         (assoc :build-tool-version (get build-tools (:build-tool base))))))
 
-(defn build-image [variant]
-  (let [image-tag (str "clojure:" (:docker-tag variant))
-        dockerfile (df/filename variant)
+(defn build-image [{:keys [docker-tag dockerfile] :as variant}]
+  (let [image-tag (str "clojure:" docker-tag)
         build-cmd ["docker" "build" "-t" image-tag "-f"
                    dockerfile "empty"]]
-    (println "Generating" dockerfile)
     (df/write-file dockerfile variant)
     (apply println "Running" build-cmd)
     (let [{:keys [out err exit]} (apply sh build-cmd)]
@@ -87,16 +85,29 @@
   (map variant-map
        (combo/cartesian-product base-images distros (keys build-tools))))
 
-(defn build-images []
-  (println "Building the following images:")
+(defn build-images [variants]
+  (println "Building images")
+  (doseq [variant variants]
+    (when-not (exclude? variant)
+      (build-image variant))))
+
+(defn generate-dockerfile [variant]
+  (let [filename (df/filename variant)]
+    (println "Generating" filename)
+    (df/write-file filename variant)
+    (assoc variant :dockerfile filename)))
+
+(defn generate-dockerfiles []
   (let [variants (image-variants)]
-    (doseq [variant variants]
-      (when-not (exclude? variant)
-        (build-image variant)))))
+    (remove nil?
+            (for [variant variants]
+              (when-not (exclude? variant)
+                (generate-dockerfile variant))))))
 
 (defn -main [& args]
-  (if (= "clean" (first args))
-    (df/clean-all)
-    (build-images))
+  (case (first args)
+    "clean" (df/clean-all)
+    "dockerfiles" (dorun (generate-dockerfiles))
+    (build-images (generate-dockerfiles)))
   (System/exit 0))
 
