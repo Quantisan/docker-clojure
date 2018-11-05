@@ -3,8 +3,7 @@
 (defn install-deps [{:keys [distro]}]
   (case distro
     "alpine"
-    ["RUN echo '@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories && \\"
-     "  apk add --update --no-cache bash curl rlwrap@testing"]
+    ["RUN apk add --update --no-cache bash curl"]
 
     "debian"
     ["RUN apt-get update && apt-get install -y rlwrap"]
