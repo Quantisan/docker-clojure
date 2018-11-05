@@ -83,12 +83,14 @@
           (print out)))))
   (println))
 
+(defn image-variants []
+  (map variant-map
+       (combo/cartesian-product base-images distros (keys build-tools))))
+
 (defn build-images []
   (println "Building the following images:")
-  (let [variants (combo/cartesian-product
-                  base-images distros (keys build-tools))
-        map-variants (map variant-map variants)]
-    (doseq [variant map-variants]
+  (let [variants (image-variants)]
+    (doseq [variant variants]
       (when-not (exclude? variant)
         (build-image variant)))))
 
