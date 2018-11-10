@@ -1,2 +1,2 @@
 .cpcache/
-Dockerfile.*
+/Dockerfile.*
