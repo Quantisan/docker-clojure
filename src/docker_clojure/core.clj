@@ -58,10 +58,10 @@
     (str/join "-" (remove nil? [jdk-label build-tool build-tool-version
                                 distro-label]))))
 
-(defn variant-map [variant]
-  (let [base {:base-image (first variant)
-              :distro     (second variant)
-              :build-tool (last variant)}]
+(defn variant-map [[base-image distro build-tool]]
+  (let [base {:base-image base-image
+              :distro     distro
+              :build-tool build-tool}]
     (-> base
         (assoc :maintainer (maintainer base))
         (assoc :docker-tag (docker-tag base))
