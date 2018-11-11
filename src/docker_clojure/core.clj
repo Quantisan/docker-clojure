@@ -92,13 +92,13 @@
     (when-not (exclude? exclusions variant)
       (build-image variant))))
 
-(defn generate-dockerfile [variant]
+(defn generate-dockerfile! [variant]
   (let [filename (df/filename variant)]
     (println "Generating" filename)
     (df/write-file filename variant)
     (assoc variant :dockerfile filename)))
 
-(defn generate-dockerfiles []
+(defn generate-dockerfiles! []
   (let [variants (image-variants base-images distros (keys build-tools))]
     (remove nil?
             (for [variant variants]
@@ -108,7 +108,7 @@
 (defn -main [& args]
   (case (first args)
     "clean" (df/clean-all)
-    "dockerfiles" (dorun (generate-dockerfiles))
-    (build-images (generate-dockerfiles)))
+    "dockerfiles" (dorun (generate-dockerfiles!))
+    (build-images (generate-dockerfiles!)))
   (System/exit 0))
 
