@@ -99,11 +99,9 @@
     (assoc variant :dockerfile filename)))
 
 (defn generate-dockerfiles! []
-  (let [variants (image-variants base-images distros (keys build-tools))]
-    (remove nil?
-            (for [variant variants]
-              (when-not (exclude? exclusions variant)
-                (generate-dockerfile variant))))))
+  (for [variant (image-variants base-images distros (keys build-tools))
+        :when (not (exclude? exclusions variant))]
+    (generate-dockerfile! variant)))
 
 (defn -main [& args]
   (case (first args)
