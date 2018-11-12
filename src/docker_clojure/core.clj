@@ -2,8 +2,29 @@
   (:require
    [clojure.java.shell :refer [sh]]
    [clojure.math.combinatorics :as combo]
+   [clojure.spec.alpha :as s]
    [clojure.string :as str]
    [docker-clojure.dockerfile :as df]))
+
+(s/def ::non-blank-string
+  (s/and string? #(not (str/blank? %))))
+
+(s/def ::base-image ::non-blank-string)
+(s/def ::base-images (s/coll-of ::base-image :distinct true :into #{}))
+
+(s/def ::distro ::non-blank-string)
+(s/def ::distros (s/coll-of ::distro :distinct true :into #{}))
+
+(s/def ::build-tool ::non-blank-string)
+(s/def ::build-tool-version
+  (s/and ::non-blank-string #(re-matches #"[\d\.]+" %)))
+(s/def ::build-tools (s/map-of ::build-tool ::build-tool-version))
+
+(s/def ::exclusions
+  (s/keys :opt-un [::base-image ::distro ::build-tool ::build-tool-version]))
+
+(s/def ::maintainers
+  (s/map-of keyword? ::non-blank-string))
 
 (def base-images
   #{"openjdk:8" "openjdk:11"})
@@ -58,6 +79,10 @@
     (str/join "-" (remove nil? [jdk-label build-tool build-tool-version
                                 distro-label]))))
 
+(s/def ::variant
+  (s/keys :req-un [::base-image ::distro ::build-tool ::build-tool-version
+                   ::maintainer ::docker-tag]))
+
 (defn variant-map [[base-image distro build-tool]]
   (let [base {:base-image base-image
               :distro     distro
@@ -84,6 +109,7 @@
 (defn image-variants [base-images distros build-tools]
   (->> (combo/cartesian-product base-images distros build-tools)
        (map variant-map)
+       (remove #(= ::s/invalid (s/conform ::variant %)))
        set))
 
 (defn build-images [variants]
