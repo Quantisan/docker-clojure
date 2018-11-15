@@ -60,12 +60,21 @@
     (= distro "alpine")
     (:wes maintainers)))
 
-(defn exclude? [exclusions variant]
-  (some (fn [exclusion]
-          (every? (fn [[k v]]
-                    (= v (get variant k)))
-                  exclusion))
-        exclusions))
+(defn contains-every-key-value?
+  "Returns true if the map `haystack` contains every key-value pair in the map
+  `needles`. `haystack` may contain additional keys that are not in `needles`.
+  Returns false if any of the keys in `needles` are missing from `haystack` or
+  have different values."
+  [haystack needles]
+  (every? (fn [[k v]]
+            (= v (get haystack k)))
+          needles))
+
+(defn exclude?
+  "Returns true if `variant` matches one of `exclusions` elements (meaning
+  `(contains-every-key-value? variant exclusion)` returns true)."
+  [exclusions variant]
+  (some (partial contains-every-key-value? variant) exclusions))
 
 (defn base-image->tag-component [base-image]
   (str/replace base-image ":" "-"))
