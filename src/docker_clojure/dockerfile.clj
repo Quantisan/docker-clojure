@@ -11,14 +11,10 @@
     base-image
     (str base-image "-" distro)))
 
-(defn base-image-filename [variant]
-  (-> variant
-      base-image-tag
-      (str/replace ":" "-")))
-
-(defn filename [{:keys [build-tool] :as variant}]
-  (str/join "." ["Dockerfile"
-                 (base-image-filename variant)
+(defn build-dir [{:keys [base-image distro build-tool]}]
+  (str/join "/" ["target"
+                 (str/replace base-image ":" "-")
+                 distro
                  build-tool]))
 
 (defn contents [{:keys [maintainer build-tool] :as variant}]
@@ -31,8 +27,13 @@
                       "lein" (lein/contents variant)
                       "tools-deps" (tools-deps/contents variant)))))
 
-(defn write-file [file variant]
-  (spit file (contents variant)))
+(defn write-file [dir file variant]
+  (let [{:keys [exit err]} (sh "mkdir" "-p" dir)]
+    (if (zero? exit)
+      (spit (str/join "/" [dir file])
+            (contents variant))
+      (throw (ex-info (str "Error creating directory " dir)
+                      {:error err})))))
 
 (defn clean-all []
-  (sh "sh" "-c" "rm Dockerfile.*"))
+  (sh "sh" "-c" "rm -rf target/*"))
