@@ -1,6 +1,6 @@
 (ns docker-clojure.core
   (:require
-   [clojure.java.shell :refer [sh]]
+   [clojure.java.shell :refer [sh with-sh-dir]]
    [clojure.math.combinatorics :as combo]
    [clojure.spec.alpha :as s]
    [clojure.string :as str]
@@ -101,13 +101,13 @@
         (assoc :docker-tag (docker-tag base))
         (assoc :build-tool-version (get build-tools (:build-tool base))))))
 
-(defn build-image [{:keys [docker-tag dockerfile] :as variant}]
+(defn build-image [{:keys [docker-tag dockerfile build-dir] :as variant}]
   (let [image-tag (str "clojure:" docker-tag)
-        build-cmd ["docker" "build" "-t" image-tag "-f"
-                   dockerfile "empty"]]
-    (df/write-file dockerfile variant)
+        build-cmd ["docker" "build" "-t" image-tag "-f" dockerfile "."]]
+    (df/write-file build-dir dockerfile variant)
     (apply println "Running" build-cmd)
-    (let [{:keys [out err exit]} (apply sh build-cmd)]
+    (let [{:keys [out err exit]}
+          (with-sh-dir build-dir (apply sh build-cmd))]
       (if (zero? exit)
         (println "Succeeded")
         (do
@@ -128,10 +128,13 @@
       (build-image variant))))
 
 (defn generate-dockerfile! [variant]
-  (let [filename (df/filename variant)]
-    (println "Generating" filename)
-    (df/write-file filename variant)
-    (assoc variant :dockerfile filename)))
+  (let [build-dir (df/build-dir variant)
+        filename "Dockerfile"]
+    (println "Generating" (str build-dir "/" filename))
+    (df/write-file build-dir filename variant)
+    (assoc variant
+           :build-dir build-dir
+           :dockerfile filename)))
 
 (defn generate-dockerfiles! []
   (for [variant (image-variants base-images distros (keys build-tools))
@@ -144,4 +147,3 @@
     "dockerfiles" (dorun (generate-dockerfiles!))
     (build-images (generate-dockerfiles!)))
   (System/exit 0))
-
