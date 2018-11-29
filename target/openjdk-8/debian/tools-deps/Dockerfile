@@ -15,4 +15,4 @@ RUN clojure -e "(clojure-version)"
 
 # Docker bug makes rlwrap crash w/o short sleep first
 # Bug: https://github.com/moby/moby/issues/28009
-CMD sleep 1; clj
+CMD ["sh", "-c", "sleep 1 && exec clj"]
