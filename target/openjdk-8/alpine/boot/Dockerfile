@@ -1,7 +1,7 @@
 FROM openjdk:8-alpine
 LABEL maintainer="Wes Morgan <wesmorgan@icloud.com>"
 
-ENV BOOT_VERSION=2.8.1
+ENV BOOT_VERSION=2.8.2
 ENV BOOT_INSTALL=/usr/local/bin/
 
 WORKDIR /tmp
@@ -13,7 +13,7 @@ RUN apk add --update --no-cache bash openssl
 # just the installer script. When/if the boot project releases a new installer
 # script we will update this to use it.
 RUN mkdir -p $BOOT_INSTALL \
-  && wget -q https://github.com/boot-clj/boot-bin/releases/download/2.7.2/boot.sh \
+  && wget -q https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh \
   && echo "Comparing installer checksum..." \
   && echo "f717ef381f2863a4cad47bf0dcc61e923b3d2afb *boot.sh" | sha1sum -c - \
   && mv boot.sh $BOOT_INSTALL/boot \

@@ -34,7 +34,7 @@
 
 (def build-tools
   {"lein"       "2.8.1"
-   "boot"       "2.8.1"
+   "boot"       "2.8.2"
    "tools-deps" "1.9.0.397"})
 
 (def exclusions ; don't build these for whatever reason(s)
