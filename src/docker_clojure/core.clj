@@ -33,7 +33,7 @@
   #{"debian" "alpine"})
 
 (def build-tools
-  {"lein"       "2.8.1"
+  {"lein"       "2.8.3"
    "boot"       "2.8.2"
    "tools-deps" "1.9.0.397"})
 

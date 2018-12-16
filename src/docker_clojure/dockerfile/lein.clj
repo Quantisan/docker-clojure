@@ -20,7 +20,7 @@
         "RUN mkdir -p $LEIN_INSTALL \\"
         "  && wget -q https://raw.githubusercontent.com/technomancy/leiningen/$LEIN_VERSION/bin/lein-pkg \\"
         "  && echo \"Comparing lein-pkg checksum ...\" \\"
-        "  && echo \"019faa5f91a463bf9742c3634ee32fb3db8c47f0 *lein-pkg\" | sha1sum -c - \\"
+        "  && echo \"67b7fa41e94e621f29625cb621ac8f7ccc77dd49 *lein-pkg\" | sha1sum -c - \\"
         "  && mv lein-pkg $LEIN_INSTALL/lein \\"
         "  && chmod 0755 $LEIN_INSTALL/lein \\"
         "  && wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.zip \\"
