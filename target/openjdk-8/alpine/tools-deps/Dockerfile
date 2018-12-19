@@ -1,7 +1,7 @@
 FROM openjdk:8-alpine
 LABEL maintainer="Kirill Chernyshov <delaguardo@gmail.com>"
 
-ENV CLOJURE_VERSION=1.9.0.397
+ENV CLOJURE_VERSION=1.10.0.403
 
 WORKDIR /tmp
 

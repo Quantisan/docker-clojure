@@ -8,9 +8,8 @@ WORKDIR /tmp
 
 
 # NOTE: BOOT_VERSION tells the boot.sh script which version of boot to install
-# on its first run. We always download version 2.7.2 of boot.sh because it is
-# just the installer script. When/if the boot project releases a new installer
-# script we will update this to use it.
+# on its first run. We always download the latest version of boot.sh because
+# it is just the installer script.
 RUN mkdir -p $BOOT_INSTALL \
   && wget -q https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh \
   && echo "Comparing installer checksum..." \
