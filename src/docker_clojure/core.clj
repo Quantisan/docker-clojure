@@ -35,7 +35,7 @@
 (def build-tools
   {"lein"       "2.9.0"
    "boot"       "2.8.2"
-   "tools-deps" "1.10.0.411"})
+   "tools-deps" "1.10.0.414"})
 
 (def exclusions ; don't build these for whatever reason(s)
   #{{:base-image "openjdk:11"
