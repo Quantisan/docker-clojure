@@ -21,7 +21,7 @@
         "  && wget -q https://raw.githubusercontent.com/technomancy/leiningen/$LEIN_VERSION/bin/lein-pkg \\"
         "  && echo \"Comparing lein-pkg checksum ...\" \\"
         "  && sha1sum lein-pkg \\"
-        "  && echo \"628e954e562338abc4f5366e9933c8f0a43fa2b2 *lein-pkg\" | sha1sum -c - \\"
+        "  && echo \"93be2c23ab4ff2fc4fcf531d7510ca4069b8d24a *lein-pkg\" | sha1sum -c - \\"
         "  && mv lein-pkg $LEIN_INSTALL/lein \\"
         "  && chmod 0755 $LEIN_INSTALL/lein \\"
         "  && wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.zip \\"
