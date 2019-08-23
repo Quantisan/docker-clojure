@@ -27,7 +27,7 @@
   (s/map-of keyword? ::non-blank-string))
 
 (def base-images
-  #{"openjdk:8" "openjdk:11"})
+  #{"openjdk:8" "openjdk:11" "openjdk:14"})
 
 (def distros
   #{"debian" "alpine"})
@@ -39,7 +39,9 @@
 
 (def exclusions ; don't build these for whatever reason(s)
   #{{:base-image "openjdk:11"
-     :distro     "alpine"}})
+     :distro     "alpine"}
+    {:base-image "openjdk:14"
+     :distro     "debian"}})
 
 (def maintainers
   {:paul "Paul Lam <paul@quantisan.com>"
