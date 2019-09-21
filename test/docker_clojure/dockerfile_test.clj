@@ -13,21 +13,11 @@
     (is (= "base-alpine" (base-image-tag {:base-image "base"
                                           :distro "alpine"})))))
 
-(deftest base-image-filename-test
+(deftest build-dir-test
   (testing "replaces colons with hyphens in tag"
-    (is (= "openjdk-11-alpine"
-           (base-image-filename {:base-image "openjdk:11"
-                                 :distro     "alpine"})))))
-
-(deftest filename-test
-  (testing "starts with 'Dockerfile'"
-    (is (str/starts-with? (filename {:base-image "openjdk:11"})
-                          "Dockerfile")))
-  (with-redefs [base-image-filename (constantly "foo")]
-    (testing "includes base-image-filename"
-      (is (str/includes? (filename {}) "foo"))))
-  (testing "includes build-tool"
-    (is (str/includes? (filename {:build-tool "lein"}) "lein"))))
+    (is (= "target/openjdk-11/alpine/"
+           (build-dir {:base-image "openjdk:11"
+                       :distro     "alpine"})))))
 
 (deftest contents-test
   (testing "includes 'FROM base-image'"
