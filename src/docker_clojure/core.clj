@@ -34,8 +34,8 @@
 
 (def build-tools
   {"lein"       "2.9.1"
-   "boot"       "2.8.2"
-   "tools-deps" "1.10.0.442"})
+   "boot"       "2.8.3"
+   "tools-deps" "1.10.1.469"})
 
 (def exclusions ; don't build these for whatever reason(s)
   #{{:base-image "openjdk:11"
@@ -79,9 +79,8 @@
 (defn base-image->tag-component [base-image]
   (str/replace base-image ":" "-"))
 
-(defn docker-tag [{:keys [base-image distro build-tool]}]
-  (let [build-tool-version (get build-tools build-tool)
-        jdk-label (if (= "openjdk:8" base-image)
+(defn docker-tag [{:keys [base-image distro build-tool build-tool-version]}]
+  (let [jdk-label (if (= "openjdk:8" base-image)
                     nil
                     (base-image->tag-component base-image))
         distro-label (if (= "debian" distro) nil distro)]
@@ -96,10 +95,10 @@
   (let [base {:base-image base-image
               :distro     distro
               :build-tool build-tool}]
-    (-> base
-        (assoc :maintainer (maintainer base))
-        (assoc :docker-tag (docker-tag base))
-        (assoc :build-tool-version (get build-tools (:build-tool base))))))
+    (as-> base $
+          (assoc $ :maintainer (maintainer $))
+          (assoc $ :build-tool-version (get build-tools (:build-tool $)))
+          (assoc $ :docker-tag (docker-tag $)))))
 
 (defn build-image [{:keys [docker-tag dockerfile build-dir] :as variant}]
   (let [image-tag (str "clojure:" docker-tag)
