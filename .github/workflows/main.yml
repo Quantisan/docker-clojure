@@ -8,6 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+    - name: Install deps
+      run: apt-get update && apt-get install -y clojure
     - uses: actions/checkout@v1
     - name: Run tests
       run: ./test.sh
