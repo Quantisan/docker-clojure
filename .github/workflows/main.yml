@@ -9,7 +9,7 @@ jobs:
     
     steps:
     - name: Install deps
-      run: apt-get update && apt-get install -y clojure
+      run: sudo apt-get update && sudo apt-get install -y clojure
     - uses: actions/checkout@v1
     - name: Run tests
       run: ./test.sh
