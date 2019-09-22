@@ -6,18 +6,11 @@
             [docker-clojure.dockerfile.boot :as boot]
             [docker-clojure.dockerfile.tools-deps :as tools-deps]))
 
-(deftest base-image-tag-test
-  (testing "debian is omitted"
-    (is (= "base" (base-image-tag {:base-image "base", :distro "debian"}))))
-  (testing "other distros are added to base-image"
-    (is (= "base-alpine" (base-image-tag {:base-image "base"
-                                          :distro "alpine"})))))
-
 (deftest build-dir-test
   (testing "replaces colons with hyphens in tag"
-    (is (= "target/openjdk-11/alpine/"
-           (build-dir {:base-image "openjdk:11"
-                       :distro     "alpine"})))))
+    (is (= "target/openjdk-11-alpine/lein"
+           (build-dir {:base-image "openjdk:11-alpine"
+                       :build-tool "lein"})))))
 
 (deftest contents-test
   (testing "includes 'FROM base-image'"

@@ -9,6 +9,10 @@
 (s/def ::non-blank-string
   (s/and string? #(not (str/blank? %))))
 
+(s/def ::jdk-version
+  (s/and pos-int? #(<= 8 %)))
+(s/def ::jdk-versions (s/coll-of ::jdk-version :distinct true :into #{}))
+
 (s/def ::base-image ::non-blank-string)
 (s/def ::base-images (s/coll-of ::base-image :distinct true :into #{}))
 
@@ -21,16 +25,23 @@
 (s/def ::build-tools (s/map-of ::build-tool ::build-tool-version))
 
 (s/def ::exclusions
-  (s/keys :opt-un [::base-image ::distro ::build-tool ::build-tool-version]))
+  (s/keys :opt-un [::jdk-version ::distro ::build-tool ::build-tool-version]))
 
 (s/def ::maintainers
-  (s/map-of keyword? ::non-blank-string))
+  (s/coll-of ::non-blank-string :distinct true :into #{}))
 
-(def base-images
-  #{"openjdk:8" "openjdk:11"})
+(def base-image "openjdk")
+
+(def jdk-versions #{8 11 13 14})
+
+;; The default JDK version to use for tags that don't specify one; usually the latest LTS release
+(def default-jdk-version 11)
 
 (def distros
-  #{"debian" "alpine"})
+  #{"stretch" "buster" "slim-buster" "alpine"})
+
+;; The default distro to use for tags that don't specify one
+(def default-distro "slim-buster")
 
 (def build-tools
   {"lein"       "2.9.1"
@@ -38,27 +49,23 @@
    "tools-deps" "1.10.1.469"})
 
 (def exclusions ; don't build these for whatever reason(s)
-  #{{:base-image "openjdk:11"
-     :distro     "alpine"}})
+  #{{:jdk-version 8
+     :distro      "alpine"}
+    {:jdk-version 11
+     :distro      "alpine"}
+    {:jdk-version 13
+     :distro      "alpine"}
+    {:jdk-version 8
+     :distro      "buster"}
+    {:jdk-version 11
+     :distro      "buster"}
+    {:jdk-version 14
+     :distro      "stretch"}
+    {:jdk-version 13
+     :distro      "stretch"}})
 
 (def maintainers
-  {:paul "Paul Lam <paul@quantisan.com>"
-   :wes  "Wes Morgan <wesmorgan@icloud.com>"
-   :dlg  "Kirill Chernyshov <delaguardo@gmail.com>"})
-
-(defn maintainer [{:keys [distro build-tool]}]
-  (cond
-    (and (= distro "debian") (= build-tool "lein"))
-    (:paul maintainers)
-
-    (and (= distro "debian") (= build-tool "boot"))
-    (:wes maintainers)
-
-    (= build-tool "tools-deps")
-    (:dlg maintainers)
-
-    (= distro "alpine")
-    (:wes maintainers)))
+  "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>")
 
 (defn contains-every-key-value?
   "Returns true if the map `haystack` contains every key-value pair in the map
@@ -70,34 +77,35 @@
             (= v (get haystack k)))
           needles))
 
+(defn base-image-name [jdk-version distro]
+  (str base-image ":" jdk-version "-" distro))
+
 (defn exclude?
   "Returns true if `variant` matches one of `exclusions` elements (meaning
   `(contains-every-key-value? variant exclusion)` returns true)."
   [exclusions variant]
   (some (partial contains-every-key-value? variant) exclusions))
 
-(defn base-image->tag-component [base-image]
-  (str/replace base-image ":" "-"))
-
-(defn docker-tag [{:keys [base-image distro build-tool build-tool-version]}]
-  (let [jdk-label (if (= "openjdk:8" base-image)
+(defn docker-tag [{:keys [jdk-version distro build-tool build-tool-version]}]
+  (let [jdk-label (if (= default-jdk-version jdk-version)
                     nil
-                    (base-image->tag-component base-image))
-        distro-label (if (= "debian" distro) nil distro)]
+                    (str base-image "-" jdk-version))
+        distro-label (if (= default-distro distro) nil distro)]
     (str/join "-" (remove nil? [jdk-label build-tool build-tool-version
                                 distro-label]))))
 
 (s/def ::variant
-  (s/keys :req-un [::base-image ::distro ::build-tool ::build-tool-version
-                   ::maintainer ::docker-tag]))
+  (s/keys :req-un [::jdk-version ::base-image ::distro ::build-tool
+                   ::build-tool-version ::maintainer ::docker-tag]))
 
-(defn variant-map [[base-image distro build-tool]]
-  (let [base {:base-image base-image
-              :distro     distro
-              :build-tool build-tool}]
+(defn variant-map [[jdk-version distro build-tool]]
+  (let [base {:jdk-version jdk-version
+              :base-image  (base-image-name jdk-version distro)
+              :distro      distro
+              :build-tool  build-tool
+              :maintainer  maintainers}]
     (as-> base $
-          (assoc $ :maintainer (maintainer $))
-          (assoc $ :build-tool-version (get build-tools (:build-tool $)))
+          (assoc $ :build-tool-version (get build-tools build-tool))
           (assoc $ :docker-tag (docker-tag $)))))
 
 (defn build-image [{:keys [docker-tag dockerfile build-dir] :as variant}]
@@ -114,8 +122,8 @@
           (print out)))))
   (println))
 
-(defn image-variants [base-images distros build-tools]
-  (->> (combo/cartesian-product base-images distros build-tools)
+(defn image-variants [jdk-versions distros build-tools]
+  (->> (combo/cartesian-product jdk-versions distros (keys build-tools))
        (map variant-map)
        (remove #(= ::s/invalid (s/conform ::variant %)))
        set))
@@ -136,7 +144,7 @@
            :dockerfile filename)))
 
 (defn generate-dockerfiles! []
-  (for [variant (image-variants base-images distros (keys build-tools))
+  (for [variant (image-variants jdk-versions distros build-tools)
         :when (not (exclude? exclusions variant))]
     (generate-dockerfile! variant)))
 

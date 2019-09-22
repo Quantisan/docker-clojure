@@ -2,6 +2,9 @@
 
 (defn install-deps [{:keys [distro]}]
   (case distro
+    "slim-buster"
+    ["RUN apt-get update && apt-get install -y wget"]
+
     "alpine"
     ["RUN apk add --update --no-cache bash openssl"]
 

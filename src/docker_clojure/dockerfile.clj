@@ -6,20 +6,14 @@
    [docker-clojure.dockerfile.lein :as lein]
    [docker-clojure.dockerfile.tools-deps :as tools-deps]))
 
-(defn base-image-tag [{:keys [base-image distro]}]
-  (if (= "debian" distro)
-    base-image
-    (str base-image "-" distro)))
-
-(defn build-dir [{:keys [base-image distro build-tool]}]
+(defn build-dir [{:keys [base-image build-tool]}]
   (str/join "/" ["target"
                  (str/replace base-image ":" "-")
-                 distro
                  build-tool]))
 
 (defn contents [{:keys [maintainer build-tool] :as variant}]
   (str/join "\n"
-            (concat [(format "FROM %s" (base-image-tag variant))
+            (concat [(format "FROM %s" (:base-image variant))
                      (format "LABEL maintainer=\"%s\"" maintainer)
                      ""]
                     (case build-tool
