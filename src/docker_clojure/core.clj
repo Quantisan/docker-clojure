@@ -40,8 +40,11 @@
 (def distros
   #{"stretch" "buster" "slim-buster" "alpine"})
 
-;; The default distro to use for tags that don't specify one
-(def default-distro "slim-buster")
+;; The default distro to use for tags that don't specify one, keyed by jdk-version.
+(def default-distros
+  {:default "slim-buster"
+   8        "stretch"
+   11       "stretch"})
 
 (def build-tools
   {"lein"       "2.9.1"
@@ -67,6 +70,9 @@
 (def maintainers
   "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>")
 
+(defn default-distro [jdk-version]
+  (get default-distros jdk-version (:default default-distros)))
+
 (defn contains-every-key-value?
   "Returns true if the map `haystack` contains every key-value pair in the map
   `needles`. `haystack` may contain additional keys that are not in `needles`.
@@ -90,7 +96,8 @@
   (let [jdk-label (if (= default-jdk-version jdk-version)
                     nil
                     (str base-image "-" jdk-version))
-        distro-label (if (= default-distro distro) nil distro)]
+        dd (default-distro jdk-version)
+        distro-label (if (= dd distro) nil distro)]
     (str/join "-" (remove nil? [jdk-label build-tool build-tool-version
                                 distro-label]))))
 
