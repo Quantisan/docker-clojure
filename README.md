@@ -6,32 +6,46 @@ This image runs on OpenJDK 8 and includes [Leiningen](http://leiningen.org), [bo
 
 ## Leiningen vs. boot vs. tools-deps
 
-The version tags on these images look like `lein-N.N.N(-alpine)`, `boot-N.N.N(-alpine)` and `tools-deps(-alpine)`.
+The version tags on these images look like `lein-N.N.N(-distro)`, `boot-N.N.N(-distro)` and `tools-deps(-distro)`.
 These refer to which version of leiningen, boot, or tools-deps is packaged in the image (because they can then install
-and use any version of Clojure at runtime). The default `latest` (or `lein`, `lein-alpine`) images will always have a
-recent version of leiningen installed. If you want boot, specify either `clojure:boot` / `clojure:boot-alpine` or
-`clojure:boot-N.N.N` / `clojure:boot-N.N.N-alpine`. (where `N.N.N` is the version of boot you want installed). If you
-want to use tools-deps, specify either `clojure:tools-deps` or `clojure:tools-deps-alpine`.
+and use any version of Clojure at runtime). The default `latest` (or `lein`, `lein-slim-buster`) images will always have
+a recent version of leiningen installed. If you want boot, specify either `clojure:boot` / `clojure:boot-slim-buster` or
+`clojure:boot-N.N.N` / `clojure:boot-N.N.N-slim-buster`. (where `N.N.N` is the version of boot you want installed). If
+you want to use tools-deps, specify either `clojure:tools-deps` or `clojure:tools-deps-alpine`.
 
 ## JDK versions
 
 Java has recently introduced a new release cadence of every 6 months and dropped the leading `1` major version number.
-As of 2018-11-5, our images still default to the latest release of JDK 1.8. But we also now provide JDK 11 variants
-where available (notably alpine is not yet). If you would like the JDK 11 variant, simply prefix `openjdk-11-` to the
-Docker tag you use. So, for example:
+As of 2019-9-25, our images will default to the latest LTS release of OpenJDK (currently 11). But we also now provide
+the ability to specify which version of Java you'd like via Docker tags:
 
-JDK 1.8 tools-deps image: `clojure:tools-deps`
-JDK 11 variant of that image: `clojure:openjdk-11-tools-deps`
+JDK 1.8 tools-deps image: `clojure:openjdk-8-tools-deps`
+JDK 11 variant of that image: `clojure:openjdk-11-tools-deps` or `clojure:tool-deps`
+JDK 13 with the latest release of leiningen: `clojure:openjdk-13`
+JDK 14 EA with boot 2.8.3: `clojure:openjdk-14-boot-2.8.3`
 
-## Alpine vs. Debian
+## Linux distro
 
-In an effort to minimize the size of Docker images, the Docker community is migrating from traditional Linux
-distributions (like Debian) to the Alpine Linux distribution. It is a very minimal distribution specifically designed
-for container applications.
+The upstream OpenJDK images are built on a few different variants of Debian Linux, so we have exposed those in our
+Docker tags as well. For OpenJDK 8 & 11 images, the default distro is still Debian stretch. For anything newer than
+that, the default is now Debian slim-buster. But you can also specify which distro you'd like by appending it to the end
+of your Docker tag as in the following examples (but note that not every combination is provided upstream and thus
+likewise for us):
 
-The traditional Debian-based Clojure images are still provided under the original tags, but you are encouraged to try
-running your applications in the new `alpine` variants. Since Clojure runs on the JVM anyway, chances are everything
-will just work and you'll save yourself some time and bandwidth.
+JDK 1.8 leiningen on Debian stretch: `clojure:openjdk-8` or `clojure:openjdk-8-lein` or `clojure:openjdk-8-lein-stretch`
+JDK 1.8 leiningen on Debian slim-buster: `clojure:openjdk-8-slim-buster` or `clojure:openjdk-8-lein-slim-buster`
+JDK 11 tools-deps on Debian stretch: `clojure:tools-deps` or `clojure:tools-deps-stretch` or `clojure:openjdk-11-tools-deps`
+JDK 11 tools-deps on Debian slim-buster: `clojure:openjdk-11-tools-deps-slim-buster` or `clojure:tools-deps-slim-buster`
+
+## Alpine Linux
+
+Most of the upstream alpine-based openjdk builds have been deprecated, so we have followed suit. As of 2019-9-25 we
+provide an alpine variant for OpenJDK 14 EA builds, but that's it. And it is likely that that build will go away once
+OpenJDK 14 is released (as has happened with other recent releases).
+
+We recommend migrating to the `slim-buster` variant instead. The older `alpine` images won't go away, but neither will
+they receive security updates, version bumps, etc. We recommend that you cease using them until / unless official
+upstream support resumes.
 
 ## Examples
 
@@ -51,10 +65,10 @@ cd hello-world
 lein repl
 ```
 
-### `clojure:alpine`
+### `clojure:slim-buster`
 
-These images are based on the minimalist Alpine Linux distribution and are much smaller than the default (Debian-based)
-images. If your app can run in them, they will be much faster to transfer and take up much less space.
+These images are based on the Debian buster distribution but have fewer packages installed and are thus much smaller
+than the `stretch` or `buster` images. Their use is recommended.
 
 ## Builds
 
@@ -63,8 +77,7 @@ The Dockerfiles are generated by the `docker-clojure` Clojure app in this repo.
 You'll need the `tools-deps` distribution of Clojure installed to run the
 build. Often this just means installing the `clojure` package for your system. 
 
-The `./build-images.sh` script will generate the Dockerfiles and build all of
-the images.
+The `./build-images.sh` script will generate the Dockerfiles and build all of the images.
 
 ## Tests
 
