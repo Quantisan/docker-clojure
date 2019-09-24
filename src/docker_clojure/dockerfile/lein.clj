@@ -2,6 +2,9 @@
 
 (defn install-deps [{:keys [distro]}]
   (case distro
+    "slim-buster"
+    ["RUN apt-get update && apt-get install -y wget gnupg"]
+
     "alpine"
     ["RUN apk add --update --no-cache tar gnupg bash openssl"]
 
@@ -37,7 +40,7 @@
         "ENV LEIN_ROOT 1"
         ""
         "# Install clojure 1.10.0 so users don't have to download it every time"
-        "RUN echo '(defproject dummy \"\" :dependencies [[org.clojure/clojure \"1.10.0\"]])' > project.clj \\"
+        "RUN echo '(defproject dummy \"\" :dependencies [[org.clojure/clojure \"1.10.1\"]])' > project.clj \\"
         "  && lein deps && rm project.clj"
         ""
         "CMD [\"lein\", \"repl\"]"])

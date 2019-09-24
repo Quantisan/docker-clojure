@@ -2,4 +2,4 @@
 
 set -e
 
-clojure -Atest
+clojure -A:test
