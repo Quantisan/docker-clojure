@@ -20,82 +20,70 @@
                                    {"lein"       "2.9.1"
                                     "boot"       "2.8.3"
                                     "tools-deps" "1.10.1.469"})]
-      (is (contains? variants
-                     {:jdk-version 11, :distro "slim-buster", :build-tool "lein"
-                      :base-image "openjdk:11-slim-buster"
-                      :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
-                      :docker-tag "lein-2.9.1-slim-buster", :build-tool-version "2.9.1"}))
-      (is (contains? variants
-                     {:jdk-version 11, :distro "slim-buster", :build-tool "boot"
-                      :base-image "openjdk:11-slim-buster"
-                      :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
-                      :docker-tag "boot-2.8.3-slim-buster", :build-tool-version "2.8.3"}))
-      (is (contains? variants
-                     {:jdk-version 11, :distro "slim-buster"
-                      :base-image "openjdk:11-slim-buster"
-                      :build-tool "tools-deps"
-                      :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
-                      :docker-tag "tools-deps-1.10.1.469-slim-buster"
-                      :build-tool-version "1.10.1.469"}))
-      (is (contains? variants
-                     {:jdk-version 11, :distro "stretch", :build-tool "lein"
-                      :base-image "openjdk:11-stretch"
-                      :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
-                      :docker-tag "lein-2.9.1", :build-tool-version "2.9.1"}))
-      (is (contains? variants
-                     {:jdk-version 11, :distro "stretch", :build-tool "boot"
-                      :base-image "openjdk:11-stretch"
-                      :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
-                      :docker-tag "boot-2.8.3", :build-tool-version "2.8.3"}))
-      (is (contains? variants
-                     {:jdk-version 11, :distro "stretch"
-                      :base-image "openjdk:11-stretch"
-                      :build-tool "tools-deps"
-                      :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
-                      :docker-tag "tools-deps-1.10.1.469"
-                      :build-tool-version "1.10.1.469"}))
-      (is (contains? variants
-                     {:jdk-version 8, :distro "slim-buster", :build-tool "lein"
-                      :base-image "openjdk:8-slim-buster"
-                      :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
-                      :docker-tag "openjdk-8-lein-2.9.1-slim-buster", :build-tool-version "2.9.1"}))
-      (is (contains? variants
-                     {:jdk-version 8, :distro "slim-buster", :build-tool "boot"
-                      :base-image "openjdk:8-slim-buster"
-                      :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
-                      :docker-tag "openjdk-8-boot-2.8.3-slim-buster", :build-tool-version "2.8.3"}))
-      (is (contains? variants
-                     {:jdk-version 8, :distro "slim-buster"
-                      :build-tool "tools-deps"
-                      :base-image "openjdk:8-slim-buster"
-                      :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
-                      :docker-tag "openjdk-8-tools-deps-1.10.1.469-slim-buster"
-                      :build-tool-version "1.10.1.469"}))
-      (is (contains? variants
-                     {:jdk-version 13, :distro "slim-buster", :build-tool "lein"
-                      :base-image "openjdk:13-slim-buster"
-                      :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
-                      :docker-tag "openjdk-13-lein-2.9.1"
-                      :build-tool-version "2.9.1"}))
-      (is (contains? variants
-                     {:jdk-version 14, :distro "alpine", :build-tool "lein"
-                      :base-image "openjdk:14-alpine"
-                      :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
-                      :docker-tag "openjdk-14-lein-2.9.1-alpine"
-                      :build-tool-version "2.9.1"}))
-      (is (contains? variants
-                     {:jdk-version 14, :distro "alpine", :build-tool "boot"
-                      :base-image "openjdk:14-alpine"
-                      :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
-                      :docker-tag "openjdk-14-boot-2.8.3-alpine"
-                      :build-tool-version "2.8.3"}))
-      (is (contains? variants
-                     {:jdk-version 14, :distro "alpine"
-                      :base-image "openjdk:14-alpine"
-                      :build-tool "tools-deps"
-                      :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
-                      :docker-tag "openjdk-14-tools-deps-1.10.1.469-alpine"
-                      :build-tool-version "1.10.1.469"})))))
+      (are [v] (contains? variants v)
+            {:jdk-version 11, :distro "slim-buster", :build-tool "lein"
+                 :base-image "openjdk:11-slim-buster"
+                 :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
+                 :docker-tag "lein-2.9.1-slim-buster", :build-tool-version "2.9.1"}
+            {:jdk-version 11, :distro "slim-buster", :build-tool "boot"
+                :base-image "openjdk:11-slim-buster"
+                :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
+                :docker-tag "boot-2.8.3-slim-buster", :build-tool-version "2.8.3"}
+            {:jdk-version 11, :distro "slim-buster"
+                :base-image "openjdk:11-slim-buster"
+                :build-tool "tools-deps"
+                :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
+                :docker-tag "tools-deps-1.10.1.469-slim-buster"
+                :build-tool-version "1.10.1.469"}
+            {:jdk-version 11, :distro "stretch", :build-tool "lein"
+                :base-image "openjdk:11-stretch"
+                :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
+                :docker-tag "lein-2.9.1", :build-tool-version "2.9.1"}
+            {:jdk-version 11, :distro "stretch", :build-tool "boot"
+                :base-image "openjdk:11-stretch"
+                :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
+                :docker-tag "boot-2.8.3", :build-tool-version "2.8.3"}
+            {:jdk-version 11, :distro "stretch"
+             :base-image "openjdk:11-stretch"
+             :build-tool "tools-deps"
+             :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
+             :docker-tag "tools-deps-1.10.1.469"
+             :build-tool-version "1.10.1.469"}
+            {:jdk-version 8, :distro "slim-buster", :build-tool "lein"
+             :base-image "openjdk:8-slim-buster"
+             :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
+             :docker-tag "openjdk-8-lein-2.9.1-slim-buster", :build-tool-version "2.9.1"}
+            {:jdk-version 8, :distro "slim-buster", :build-tool "boot"
+             :base-image "openjdk:8-slim-buster"
+             :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
+             :docker-tag "openjdk-8-boot-2.8.3-slim-buster", :build-tool-version "2.8.3"}
+            {:jdk-version 8, :distro "slim-buster"
+             :build-tool "tools-deps"
+             :base-image "openjdk:8-slim-buster"
+             :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
+             :docker-tag "openjdk-8-tools-deps-1.10.1.469-slim-buster"
+             :build-tool-version "1.10.1.469"}
+            {:jdk-version 13, :distro "slim-buster", :build-tool "lein"
+             :base-image "openjdk:13-slim-buster"
+             :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
+             :docker-tag "openjdk-13-lein-2.9.1"
+             :build-tool-version "2.9.1"}
+            {:jdk-version 14, :distro "alpine", :build-tool "lein"
+             :base-image "openjdk:14-alpine"
+             :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
+             :docker-tag "openjdk-14-lein-2.9.1-alpine"
+             :build-tool-version "2.9.1"}
+            {:jdk-version 14, :distro "alpine", :build-tool "boot"
+             :base-image "openjdk:14-alpine"
+             :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
+             :docker-tag "openjdk-14-boot-2.8.3-alpine"
+             :build-tool-version "2.8.3"}
+            {:jdk-version 14, :distro "alpine"
+             :base-image "openjdk:14-alpine"
+             :build-tool "tools-deps"
+             :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
+             :docker-tag "openjdk-14-tools-deps-1.10.1.469-alpine"
+             :build-tool-version "1.10.1.469"}))))
 
 (deftest variant-map-test
   (testing "returns the expected map version of the image variant list"
