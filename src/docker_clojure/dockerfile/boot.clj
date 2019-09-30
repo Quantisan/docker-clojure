@@ -13,7 +13,8 @@
     "slim-buster"
     ["apt-get update"
      (str/join " " (concat ["apt-get install -y"]
-                           (all-deps distro-deps distro)))]
+                           (all-deps distro-deps distro)))
+     "rm -rf /var/lib/apt/lists/*"]
 
     "alpine"
     [(str/join " " (concat ["apk add --update --no-cache"]
