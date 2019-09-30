@@ -7,6 +7,7 @@ WORKDIR /tmp
 RUN \
 apt-get update && \
 apt-get install -y curl rlwrap wget && \
+rm -rf /var/lib/apt/lists/* && \
 wget https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh && \
 chmod +x linux-install-$CLOJURE_VERSION.sh && \
 ./linux-install-$CLOJURE_VERSION.sh && \

@@ -9,6 +9,7 @@ WORKDIR /tmp
 RUN \
 apt-get update && \
 apt-get install -y gnupg wget && \
+rm -rf /var/lib/apt/lists/* && \
 mkdir -p $LEIN_INSTALL && \
 wget -q https://raw.githubusercontent.com/technomancy/leiningen/$LEIN_VERSION/bin/lein-pkg && \
 echo "Comparing lein-pkg checksum ..." && \

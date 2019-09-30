@@ -11,6 +11,7 @@ WORKDIR /tmp
 RUN \
 apt-get update && \
 apt-get install -y wget && \
+rm -rf /var/lib/apt/lists/* && \
 mkdir -p $BOOT_INSTALL && \
 wget -q https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh && \
 echo "Comparing installer checksum..." && \
