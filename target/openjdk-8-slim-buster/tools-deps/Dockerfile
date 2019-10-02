@@ -14,4 +14,7 @@ chmod +x linux-install-$CLOJURE_VERSION.sh && \
 clojure -e "(clojure-version)" && \
 apt-get remove -y --purge curl wget
 
+# Docker bug makes rlwrap crash w/o short sleep first
+# Bug: https://github.com/moby/moby/issues/28009
+# As of 2019-10-2 this bug still exists, despite that issue being closed
 CMD ["sh", "-c", "sleep 1 && exec clj"]
