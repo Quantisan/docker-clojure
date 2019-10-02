@@ -1,47 +1,77 @@
-(ns docker-clojure.dockerfile.lein)
+(ns docker-clojure.dockerfile.lein
+  (:require [clojure.string :as str]
+            [docker-clojure.dockerfile.shared :refer :all]))
+
+(def distro-deps
+  {"slim-buster" {:build   #{"wget" "gnupg"}
+                  :runtime #{}}
+   "alpine"      {:build   #{"tar" "gnupg" "openssl"}
+                  :runtime #{"bash"}}})
 
 (defn install-deps [{:keys [distro]}]
   (case distro
     "slim-buster"
-    ["RUN apt-get update && apt-get install -y wget gnupg"]
+    ["apt-get update"
+     (str/join " " (concat ["apt-get install -y"]
+                           (all-deps distro-deps distro)))
+     "rm -rf /var/lib/apt/lists/*"]
 
     "alpine"
-    ["RUN apk add --update --no-cache tar gnupg bash openssl"]
+    [(str/join " " (concat ["apk add --update --no-cache"]
+                           (all-deps distro-deps distro)))]
+
+    nil))
+
+(defn uninstall-build-deps [{:keys [distro]}]
+  (case distro
+    "slim-buster"
+    [(str/join " " (concat ["apt-get remove -y --purge"]
+                           (build-deps distro-deps distro)))]
+
+    "alpine"
+    [(str/join " " (concat ["apk del"]
+                           (build-deps distro-deps distro)))]
 
     nil))
 
 (defn contents [{:keys [build-tool-version] :as variant}]
-  (-> [(format "ENV LEIN_VERSION=%s" build-tool-version)
-       "ENV LEIN_INSTALL=/usr/local/bin/"
-       ""
-       "WORKDIR /tmp"
-       ""]
-      (concat (install-deps variant))
-      (concat
-       [""
-        "# Download the whole repo as an archive"
-        "RUN mkdir -p $LEIN_INSTALL \\"
-        "  && wget -q https://raw.githubusercontent.com/technomancy/leiningen/$LEIN_VERSION/bin/lein-pkg \\"
-        "  && echo \"Comparing lein-pkg checksum ...\" \\"
-        "  && sha1sum lein-pkg \\"
-        "  && echo \"93be2c23ab4ff2fc4fcf531d7510ca4069b8d24a *lein-pkg\" | sha1sum -c - \\"
-        "  && mv lein-pkg $LEIN_INSTALL/lein \\"
-        "  && chmod 0755 $LEIN_INSTALL/lein \\"
-        "  && wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.zip \\"
-        "  && wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.zip.asc \\"
-        "  && gpg --batch --keyserver pool.sks-keyservers.net --recv-key 2B72BF956E23DE5E830D50F6002AF007D1A7CC18 \\"
-        "  && echo \"Verifying Jar file signature ...\" \\"
-        "  && gpg --verify leiningen-$LEIN_VERSION-standalone.zip.asc \\"
-        "  && rm leiningen-$LEIN_VERSION-standalone.zip.asc \\"
-        "  && mkdir -p /usr/share/java \\"
-        "  && mv leiningen-$LEIN_VERSION-standalone.zip /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar"
-        ""
-        "ENV PATH=$PATH:$LEIN_INSTALL"
-        "ENV LEIN_ROOT 1"
-        ""
-        "# Install clojure 1.10.0 so users don't have to download it every time"
-        "RUN echo '(defproject dummy \"\" :dependencies [[org.clojure/clojure \"1.10.1\"]])' > project.clj \\"
-        "  && lein deps && rm project.clj"
-        ""
-        "CMD [\"lein\", \"repl\"]"])
-      (->> (remove nil?))))
+  (let [install-dep-cmds (install-deps variant)
+        uninstall-dep-cmds (uninstall-build-deps variant)]
+    (-> [(format "ENV LEIN_VERSION=%s" build-tool-version)
+         "ENV LEIN_INSTALL=/usr/local/bin/"
+         ""
+         "WORKDIR /tmp"
+         ""
+         "# Download the whole repo as an archive"
+         "RUN \\"]
+        (concat-commands install-dep-cmds)
+        (concat-commands
+         ["mkdir -p $LEIN_INSTALL"
+          "wget -q https://raw.githubusercontent.com/technomancy/leiningen/$LEIN_VERSION/bin/lein-pkg"
+          "echo \"Comparing lein-pkg checksum ...\""
+          "sha1sum lein-pkg"
+          "echo \"93be2c23ab4ff2fc4fcf531d7510ca4069b8d24a *lein-pkg\" | sha1sum -c -"
+          "mv lein-pkg $LEIN_INSTALL/lein"
+          "chmod 0755 $LEIN_INSTALL/lein"
+          "wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.zip"
+          "wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.zip.asc"
+          "gpg --batch --keyserver pool.sks-keyservers.net --recv-key 2B72BF956E23DE5E830D50F6002AF007D1A7CC18"
+          "echo \"Verifying Jar file signature ...\""
+          "gpg --verify leiningen-$LEIN_VERSION-standalone.zip.asc"
+          "rm leiningen-$LEIN_VERSION-standalone.zip.asc"
+          "mkdir -p /usr/share/java"
+          "mv leiningen-$LEIN_VERSION-standalone.zip /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar"]
+         (empty? uninstall-dep-cmds))
+        (concat-commands uninstall-dep-cmds :end)
+        (concat
+         [""
+          "ENV PATH=$PATH:$LEIN_INSTALL"
+          "ENV LEIN_ROOT 1"
+          ""
+          "# Install clojure 1.10.1 so users don't have to download it every time"
+          "RUN echo '(defproject dummy \"\" :dependencies [[org.clojure/clojure \"1.10.1\"]])' > project.clj \\"
+          "  && lein deps && rm project.clj"
+          ""
+          "CMD [\"lein\", \"repl\"]"])
+
+        (->> (remove nil?)))))

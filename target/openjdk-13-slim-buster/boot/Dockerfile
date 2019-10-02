@@ -1,22 +1,25 @@
 FROM openjdk:13-slim-buster
-LABEL maintainer="Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
 
 ENV BOOT_VERSION=2.8.3
 ENV BOOT_INSTALL=/usr/local/bin/
 
 WORKDIR /tmp
 
-RUN apt-get update && apt-get install -y wget
-
 # NOTE: BOOT_VERSION tells the boot.sh script which version of boot to install
 # on its first run. We always download the latest version of boot.sh because
 # it is just the installer script.
-RUN mkdir -p $BOOT_INSTALL \
-  && wget -q https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh \
-  && echo "Comparing installer checksum..." \
-  && echo "f717ef381f2863a4cad47bf0dcc61e923b3d2afb *boot.sh" | sha1sum -c - \
-  && mv boot.sh $BOOT_INSTALL/boot \
-  && chmod 0755 $BOOT_INSTALL/boot
+RUN \
+apt-get update && \
+apt-get install -y wget && \
+rm -rf /var/lib/apt/lists/* && \
+mkdir -p $BOOT_INSTALL && \
+wget -q https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh && \
+echo "Comparing installer checksum..." && \
+echo "f717ef381f2863a4cad47bf0dcc61e923b3d2afb *boot.sh" | sha1sum -c - && \
+mv boot.sh $BOOT_INSTALL/boot && \
+chmod 0755 $BOOT_INSTALL/boot && \
+apt-get remove -y --purge wget && \
+apt-get autoremove -y
 
 ENV PATH=$PATH:$BOOT_INSTALL
 ENV BOOT_AS_ROOT=yes

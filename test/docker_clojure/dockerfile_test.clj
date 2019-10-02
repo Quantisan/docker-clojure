@@ -17,11 +17,11 @@
     (is (str/includes? (contents {:base-image "base:foo"
                                   :build-tool "boot"})
                        "FROM base:foo")))
-  (testing "includes maintainer label"
-    (is (str/includes? (contents {:base-image "base:foo"
-                                  :build-tool "boot"
-                                  :maintainer "Me Myself"})
-                       "LABEL maintainer=\"Me Myself\"")))
+  (testing "has no labels (Docker recommends against for base images)"
+    (is (not (str/includes? (contents {:base-image "base:foo"
+                                       :build-tool "boot"
+                                       :maintainer "Me Myself"})
+                            "LABEL "))))
   (testing "lein variant includes lein-specific contents"
     (with-redefs [lein/contents (constantly ["leiningen vs. the ants"])]
       (is (str/includes? (contents {:base-image "base:foo"

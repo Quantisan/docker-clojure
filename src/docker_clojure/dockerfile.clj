@@ -14,7 +14,6 @@
 (defn contents [{:keys [maintainer build-tool] :as variant}]
   (str/join "\n"
             (concat [(format "FROM %s" (:base-image variant))
-                     (format "LABEL maintainer=\"%s\"" maintainer)
                      ""]
                     (case build-tool
                       "boot" (boot/contents variant)
