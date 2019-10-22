@@ -19,7 +19,7 @@
                                    #{"stretch" "slim-buster" "alpine"}
                                    {"lein"       "2.9.1"
                                     "boot"       "2.8.3"
-                                    "tools-deps" "1.10.1.469"})]
+                                    "tools-deps" "1.10.1.478"})]
       (are [v] (contains? variants v)
             {:jdk-version 11, :distro "slim-buster", :build-tool "lein"
                  :base-image "openjdk:11-slim-buster"
@@ -33,8 +33,8 @@
                 :base-image "openjdk:11-slim-buster"
                 :build-tool "tools-deps"
                 :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
-                :docker-tag "tools-deps-1.10.1.469-slim-buster"
-                :build-tool-version "1.10.1.469"}
+                :docker-tag "tools-deps-1.10.1.478-slim-buster"
+                :build-tool-version "1.10.1.478"}
             {:jdk-version 11, :distro "stretch", :build-tool "lein"
                 :base-image "openjdk:11-stretch"
                 :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
@@ -47,8 +47,8 @@
              :base-image "openjdk:11-stretch"
              :build-tool "tools-deps"
              :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
-             :docker-tag "tools-deps-1.10.1.469"
-             :build-tool-version "1.10.1.469"}
+             :docker-tag "tools-deps-1.10.1.478"
+             :build-tool-version "1.10.1.478"}
             {:jdk-version 8, :distro "slim-buster", :build-tool "lein"
              :base-image "openjdk:8-slim-buster"
              :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
@@ -61,8 +61,8 @@
              :build-tool "tools-deps"
              :base-image "openjdk:8-slim-buster"
              :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
-             :docker-tag "openjdk-8-tools-deps-1.10.1.469-slim-buster"
-             :build-tool-version "1.10.1.469"}
+             :docker-tag "openjdk-8-tools-deps-1.10.1.478-slim-buster"
+             :build-tool-version "1.10.1.478"}
             {:jdk-version 13, :distro "slim-buster", :build-tool "lein"
              :base-image "openjdk:13-slim-buster"
              :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
@@ -82,8 +82,8 @@
              :base-image "openjdk:14-alpine"
              :build-tool "tools-deps"
              :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
-             :docker-tag "openjdk-14-tools-deps-1.10.1.469-alpine"
-             :build-tool-version "1.10.1.469"}))))
+             :docker-tag "openjdk-14-tools-deps-1.10.1.478-alpine"
+             :build-tool-version "1.10.1.478"}))))
 
 (deftest variant-map-test
   (testing "returns the expected map version of the image variant list"
