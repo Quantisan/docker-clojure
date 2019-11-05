@@ -87,15 +87,14 @@
 
 (deftest variant-map-test
   (testing "returns the expected map version of the image variant list"
-    (with-redefs [build-tools {"build-tool" "1.2.3"}]
-      (is (= {:jdk-version        8
-              :base-image         "openjdk:8-distro"
-              :distro             "distro"
-              :build-tool         "build-tool"
-              :docker-tag         "openjdk-8-build-tool-1.2.3-distro"
-              :build-tool-version "1.2.3"
-              :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"}
-             (variant-map '(8 "distro" "build-tool")))))))
+    (is (= {:jdk-version        8
+            :base-image         "openjdk:8-distro"
+            :distro             "distro"
+            :build-tool         "build-tool"
+            :docker-tag         "openjdk-8-build-tool-1.2.3-distro"
+            :build-tool-version "1.2.3"
+            :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"}
+           (variant-map '(8 "distro" ["build-tool" "1.2.3"]))))))
 
 (deftest exclude?-test
   (testing "excludes variant that matches all key-values in any exclusion"
