@@ -49,7 +49,7 @@
 (def build-tools
   {"lein"       "2.9.1"
    "boot"       "2.8.3"
-   "tools-deps" "1.10.1.478"})
+   "tools-deps" "1.10.1.483"})
 
 (def exclusions ; don't build these for whatever reason(s)
   #{{:jdk-version 8
@@ -105,15 +105,14 @@
   (s/keys :req-un [::jdk-version ::base-image ::distro ::build-tool
                    ::build-tool-version ::maintainer ::docker-tag]))
 
-(defn variant-map [[jdk-version distro build-tool]]
-  (let [base {:jdk-version jdk-version
-              :base-image  (base-image-name jdk-version distro)
-              :distro      distro
-              :build-tool  build-tool
-              :maintainer  maintainers}]
-    (as-> base $
-          (assoc $ :build-tool-version (get build-tools build-tool))
-          (assoc $ :docker-tag (docker-tag $)))))
+(defn variant-map [[jdk-version distro [build-tool build-tool-version]]]
+  (let [base {:jdk-version        jdk-version
+              :base-image         (base-image-name jdk-version distro)
+              :distro             distro
+              :build-tool         build-tool
+              :build-tool-version build-tool-version
+              :maintainer         maintainers}]
+    (assoc base :docker-tag (docker-tag base))))
 
 (defn build-image [{:keys [docker-tag dockerfile build-dir] :as variant}]
   (let [image-tag (str "clojure:" docker-tag)
@@ -130,7 +129,7 @@
   (println))
 
 (defn image-variants [jdk-versions distros build-tools]
-  (->> (combo/cartesian-product jdk-versions distros (keys build-tools))
+  (->> (combo/cartesian-product jdk-versions distros build-tools)
        (map variant-map)
        (remove #(= ::s/invalid (s/conform ::variant %)))
        set))
