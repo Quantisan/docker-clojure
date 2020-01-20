@@ -1,6 +1,6 @@
 FROM openjdk:8-slim-buster
 
-ENV CLOJURE_VERSION=1.10.1.483
+ENV CLOJURE_VERSION=1.10.1.496
 
 WORKDIR /tmp
 
