@@ -10,7 +10,7 @@ wget https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh && \
 chmod +x linux-install-$CLOJURE_VERSION.sh && \
 ./linux-install-$CLOJURE_VERSION.sh && \
 clojure -e "(clojure-version)" && \
-apk del curl bash
+apk del curl
 
 # Docker bug makes rlwrap crash w/o short sleep first
 # Bug: https://github.com/moby/moby/issues/28009
