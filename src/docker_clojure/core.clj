@@ -49,7 +49,7 @@
 (def build-tools
   {"lein"       "2.9.1"
    "boot"       "2.8.3"
-   "tools-deps" "1.10.1.496"})
+   "tools-deps" "1.10.1.502"})
 
 (def exclusions ; don't build these for whatever reason(s)
   #{{:jdk-version 8
