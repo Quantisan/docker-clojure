@@ -4,9 +4,9 @@
 
 (def distro-deps
   {"slim-buster" {:build   #{"wget" "curl"}
-                  :runtime #{"rlwrap"}}
+                  :runtime #{"rlwrap" "make"}}
    "alpine"      {:build   #{"curl"}
-                  :runtime #{"bash"}}})
+                  :runtime #{"bash" "make"}}})
 
 (defn install-deps [{:keys [distro]}]
   (case distro

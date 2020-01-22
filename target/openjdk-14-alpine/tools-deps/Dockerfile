@@ -1,11 +1,11 @@
 FROM openjdk:14-alpine
 
-ENV CLOJURE_VERSION=1.10.1.483
+ENV CLOJURE_VERSION=1.10.1.502
 
 WORKDIR /tmp
 
 RUN \
-apk add --update --no-cache curl bash && \
+apk add --update --no-cache curl bash make && \
 wget https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh && \
 chmod +x linux-install-$CLOJURE_VERSION.sh && \
 ./linux-install-$CLOJURE_VERSION.sh && \

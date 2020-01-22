@@ -1,12 +1,12 @@
 FROM openjdk:8-slim-buster
 
-ENV CLOJURE_VERSION=1.10.1.483
+ENV CLOJURE_VERSION=1.10.1.502
 
 WORKDIR /tmp
 
 RUN \
 apt-get update && \
-apt-get install -y curl rlwrap wget && \
+apt-get install -y curl make rlwrap wget && \
 rm -rf /var/lib/apt/lists/* && \
 wget https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh && \
 chmod +x linux-install-$CLOJURE_VERSION.sh && \
