@@ -34,7 +34,7 @@
 
     nil))
 
-(defn contents [{:keys [build-tool-version] :as variant}]
+(defn install [{:keys [build-tool-version] :as variant}]
   (let [install-dep-cmds (install-deps variant)
         uninstall-dep-cmds (uninstall-build-deps variant)]
     (-> [(format "ENV LEIN_VERSION=%s" build-tool-version)
@@ -65,8 +65,12 @@
           ""
           "# Install clojure 1.10.1 so users don't have to download it every time"
           "RUN echo '(defproject dummy \"\" :dependencies [[org.clojure/clojure \"1.10.1\"]])' > project.clj \\"
-          "  && lein deps && rm project.clj"
-          ""
-          "CMD [\"lein\", \"repl\"]"])
+          "  && lein deps && rm project.clj"])
 
         (->> (remove nil?)))))
+
+(def command
+  ["CMD [\"lein\", \"repl\"]"])
+
+(defn contents [variant]
+  (concat (install variant) [""] command))
