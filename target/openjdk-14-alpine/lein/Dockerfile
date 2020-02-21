@@ -7,7 +7,7 @@ WORKDIR /tmp
 
 # Download the whole repo as an archive
 RUN \
-apk add --update --no-cache bash tar openssl gnupg && \
+apk add --update --no-cache bash tar openssl && \
 mkdir -p $LEIN_INSTALL && \
 wget -q https://raw.githubusercontent.com/technomancy/leiningen/$LEIN_VERSION/bin/lein-pkg && \
 echo "Comparing lein-pkg checksum ..." && \
@@ -16,14 +16,9 @@ echo "93be2c23ab4ff2fc4fcf531d7510ca4069b8d24a *lein-pkg" | sha1sum -c - && \
 mv lein-pkg $LEIN_INSTALL/lein && \
 chmod 0755 $LEIN_INSTALL/lein && \
 wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.zip && \
-wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.zip.asc && \
-gpg --batch --keyserver pool.sks-keyservers.net --recv-key 2B72BF956E23DE5E830D50F6002AF007D1A7CC18 && \
-echo "Verifying Jar file signature ..." && \
-gpg --verify leiningen-$LEIN_VERSION-standalone.zip.asc && \
-rm leiningen-$LEIN_VERSION-standalone.zip.asc && \
 mkdir -p /usr/share/java && \
 mv leiningen-$LEIN_VERSION-standalone.zip /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar && \
-apk del tar openssl gnupg
+apk del tar openssl
 
 ENV PATH=$PATH:$LEIN_INSTALL
 ENV LEIN_ROOT 1
