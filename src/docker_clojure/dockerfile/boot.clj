@@ -35,7 +35,7 @@
 
     nil))
 
-(defn contents [{:keys [build-tool-version] :as variant}]
+(defn install [{:keys [build-tool-version] :as variant}]
   (let [install-dep-cmds (install-deps variant)
         uninstall-dep-cmds (uninstall-build-deps variant)]
     (-> [(format "ENV BOOT_VERSION=%s" build-tool-version)
@@ -61,8 +61,12 @@
           "ENV PATH=$PATH:$BOOT_INSTALL"
           "ENV BOOT_AS_ROOT=yes"
           ""
-          "RUN boot"
-          ""
-          "CMD [\"boot\", \"repl\"]"])
+          "RUN boot"])
 
         (->> (remove nil?)))))
+
+(def command
+  ["CMD [\"boot\", \"repl\"]"])
+
+(defn contents [variant]
+  (concat (install variant) [""] command))

@@ -19,9 +19,10 @@
 (s/def ::distro ::non-blank-string)
 (s/def ::distros (s/coll-of ::distro :distinct true :into #{}))
 
-(s/def ::build-tool ::non-blank-string)
+(s/def ::build-tool (s/or ::specific-tool ::non-blank-string
+                          ::all-tools #(= ::all %)))
 (s/def ::build-tool-version
-  (s/and ::non-blank-string #(re-matches #"[\d\.]+" %)))
+  (s/nilable (s/and ::non-blank-string #(re-matches #"[\d\.]+" %))))
 (s/def ::build-tools (s/map-of ::build-tool ::build-tool-version))
 
 (s/def ::exclusions
@@ -93,17 +94,25 @@
   (some (partial contains-every-key-value? variant) exclusions))
 
 (defn docker-tag [{:keys [jdk-version distro build-tool build-tool-version]}]
-  (let [jdk-label (if (= default-jdk-version jdk-version)
-                    nil
-                    (str base-image "-" jdk-version))
-        dd (default-distro jdk-version)
-        distro-label (if (= dd distro) nil distro)]
-    (str/join "-" (remove nil? [jdk-label build-tool build-tool-version
-                                distro-label]))))
+  (if (= ::all build-tool)
+    "latest"
+    (let [jdk-label (if (= default-jdk-version jdk-version)
+                      nil
+                      (str base-image "-" jdk-version))
+          dd (default-distro jdk-version)
+          distro-label (if (= dd distro) nil distro)]
+      (str/join "-" (remove nil? [jdk-label build-tool build-tool-version
+                                  distro-label])))))
 
 (s/def ::variant
   (s/keys :req-un [::jdk-version ::base-image ::distro ::build-tool
-                   ::build-tool-version ::maintainer ::docker-tag]))
+                   ::build-tool-version ::maintainer ::docker-tag]
+          :opt-un [::build-tool-versions]))
+
+(defn assoc-if [m pred k v]
+  (if (pred)
+    (assoc m k v)
+    m))
 
 (defn variant-map [[jdk-version distro [build-tool build-tool-version]]]
   (let [base {:jdk-version        jdk-version
@@ -112,7 +121,9 @@
               :build-tool         build-tool
               :build-tool-version build-tool-version
               :maintainer         maintainers}]
-    (assoc base :docker-tag (docker-tag base))))
+    (-> base
+        (assoc :docker-tag (docker-tag base))
+        (assoc-if #(nil? (:build-tool-version base)) :build-tool-versions build-tools))))
 
 (defn build-image [{:keys [docker-tag dockerfile build-dir] :as variant}]
   (let [image-tag (str "clojure:" docker-tag)
@@ -128,8 +139,14 @@
           (print out)))))
   (println))
 
+(def latest-variant
+  "The latest variant is special because we include all 3 build tools via the
+  [::all] value on the end."
+  (list default-jdk-version (default-distro default-jdk-version) [::all]))
+
 (defn image-variants [jdk-versions distros build-tools]
   (->> (combo/cartesian-product jdk-versions distros build-tools)
+       (cons latest-variant)
        (map variant-map)
        (remove #(= ::s/invalid (s/conform ::variant %)))
        set))

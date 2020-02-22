@@ -3,9 +3,9 @@
             [docker-clojure.dockerfile.shared :refer :all]))
 
 (def distro-deps
-  {"slim-buster" {:build   #{"wget" "gnupg"}
+  {"slim-buster" {:build   #{"wget"}
                   :runtime #{}}
-   "alpine"      {:build   #{"tar" "gnupg" "openssl"}
+   "alpine"      {:build   #{"tar" "openssl"}
                   :runtime #{"bash"}}})
 
 (defn install-deps [{:keys [distro]}]
@@ -34,7 +34,7 @@
 
     nil))
 
-(defn contents [{:keys [build-tool-version] :as variant}]
+(defn install [{:keys [build-tool-version] :as variant}]
   (let [install-dep-cmds (install-deps variant)
         uninstall-dep-cmds (uninstall-build-deps variant)]
     (-> [(format "ENV LEIN_VERSION=%s" build-tool-version)
@@ -54,11 +54,6 @@
           "mv lein-pkg $LEIN_INSTALL/lein"
           "chmod 0755 $LEIN_INSTALL/lein"
           "wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.zip"
-          "wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.zip.asc"
-          "gpg --batch --keyserver pool.sks-keyservers.net --recv-key 2B72BF956E23DE5E830D50F6002AF007D1A7CC18"
-          "echo \"Verifying Jar file signature ...\""
-          "gpg --verify leiningen-$LEIN_VERSION-standalone.zip.asc"
-          "rm leiningen-$LEIN_VERSION-standalone.zip.asc"
           "mkdir -p /usr/share/java"
           "mv leiningen-$LEIN_VERSION-standalone.zip /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar"]
          (empty? uninstall-dep-cmds))
@@ -70,8 +65,12 @@
           ""
           "# Install clojure 1.10.1 so users don't have to download it every time"
           "RUN echo '(defproject dummy \"\" :dependencies [[org.clojure/clojure \"1.10.1\"]])' > project.clj \\"
-          "  && lein deps && rm project.clj"
-          ""
-          "CMD [\"lein\", \"repl\"]"])
+          "  && lein deps && rm project.clj"])
 
         (->> (remove nil?)))))
+
+(def command
+  ["CMD [\"lein\", \"repl\"]"])
+
+(defn contents [variant]
+  (concat (install variant) [""] command))

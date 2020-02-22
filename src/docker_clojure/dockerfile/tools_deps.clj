@@ -34,7 +34,7 @@
 
     nil))
 
-(defn contents [{:keys [build-tool-version] :as variant}]
+(defn install [{:keys [build-tool-version] :as variant}]
   (let [install-dep-cmds (install-deps variant)
         uninstall-dep-cmds (uninstall-build-deps variant)]
     (-> [(format "ENV CLOJURE_VERSION=%s" build-tool-version)
@@ -49,12 +49,14 @@
           "./linux-install-$CLOJURE_VERSION.sh"
           "clojure -e \"(clojure-version)\""] (empty? uninstall-dep-cmds))
         (concat-commands uninstall-dep-cmds :end)
-        (concat
-         [""
-          "# Docker bug makes rlwrap crash w/o short sleep first"
-          "# Bug: https://github.com/moby/moby/issues/28009"
-          "# As of 2019-10-2 this bug still exists, despite that issue being closed"
-          "CMD [\"sh\", \"-c\", \"sleep 1 && exec clj\"]"])
 
         (->> (remove nil?)))))
 
+(def command
+  ["# Docker bug makes rlwrap crash w/o short sleep first"
+   "# Bug: https://github.com/moby/moby/issues/28009"
+   "# As of 2019-10-2 this bug still exists, despite that issue being closed"
+   "CMD [\"sh\", \"-c\", \"sleep 1 && exec clj\"]"])
+
+(defn contents [variant]
+  (concat (install variant) [""] command))

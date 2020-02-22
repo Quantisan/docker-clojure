@@ -9,13 +9,32 @@
 (defn build-dir [{:keys [base-image build-tool]}]
   (str/join "/" ["target"
                  (str/replace base-image ":" "-")
-                 build-tool]))
+                 (if (= :docker-clojure.core/all build-tool)
+                   "latest"
+                   build-tool)]))
 
-(defn contents [{:keys [maintainer build-tool] :as variant}]
+(defn all-contents [variant]
+  (concat
+    ["### INSTALL BOOT ###"]
+    (boot/install
+     (assoc variant :build-tool-version
+            (get-in variant [:build-tool-versions "boot"])))
+    ["" "### INSTALL LEIN ###"]
+    (lein/install
+     (assoc variant :build-tool-version
+            (get-in variant [:build-tool-versions "lein"])))
+    ["" "### INSTALL TOOLS-DEPS ###"]
+    (tools-deps/install
+     (assoc variant :build-tool-version
+            (get-in variant [:build-tool-versions "tools-deps"])))
+    ["" "CMD [\"lein\", \"repl\"]"]))
+
+(defn contents [{:keys [build-tool] :as variant}]
   (str/join "\n"
             (concat [(format "FROM %s" (:base-image variant))
                      ""]
                     (case build-tool
+                      :docker-clojure.core/all (all-contents variant)
                       "boot" (boot/contents variant)
                       "lein" (lein/contents variant)
                       "tools-deps" (tools-deps/contents variant)))))
