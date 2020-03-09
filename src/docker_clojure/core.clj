@@ -48,7 +48,7 @@
    11       "stretch"})
 
 (def build-tools
-  {"lein"       "2.9.1"
+  {"lein"       "2.9.2"
    "boot"       "2.8.3"
    "tools-deps" "1.10.1.502"})
 
