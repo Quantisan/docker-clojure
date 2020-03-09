@@ -49,7 +49,7 @@ RUN echo '(defproject dummy "" :dependencies [[org.clojure/clojure "1.10.1"]])' 
   && lein deps && rm project.clj
 
 ### INSTALL TOOLS-DEPS ###
-ENV CLOJURE_VERSION=1.10.1.502
+ENV CLOJURE_VERSION=1.10.1.536
 
 WORKDIR /tmp
 
