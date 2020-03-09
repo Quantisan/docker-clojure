@@ -15,7 +15,8 @@ rm -rf /var/lib/apt/lists/* && \
 mkdir -p $BOOT_INSTALL && \
 wget -q https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh && \
 echo "Comparing installer checksum..." && \
-echo "f717ef381f2863a4cad47bf0dcc61e923b3d2afb *boot.sh" | sha1sum -c - && \
+sha256sum boot.sh && \
+echo "0ccd697f2027e7e1cd3be3d62721057cbc841585740d0aaa9fbb485d7b1f17c3 *boot.sh" | sha256sum -c - && \
 mv boot.sh $BOOT_INSTALL/boot && \
 chmod 0755 $BOOT_INSTALL/boot && \
 apt-get remove -y --purge wget && \

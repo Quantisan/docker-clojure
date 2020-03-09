@@ -13,7 +13,8 @@ RUN \
 mkdir -p $BOOT_INSTALL && \
 wget -q https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh && \
 echo "Comparing installer checksum..." && \
-echo "f717ef381f2863a4cad47bf0dcc61e923b3d2afb *boot.sh" | sha1sum -c - && \
+sha256sum boot.sh && \
+echo "0ccd697f2027e7e1cd3be3d62721057cbc841585740d0aaa9fbb485d7b1f17c3 *boot.sh" | sha256sum -c - && \
 mv boot.sh $BOOT_INSTALL/boot && \
 chmod 0755 $BOOT_INSTALL/boot
 
@@ -33,8 +34,8 @@ RUN \
 mkdir -p $LEIN_INSTALL && \
 wget -q https://raw.githubusercontent.com/technomancy/leiningen/$LEIN_VERSION/bin/lein-pkg && \
 echo "Comparing lein-pkg checksum ..." && \
-sha1sum lein-pkg && \
-echo "894c4b9aa425c0623cd00430934f3cd503de22b9 *lein-pkg" | sha1sum -c - && \
+sha256sum lein-pkg && \
+echo "36f879a26442648ec31cfa990487cbd337a5ff3b374433a6e5bf393d06597602 *lein-pkg" | sha256sum -c - && \
 mv lein-pkg $LEIN_INSTALL/lein && \
 chmod 0755 $LEIN_INSTALL/lein && \
 wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.zip && \
@@ -55,6 +56,8 @@ WORKDIR /tmp
 
 RUN \
 wget https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh && \
+sha256sum linux-install-$CLOJURE_VERSION.sh && \
+echo "83b824091723afe8e0f4e958bf74a2f7cd4c4caddd34e31af6ef1a4323c45ff1 *linux-install-$CLOJURE_VERSION.sh" | sha256sum -c - && \
 chmod +x linux-install-$CLOJURE_VERSION.sh && \
 ./linux-install-$CLOJURE_VERSION.sh && \
 clojure -e "(clojure-version)"
