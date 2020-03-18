@@ -33,19 +33,17 @@
 
 (def base-image "openjdk")
 
-(def jdk-versions #{8 11 13 14})
+(def jdk-versions #{8 11 13 14 15})
 
 ;; The default JDK version to use for tags that don't specify one; usually the latest LTS release
 (def default-jdk-version 11)
 
 (def distros
-  #{"stretch" "buster" "slim-buster" "alpine"})
+  #{"buster" "slim-buster" "alpine"})
 
 ;; The default distro to use for tags that don't specify one, keyed by jdk-version.
 (def default-distros
-  {:default "slim-buster"
-   8        "stretch"
-   11       "stretch"})
+  {:default "slim-buster"})
 
 (def build-tools
   {"lein"       "2.9.2"
@@ -59,14 +57,8 @@
      :distro      "alpine"}
     {:jdk-version 13
      :distro      "alpine"}
-    {:jdk-version 8
-     :distro      "buster"}
-    {:jdk-version 11
-     :distro      "buster"}
     {:jdk-version 14
-     :distro      "stretch"}
-    {:jdk-version 13
-     :distro      "stretch"}})
+     :distro      "alpine"}})
 
 (def maintainers
   "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>")
