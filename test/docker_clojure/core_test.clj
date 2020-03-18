@@ -10,13 +10,12 @@
     (is (= "slim-buster" (default-distro 11))))
   (testing "other versions get slim-buster"
     (is (= "slim-buster" (default-distro 12)))
-    (is (= "slim-buster" (default-distro 13)))
     (is (= "slim-buster" (default-distro 14)))
     (is (= "slim-buster" (default-distro 15)))))
 
 (deftest image-variants-test
   (testing "generates the expected set of variants"
-    (let [variants (image-variants #{8 11 13 14 15}
+    (let [variants (image-variants #{8 11 14 15}
                                    #{"buster" "slim-buster" "alpine"}
                                    {"lein"       "2.9.1"
                                     "boot"       "2.8.3"
@@ -70,10 +69,10 @@
              :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
              :docker-tag "openjdk-8-tools-deps-1.10.1.478"
              :build-tool-version "1.10.1.478"}
-            {:jdk-version 13, :distro "slim-buster", :build-tool "lein"
-             :base-image "openjdk:13-slim-buster"
+            {:jdk-version 14, :distro "slim-buster", :build-tool "lein"
+             :base-image "openjdk:14-slim-buster"
              :maintainer "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
-             :docker-tag "openjdk-13-lein-2.9.1"
+             :docker-tag "openjdk-14-lein-2.9.1"
              :build-tool-version "2.9.1"}
             {:jdk-version 15, :distro "alpine", :build-tool "lein"
              :base-image "openjdk:15-alpine"
@@ -118,10 +117,10 @@
     (is (not (str/includes? (docker-tag {:jdk-version 11})
                             "openjdk-11"))))
   (testing "non-default version is added as a prefix"
-    (is (str/starts-with? (docker-tag {:jdk-version 13})
-                          "openjdk-13")))
+    (is (str/starts-with? (docker-tag {:jdk-version 14})
+                          "openjdk-14")))
   (testing "default distro is left out"
-    (is (not (str/includes? (docker-tag {:jdk-version 13
+    (is (not (str/includes? (docker-tag {:jdk-version 14
                                          :distro "slim-buster"})
                             "slim-buster"))))
   (testing "alpine is added as a suffix"
