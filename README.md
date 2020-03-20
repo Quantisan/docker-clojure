@@ -13,6 +13,16 @@ a recent version of leiningen installed. If you want boot, specify either `cloju
 `clojure:boot-N.N.N` / `clojure:boot-N.N.N-slim-buster`. (where `N.N.N` is the version of boot you want installed). If
 you want to use tools-deps, specify either `clojure:tools-deps` or `clojure:tools-deps-alpine`.
 
+### Note about the latest tag
+
+As of 2020-3-20 the `clojure:latest` (also `clojure` because `latest` is the default) now has leiningen, boot, and
+tools-deps installed.
+
+Previously this tag only had leiningen installed. Installing the others is helpful for quick start examples, newcomers,
+etc. as leiningen is by no means the de facto standard build tool these days. The downside is that the image is larger.
+But for the `latest` tag it's a good trade off because for anything real we have always recommended using more specific
+tags. No other tags are affected by this change.
+
 ## JDK versions
 
 Java has recently introduced a new release cadence of every 6 months and dropped the leading `1` major version number.
@@ -21,27 +31,26 @@ the ability to specify which version of Java you'd like via Docker tags:
 
 JDK 1.8 tools-deps image: `clojure:openjdk-8-tools-deps`
 JDK 11 variant of that image: `clojure:openjdk-11-tools-deps` or `clojure:tool-deps`
-JDK 13 with the latest release of leiningen: `clojure:openjdk-13`
-JDK 14 EA with boot 2.8.3: `clojure:openjdk-14-boot-2.8.3`
+JDK 14 with the latest release of leiningen: `clojure:openjdk-14`
+JDK 15 EA with boot 2.8.3: `clojure:openjdk-15-boot-2.8.3`
 
 ## Linux distro
 
 The upstream OpenJDK images are built on a few different variants of Debian Linux, so we have exposed those in our
-Docker tags as well. For OpenJDK 8 & 11 images, the default distro is still Debian stretch. For anything newer than
-that, the default is now Debian slim-buster. But you can also specify which distro you'd like by appending it to the end
-of your Docker tag as in the following examples (but note that not every combination is provided upstream and thus
-likewise for us):
+Docker tags as well. The default is now Debian slim-buster. But you can also specify which distro you'd like by
+appending it to the end of your Docker tag as in the following examples (but note that not every combination is
+provided upstream and thus likewise for us):
 
-JDK 1.8 leiningen on Debian stretch: `clojure:openjdk-8` or `clojure:openjdk-8-lein` or `clojure:openjdk-8-lein-stretch`
-JDK 1.8 leiningen on Debian slim-buster: `clojure:openjdk-8-slim-buster` or `clojure:openjdk-8-lein-slim-buster`
-JDK 11 tools-deps on Debian stretch: `clojure:tools-deps` or `clojure:tools-deps-stretch` or `clojure:openjdk-11-tools-deps`
-JDK 11 tools-deps on Debian slim-buster: `clojure:openjdk-11-tools-deps-slim-buster` or `clojure:tools-deps-slim-buster`
+JDK 1.8 leiningen on Debian slim-buster: `clojure:openjdk-8` or `clojure:openjdk-8-lein` or `clojure:openjdk-8-lein-stretch`
+JDK 1.8 leiningen on Debian buster: `clojure:openjdk-8-buster` or `clojure:openjdk-8-lein-buster`
+JDK 11 tools-deps on Debian slim-buster: `clojure:tools-deps` or `clojure:openjdk-11-tools-deps` or `clojure:openjdk-11-tools-deps-slim-buster`
+JDK 15 tools-deps on Alpine: `clojure:openjdk-15-tools-deps-alpine`
 
 ## Alpine Linux
 
-Most of the upstream alpine-based openjdk builds have been deprecated, so we have followed suit. As of 2019-9-25 we
-provide an alpine variant for OpenJDK 14 EA builds, but that's it. And it is likely that that build will go away once
-OpenJDK 14 is released (as has happened with other recent releases).
+Most of the upstream alpine-based openjdk builds have been deprecated, so we have followed suit. As of 2020-3-20 we
+provide an alpine variant for OpenJDK 15 EA builds, but that's it. And it is likely that that build will go away once
+OpenJDK 15 is released (as has happened with other recent releases).
 
 We recommend migrating to the `slim-buster` variant instead. The older `alpine` images won't go away, but neither will
 they receive security updates, version bumps, etc. We recommend that you cease using them until / unless official
