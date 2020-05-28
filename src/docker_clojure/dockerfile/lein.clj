@@ -3,9 +3,9 @@
             [docker-clojure.dockerfile.shared :refer :all]))
 
 (def distro-deps
-  {"slim-buster" {:build   #{"wget"}
+  {"slim-buster" {:build   #{"wget" "gnupg"}
                   :runtime #{}}
-   "alpine"      {:build   #{"tar" "openssl"}
+   "alpine"      {:build   #{"tar" "gnupg" "openssl" "ca-certificates"}
                   :runtime #{"bash"}}})
 
 (defn install-deps [{:keys [distro]}]
@@ -54,6 +54,11 @@
           "mv lein-pkg $LEIN_INSTALL/lein"
           "chmod 0755 $LEIN_INSTALL/lein"
           "wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.zip"
+          "wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.zip.asc"
+          "gpg --batch --auto-key-locate keyserver --keyserver keys.openpgp.org --locate-keys phil@hagelb.org"
+          "echo \"Verifying file PGP signature...\""
+          "gpg --batch --verify leiningen-$LEIN_VERSION-standalone.zip.asc leiningen-$LEIN_VERSION-standalone.zip"
+          "rm leiningen-$LEIN_VERSION-standalone.zip.asc"
           "mkdir -p /usr/share/java"
           "mv leiningen-$LEIN_VERSION-standalone.zip /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar"]
          (empty? uninstall-dep-cmds))
