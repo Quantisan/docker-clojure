@@ -15,6 +15,11 @@ echo "42e18e8a833b863ddfba1c5565bd5d78b54bcee661ec86e94a8bdc67b1733e63 *lein-pkg
 mv lein-pkg $LEIN_INSTALL/lein && \
 chmod 0755 $LEIN_INSTALL/lein && \
 wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.zip && \
+wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.zip.asc && \
+gpg --batch --auto-key-locate keyserver --keyserver keys.openpgp.org --locate-keys phil@hagelb.org && \
+echo "Verifying file PGP signature..." && \
+gpg --batch --verify leiningen-$LEIN_VERSION-standalone.zip.asc leiningen-$LEIN_VERSION-standalone.zip && \
+rm leiningen-$LEIN_VERSION-standalone.zip.asc && \
 mkdir -p /usr/share/java && \
 mv leiningen-$LEIN_VERSION-standalone.zip /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar
 
