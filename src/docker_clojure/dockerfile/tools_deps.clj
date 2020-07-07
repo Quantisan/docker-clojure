@@ -5,12 +5,14 @@
 (def distro-deps
   {"slim-buster" {:build   #{"wget" "curl"}
                   :runtime #{"rlwrap" "make"}}
+   "buster"      {:build   #{}
+                  :runtime #{"rlwrap" "make"}}
    "alpine"      {:build   #{"curl"}
                   :runtime #{"bash" "make"}}})
 
 (defn install-deps [{:keys [distro]}]
   (case distro
-    "slim-buster"
+    ("slim-buster" "buster")
     ["apt-get update"
      (str/join " " (concat ["apt-get install -y"]
                            (all-deps distro-deps distro)))
@@ -24,7 +26,7 @@
 
 (defn uninstall-build-deps [{:keys [distro]}]
   (case distro
-    "slim-buster"
+    ("slim-buster" "buster")
     [(str/join " " (concat ["apt-get remove -y --purge"]
                            (build-deps distro-deps distro)))]
 
@@ -35,7 +37,7 @@
     nil))
 
 (defn install [{:keys [build-tool-version] :as variant}]
-  (let [install-dep-cmds (install-deps variant)
+  (let [install-dep-cmds   (install-deps variant)
         uninstall-dep-cmds (uninstall-build-deps variant)]
     (-> [(format "ENV CLOJURE_VERSION=%s" build-tool-version)
          ""
@@ -44,12 +46,12 @@
          "RUN \\"]
         (concat-commands install-dep-cmds)
         (concat-commands
-         ["wget https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh"
-          "sha256sum linux-install-$CLOJURE_VERSION.sh"
-          "echo \"779ce3bd2aea008fa4d7a0569d00b1a1011b88662960355bab54fb86851ae5ad *linux-install-$CLOJURE_VERSION.sh\" | sha256sum -c -"
-          "chmod +x linux-install-$CLOJURE_VERSION.sh"
-          "./linux-install-$CLOJURE_VERSION.sh"
-          "clojure -e \"(clojure-version)\""] (empty? uninstall-dep-cmds))
+          ["wget https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh"
+           "sha256sum linux-install-$CLOJURE_VERSION.sh"
+           "echo \"779ce3bd2aea008fa4d7a0569d00b1a1011b88662960355bab54fb86851ae5ad *linux-install-$CLOJURE_VERSION.sh\" | sha256sum -c -"
+           "chmod +x linux-install-$CLOJURE_VERSION.sh"
+           "./linux-install-$CLOJURE_VERSION.sh"
+           "clojure -e \"(clojure-version)\""] (empty? uninstall-dep-cmds))
         (concat-commands uninstall-dep-cmds :end)
 
         (->> (remove nil?)))))

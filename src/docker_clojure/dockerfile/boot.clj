@@ -10,7 +10,7 @@
 
 (defn install-deps [{:keys [distro]}]
   (case distro
-    "slim-buster"
+    ("slim-buster" "buster")
     ["apt-get update"
      (str/join " " (concat ["apt-get install -y"]
                            (all-deps distro-deps distro)))
@@ -24,7 +24,7 @@
 
 (defn uninstall-build-deps [{:keys [distro]}]
   (case distro
-    "slim-buster"
+    ("slim-buster" "buster")
     [(str/join " " (concat ["apt-get remove -y --purge"]
                            (build-deps distro-deps distro)))
      "apt-get autoremove -y"]
@@ -36,7 +36,7 @@
     nil))
 
 (defn install [{:keys [build-tool-version] :as variant}]
-  (let [install-dep-cmds (install-deps variant)
+  (let [install-dep-cmds   (install-deps variant)
         uninstall-dep-cmds (uninstall-build-deps variant)]
     (-> [(format "ENV BOOT_VERSION=%s" build-tool-version)
          "ENV BOOT_INSTALL=/usr/local/bin/"
@@ -49,20 +49,20 @@
          "RUN \\"]
         (concat-commands install-dep-cmds)
         (concat-commands
-         ["mkdir -p $BOOT_INSTALL"
-          "wget -q https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh"
-          "echo \"Comparing installer checksum...\""
-          "sha256sum boot.sh"
-          "echo \"0ccd697f2027e7e1cd3be3d62721057cbc841585740d0aaa9fbb485d7b1f17c3 *boot.sh\" | sha256sum -c -"
-          "mv boot.sh $BOOT_INSTALL/boot"
-          "chmod 0755 $BOOT_INSTALL/boot"] (empty? uninstall-dep-cmds))
+          ["mkdir -p $BOOT_INSTALL"
+           "wget -q https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh"
+           "echo \"Comparing installer checksum...\""
+           "sha256sum boot.sh"
+           "echo \"0ccd697f2027e7e1cd3be3d62721057cbc841585740d0aaa9fbb485d7b1f17c3 *boot.sh\" | sha256sum -c -"
+           "mv boot.sh $BOOT_INSTALL/boot"
+           "chmod 0755 $BOOT_INSTALL/boot"] (empty? uninstall-dep-cmds))
         (concat-commands uninstall-dep-cmds :end)
         (concat
-         [""
-          "ENV PATH=$PATH:$BOOT_INSTALL"
-          "ENV BOOT_AS_ROOT=yes"
-          ""
-          "RUN boot"])
+          [""
+           "ENV PATH=$PATH:$BOOT_INSTALL"
+           "ENV BOOT_AS_ROOT=yes"
+           ""
+           "RUN boot"])
 
         (->> (remove nil?)))))
 
