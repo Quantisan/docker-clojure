@@ -7,6 +7,9 @@ WORKDIR /tmp
 
 # Download the whole repo as an archive
 RUN \
+apt-get update && \
+apt-get install -y gnupg && \
+rm -rf /var/lib/apt/lists/* && \
 mkdir -p $LEIN_INSTALL && \
 wget -q https://raw.githubusercontent.com/technomancy/leiningen/$LEIN_VERSION/bin/lein-pkg && \
 echo "Comparing lein-pkg checksum ..." && \
@@ -21,7 +24,8 @@ echo "Verifying file PGP signature..." && \
 gpg --batch --verify leiningen-$LEIN_VERSION-standalone.zip.asc leiningen-$LEIN_VERSION-standalone.zip && \
 rm leiningen-$LEIN_VERSION-standalone.zip.asc && \
 mkdir -p /usr/share/java && \
-mv leiningen-$LEIN_VERSION-standalone.zip /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar
+mv leiningen-$LEIN_VERSION-standalone.zip /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar && \
+apt-get remove -y --purge gnupg
 
 ENV PATH=$PATH:$LEIN_INSTALL
 ENV LEIN_ROOT 1
