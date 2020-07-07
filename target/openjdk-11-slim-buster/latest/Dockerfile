@@ -54,7 +54,8 @@ gpg --batch --verify leiningen-$LEIN_VERSION-standalone.zip.asc leiningen-$LEIN_
 rm leiningen-$LEIN_VERSION-standalone.zip.asc && \
 mkdir -p /usr/share/java && \
 mv leiningen-$LEIN_VERSION-standalone.zip /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar && \
-apt-get remove -y --purge gnupg wget
+apt-get remove -y --purge gnupg wget && \
+apt-get autoremove -y
 
 ENV PATH=$PATH:$LEIN_INSTALL
 ENV LEIN_ROOT 1
@@ -78,6 +79,7 @@ echo "779ce3bd2aea008fa4d7a0569d00b1a1011b88662960355bab54fb86851ae5ad *linux-in
 chmod +x linux-install-$CLOJURE_VERSION.sh && \
 ./linux-install-$CLOJURE_VERSION.sh && \
 clojure -e "(clojure-version)" && \
-apt-get remove -y --purge curl wget
+apt-get remove -y --purge curl wget && \
+apt-get autoremove -y
 
 CMD ["lein", "repl"]
