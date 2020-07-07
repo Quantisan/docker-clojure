@@ -8,32 +8,9 @@
    "alpine"      {:build   #{"openssl"}
                   :runtime #{"bash"}}})
 
-(defn install-deps [{:keys [distro]}]
-  (case distro
-    ("slim-buster" "buster")
-    ["apt-get update"
-     (str/join " " (concat ["apt-get install -y"]
-                           (all-deps distro-deps distro)))
-     "rm -rf /var/lib/apt/lists/*"]
+(def install-deps (partial install-distro-deps distro-deps))
 
-    "alpine"
-    [(str/join " " (concat ["apk add --update --no-cache"]
-                           (all-deps distro-deps distro)))]
-
-    nil))
-
-(defn uninstall-build-deps [{:keys [distro]}]
-  (case distro
-    ("slim-buster" "buster")
-    [(str/join " " (concat ["apt-get remove -y --purge"]
-                           (build-deps distro-deps distro)))
-     "apt-get autoremove -y"]
-
-    "alpine"
-    [(str/join " " (concat ["apk del"]
-                           (build-deps distro-deps distro)))]
-
-    nil))
+(def uninstall-build-deps (partial uninstall-distro-build-deps distro-deps))
 
 (defn install [{:keys [build-tool-version] :as variant}]
   (let [install-dep-cmds   (install-deps variant)
