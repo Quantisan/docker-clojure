@@ -39,8 +39,7 @@
     (when (seq deps)
       (case distro
         ("slim-buster" "buster")
-        [(str/join " " (concat ["apt-get remove -y --purge"] deps))
-         "apt-get autoremove -y"]
+        [(str/join " " (concat ["apt-get purge -y --auto-remove"] deps))]
 
         "alpine"
         [(str/join " " (concat ["apk del"] deps))]
