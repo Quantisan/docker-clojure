@@ -20,8 +20,7 @@ sha256sum boot.sh && \
 echo "0ccd697f2027e7e1cd3be3d62721057cbc841585740d0aaa9fbb485d7b1f17c3 *boot.sh" | sha256sum -c - && \
 mv boot.sh $BOOT_INSTALL/boot && \
 chmod 0755 $BOOT_INSTALL/boot && \
-apt-get remove -y --purge wget && \
-apt-get autoremove -y
+apt-get purge -y --auto-remove wget
 
 ENV PATH=$PATH:$BOOT_INSTALL
 ENV BOOT_AS_ROOT=yes
@@ -54,8 +53,7 @@ gpg --batch --verify leiningen-$LEIN_VERSION-standalone.zip.asc leiningen-$LEIN_
 rm leiningen-$LEIN_VERSION-standalone.zip.asc && \
 mkdir -p /usr/share/java && \
 mv leiningen-$LEIN_VERSION-standalone.zip /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar && \
-apt-get remove -y --purge gnupg wget && \
-apt-get autoremove -y
+apt-get purge -y --auto-remove gnupg wget
 
 ENV PATH=$PATH:$LEIN_INSTALL
 ENV LEIN_ROOT 1
@@ -79,7 +77,6 @@ echo "779ce3bd2aea008fa4d7a0569d00b1a1011b88662960355bab54fb86851ae5ad *linux-in
 chmod +x linux-install-$CLOJURE_VERSION.sh && \
 ./linux-install-$CLOJURE_VERSION.sh && \
 clojure -e "(clojure-version)" && \
-apt-get remove -y --purge curl wget && \
-apt-get autoremove -y
+apt-get purge -y --auto-remove curl wget
 
 CMD ["lein", "repl"]

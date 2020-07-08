@@ -25,8 +25,7 @@ gpg --batch --verify leiningen-$LEIN_VERSION-standalone.zip.asc leiningen-$LEIN_
 rm leiningen-$LEIN_VERSION-standalone.zip.asc && \
 mkdir -p /usr/share/java && \
 mv leiningen-$LEIN_VERSION-standalone.zip /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar && \
-apt-get remove -y --purge gnupg && \
-apt-get autoremove -y
+apt-get purge -y --auto-remove gnupg
 
 ENV PATH=$PATH:$LEIN_INSTALL
 ENV LEIN_ROOT 1

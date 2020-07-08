@@ -19,8 +19,7 @@ sha256sum boot.sh && \
 echo "0ccd697f2027e7e1cd3be3d62721057cbc841585740d0aaa9fbb485d7b1f17c3 *boot.sh" | sha256sum -c - && \
 mv boot.sh $BOOT_INSTALL/boot && \
 chmod 0755 $BOOT_INSTALL/boot && \
-apt-get remove -y --purge wget && \
-apt-get autoremove -y
+apt-get purge -y --auto-remove wget
 
 ENV PATH=$PATH:$BOOT_INSTALL
 ENV BOOT_AS_ROOT=yes
