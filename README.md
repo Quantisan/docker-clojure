@@ -56,6 +56,11 @@ We recommend migrating to the `slim-buster` variant instead. The older `alpine` 
 they receive security updates, version bumps, etc. We recommend that you cease using them until / unless official
 upstream support resumes.
 
+### `clojure:slim-buster`
+
+These images are based on the Debian buster distribution but have fewer packages installed and are thus much smaller
+than the `stretch` or `buster` images. Their use is recommended.
+
 ## Examples
 
 ### Interactive Shell
@@ -73,11 +78,6 @@ lein new hello-world
 cd hello-world
 lein repl
 ```
-
-### `clojure:slim-buster`
-
-These images are based on the Debian buster distribution but have fewer packages installed and are thus much smaller
-than the `stretch` or `buster` images. Their use is recommended.
 
 ## Builds
 
