@@ -1,6 +1,6 @@
 FROM openjdk:14-buster
 
-ENV CLOJURE_VERSION=1.10.1.590
+ENV CLOJURE_VERSION=1.10.1.619
 
 WORKDIR /tmp
 
@@ -10,7 +10,7 @@ apt-get install -y make rlwrap && \
 rm -rf /var/lib/apt/lists/* && \
 wget https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh && \
 sha256sum linux-install-$CLOJURE_VERSION.sh && \
-echo "92a606c1b373ddee338c209f9fecd6f0a40b3354b5eb762962b9cc64f226ce53 *linux-install-$CLOJURE_VERSION.sh" | sha256sum -c - && \
+echo "28b1652686426cdf856f83551b8ca01ff949b03bc9a533d270204d6511a8ca9d *linux-install-$CLOJURE_VERSION.sh" | sha256sum -c - && \
 chmod +x linux-install-$CLOJURE_VERSION.sh && \
 ./linux-install-$CLOJURE_VERSION.sh && \
 clojure -e "(clojure-version)"
