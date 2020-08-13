@@ -56,6 +56,8 @@
     {:jdk-version 11
      :distro      "alpine"}
     {:jdk-version 14
+     :distro      "alpine"}
+    {:jdk-version 15
      :distro      "alpine"}})
 
 (def maintainers
