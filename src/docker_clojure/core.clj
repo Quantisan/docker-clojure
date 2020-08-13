@@ -33,7 +33,7 @@
 
 (def base-image "openjdk")
 
-(def jdk-versions #{8 11 14 15})
+(def jdk-versions #{8 11 14 15 16})
 
 ;; The default JDK version to use for tags that don't specify one; usually the latest LTS release
 (def default-jdk-version 11)
@@ -115,9 +115,14 @@
         (assoc :docker-tag (docker-tag base))
         (assoc-if #(nil? (:build-tool-version base)) :build-tool-versions build-tools))))
 
-(defn build-image [{:keys [docker-tag dockerfile build-dir] :as variant}]
+(defn pull-image [image]
+  (sh "docker" "pull" image))
+
+(defn build-image [{:keys [docker-tag dockerfile build-dir base-image] :as variant}]
   (let [image-tag (str "clojure:" docker-tag)
         build-cmd ["docker" "build" "-t" image-tag "-f" dockerfile "."]]
+    (println "Pulling base image" base-image)
+    (pull-image base-image)
     (df/write-file build-dir dockerfile variant)
     (apply println "Running" build-cmd)
     (let [{:keys [out err exit]}
