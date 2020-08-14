@@ -53,9 +53,9 @@ JDK 15 tools-deps on Alpine: `clojure:openjdk-15-tools-deps-alpine`
 
 ## Alpine Linux
 
-Most of the upstream alpine-based openjdk builds have been deprecated, so we have followed suit. As of 2020-8-3 we
-provide an alpine variant for OpenJDK 15 and 16 builds, but that's it. And it is likely that that build will go away once
-OpenJDK 15 is released (as has happened with other recent releases).
+Most of the upstream alpine-based openjdk builds have been deprecated, so we have followed suit. As of 2020-8-14 we
+provide an alpine variant for OpenJDK 16 builds, but that's it. And it is likely that that build will go away once
+OpenJDK 17 is released (as has happened with other recent releases).
 
 For other versions of OpenJDK, we recommend migrating to the `slim-buster` variant instead. The older `alpine` images
 won't go away, but neither will they receive security updates, version bumps, etc. We recommend that you cease using
