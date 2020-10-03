@@ -2,4 +2,4 @@
 
 set -e
 
-clojure -m docker-clojure.core dockerfiles
+clojure -M -m docker-clojure.core dockerfiles
