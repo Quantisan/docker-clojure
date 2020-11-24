@@ -48,7 +48,7 @@
 (def build-tools
   {"lein"       "2.9.3"
    "boot"       "2.8.3"
-   "tools-deps" "1.10.1.727"})
+   "tools-deps" "1.10.1.739"})
 
 (def exclusions ; don't build these for whatever reason(s)
   #{{:jdk-version 8
@@ -122,7 +122,7 @@
 
 (defn build-image [{:keys [docker-tag dockerfile build-dir base-image] :as variant}]
   (let [image-tag (str "clojure:" docker-tag)
-        build-cmd ["docker" "build" "-t" image-tag "-f" dockerfile "."]]
+        build-cmd ["docker" "build" "--no-cache" "-t" image-tag "-f" dockerfile "."]]
     (println "Pulling base image" base-image)
     (pull-image base-image)
     (df/write-file build-dir dockerfile variant)
