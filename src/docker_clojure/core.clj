@@ -33,7 +33,7 @@
 
 (def base-image "openjdk")
 
-(def jdk-versions #{8 11 15 16})
+(def jdk-versions #{8 11 15 16 17})
 
 ;; The default JDK version to use for tags that don't specify one; usually the latest LTS release
 (def default-jdk-version 11)
@@ -56,6 +56,8 @@
     {:jdk-version 11
      :distro      "alpine"}
     {:jdk-version 15
+     :distro      "alpine"}
+    {:jdk-version 16
      :distro      "alpine"}})
 
 (def maintainers
