@@ -49,7 +49,7 @@
            "ENV LEIN_ROOT 1"
            ""
            "# Install clojure 1.10.1 so users don't have to download it every time"
-           "RUN echo '(defproject dummy \"\" :dependencies [[org.clojure/clojure \"1.10.1\"]])' > project.clj \\"
+           "RUN echo '(defproject dummy \"\" :dependencies [[org.clojure/clojure \"1.10.2\"]])' > project.clj \\"
            "  && lein deps && rm project.clj"])
 
         (->> (remove nil?)))))
