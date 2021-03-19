@@ -1,6 +1,6 @@
 FROM openjdk:17-alpine
 
-ENV CLOJURE_VERSION=1.10.2.796
+ENV CLOJURE_VERSION=1.10.3.814
 
 WORKDIR /tmp
 
@@ -8,7 +8,7 @@ RUN \
 apk add --update --no-cache curl bash make && \
 wget https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh && \
 sha256sum linux-install-$CLOJURE_VERSION.sh && \
-echo "0ea8633c7f53eb76098132d4a4536169395be24bbdc253cff4d10251e2ea6e45 *linux-install-$CLOJURE_VERSION.sh" | sha256sum -c - && \
+echo "ea4a943d32496dc2423a529b32a309f2c0365e56ba251d4a56739c5977b906a3 *linux-install-$CLOJURE_VERSION.sh" | sha256sum -c - && \
 chmod +x linux-install-$CLOJURE_VERSION.sh && \
 ./linux-install-$CLOJURE_VERSION.sh && \
 clojure -e "(clojure-version)" && \
