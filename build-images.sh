@@ -2,4 +2,4 @@
 
 set -e
 
-clojure -M -m docker-clojure.core
+clojure -M -m docker-clojure.core "$@"
