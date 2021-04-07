@@ -30,7 +30,7 @@ apt-get purge -y --auto-remove gnupg
 ENV PATH=$PATH:$LEIN_INSTALL
 ENV LEIN_ROOT 1
 
-# Install clojure 1.10.1 so users don't have to download it every time
+# Install clojure 1.10.3 so users don't have to download it every time
 RUN echo '(defproject dummy "" :dependencies [[org.clojure/clojure "1.10.3"]])' > project.clj \
   && lein deps && rm project.clj
 
