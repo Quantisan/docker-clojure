@@ -46,7 +46,7 @@
   {:default "slim-buster"})
 
 (def build-tools
-  {"lein"       "2.9.5"
+  {"lein"       "2.9.6"
    "boot"       "2.8.3"
    "tools-deps" "1.10.3.822"})
 
