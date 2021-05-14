@@ -120,7 +120,10 @@
 
 (defn build-image [{:keys [docker-tag dockerfile build-dir base-image] :as variant}]
   (let [image-tag (str "clojure:" docker-tag)
-        build-cmd ["docker" "build" "--no-cache" "-t" image-tag "-f" dockerfile "."]]
+        ;; TODO: Build for all appropriate platforms instead of just linux/amd64.
+        ;;       alpine & JDK 8 won't build for arm64.
+        build-cmd ["docker" "build" "--no-cache" "--platform" "linux/amd64"
+                   "-t" image-tag "-f" dockerfile "."]]
     (println "Pulling base image" base-image)
     (pull-image base-image)
     (df/write-file build-dir dockerfile variant)
