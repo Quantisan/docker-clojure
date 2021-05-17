@@ -123,7 +123,7 @@
         ;; TODO: Build for all appropriate platforms instead of just linux/amd64.
         ;;       alpine & JDK 8 won't build for arm64.
         build-cmd ["docker" "build" "--no-cache" "--platform" "linux/amd64"
-                   "-t" image-tag "-f" dockerfile "."]]
+                   "--load" "-t" image-tag "-f" dockerfile "."]]
     (println "Pulling base image" base-image)
     (pull-image base-image)
     (df/write-file build-dir dockerfile variant)
