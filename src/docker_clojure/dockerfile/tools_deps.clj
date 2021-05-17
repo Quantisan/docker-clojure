@@ -25,7 +25,7 @@
         (concat-commands
           ["wget https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh"
            "sha256sum linux-install-$CLOJURE_VERSION.sh"
-           "echo \"c4571bb1deebf7a72729ec98ef2bf8570363f98f939c49b87308d616fc8afe7e *linux-install-$CLOJURE_VERSION.sh\" | sha256sum -c -"
+           "echo \"ba754dcf1d88cd1e8fe8337637fe249b91dff4f63115b4b9550947539869c804 *linux-install-$CLOJURE_VERSION.sh\" | sha256sum -c -"
            "chmod +x linux-install-$CLOJURE_VERSION.sh"
            "./linux-install-$CLOJURE_VERSION.sh"
            "clojure -e \"(clojure-version)\""] (empty? uninstall-dep-cmds))
