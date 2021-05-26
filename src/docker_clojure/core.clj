@@ -48,7 +48,7 @@
 (def build-tools
   {"lein"       "2.9.6"
    "boot"       "2.8.3"
-   "tools-deps" "1.10.3.839"})
+   "tools-deps" "1.10.3.855"})
 
 (def exclusions ; don't build these for whatever reason(s)
   #{{:jdk-version 8
@@ -122,8 +122,8 @@
   (let [image-tag (str "clojure:" docker-tag)
         ;; TODO: Build for all appropriate platforms instead of just linux/amd64.
         ;;       alpine & JDK 8 won't build for arm64.
-        build-cmd ["docker" "build" "--no-cache" "--platform" "linux/amd64"
-                   "--load" "-t" image-tag "-f" dockerfile "."]]
+        build-cmd ["docker" "buildx" "build" "--no-cache" "--platform"
+                   "linux/amd64" "--load" "-t" image-tag "-f" dockerfile "."]]
     (println "Pulling base image" base-image)
     (pull-image base-image)
     (df/write-file build-dir dockerfile variant)
