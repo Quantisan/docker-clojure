@@ -2,4 +2,4 @@
 
 set -e
 
-clojure -m docker-clojure.core clean
+clojure -M -m docker-clojure.core clean
