@@ -1,6 +1,6 @@
 FROM openjdk:17-slim-buster
 
-ENV CLOJURE_VERSION=1.10.3.855
+ENV CLOJURE_VERSION=1.10.3.933
 
 WORKDIR /tmp
 
@@ -10,7 +10,7 @@ apt-get install -y curl make rlwrap wget && \
 rm -rf /var/lib/apt/lists/* && \
 wget https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh && \
 sha256sum linux-install-$CLOJURE_VERSION.sh && \
-echo "4bafe3c7343b7d4ef44bd0145bf4203be1c144a30d99a1db53ab67abb2568e2b *linux-install-$CLOJURE_VERSION.sh" | sha256sum -c - && \
+echo "0559cc25d08c3c25c3c0b734aba3a6c80f9b5d2760fdbddf08a4df886873528e *linux-install-$CLOJURE_VERSION.sh" | sha256sum -c - && \
 chmod +x linux-install-$CLOJURE_VERSION.sh && \
 ./linux-install-$CLOJURE_VERSION.sh && \
 clojure -e "(clojure-version)" && \
