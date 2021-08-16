@@ -5,5 +5,5 @@
  :aliases
  {:test {:extra-paths ["test"]
          :extra-deps {com.cognitect/test-runner {:git/url "https://github.com/cognitect-labs/test-runner.git"
-                                                 :sha "b6b3193fcc42659d7e46ecd1884a228993441182"}}
+                                                 :sha "4e7e1c0dfd5291fa2134df052443dc29695d8cbe"}}
          :main-opts ["-m" "cognitect.test-runner"]}}}
