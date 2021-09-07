@@ -39,11 +39,11 @@
 (def default-jdk-version 11)
 
 (def distros
-  #{:debian/buster :debian-slim/slim-buster :alpine/alpine})
+  #{:debian/buster :debian-slim/slim-buster :debian/bullseye :debian-slim/slim-bullseye :alpine/alpine})
 
 ;; The default distro to use for tags that don't specify one, keyed by jdk-version.
 (def default-distros
-  {:default :debian-slim/slim-buster})
+  {:default :debian-slim/slim-bullseye})
 
 (def build-tools
   {"lein"       "2.9.6"
