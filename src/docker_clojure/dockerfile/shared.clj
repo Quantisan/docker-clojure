@@ -11,7 +11,7 @@
            (when end? [(last cmds)]))))
 
 (defn get-deps [type distro-deps distro]
-  (->> distro namespace keyword (get distro-deps) type))
+  (some->> distro namespace keyword (get distro-deps) type))
 
 (def build-deps (partial get-deps :build))
 
