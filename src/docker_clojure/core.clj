@@ -16,7 +16,7 @@
 (s/def ::base-image ::non-blank-string)
 (s/def ::base-images (s/coll-of ::base-image :distinct true :into #{}))
 
-(s/def ::distro ::non-blank-string)
+(s/def ::distro qualified-keyword?)
 (s/def ::distros (s/coll-of ::distro :distinct true :into #{}))
 
 (s/def ::build-tool (s/or ::specific-tool ::non-blank-string
@@ -39,11 +39,11 @@
 (def default-jdk-version 11)
 
 (def distros
-  #{"buster" "slim-buster" "alpine"})
+  #{:debian/buster :debian-slim/slim-buster :alpine/alpine})
 
 ;; The default distro to use for tags that don't specify one, keyed by jdk-version.
 (def default-distros
-  {:default "slim-buster"})
+  {:default :debian-slim/slim-buster})
 
 (def build-tools
   {"lein"       "2.9.6"
@@ -52,15 +52,15 @@
 
 (def exclusions ; don't build these for whatever reason(s)
   #{{:jdk-version 8
-     :distro      "alpine"}
+     :distro      :alpine/alpine}
     {:jdk-version 11
-     :distro      "alpine"}
+     :distro      :alpine/alpine}
     {:jdk-version 16
-     :distro      "alpine"}
+     :distro      :alpine/alpine}
     {:jdk-version 17
-     :distro      "alpine"}
+     :distro      :alpine/alpine}
     {:jdk-version 18
-     :distro      "alpine"}})
+     :distro      :alpine/alpine}})
 
 (def maintainers
   "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>")
@@ -79,7 +79,7 @@
           needles))
 
 (defn base-image-name [jdk-version distro]
-  (str base-image ":" jdk-version "-" distro))
+  (str base-image ":" jdk-version "-" (name distro)))
 
 (defn exclude?
   "Returns true if `variant` matches one of `exclusions` elements (meaning
@@ -87,14 +87,15 @@
   [exclusions variant]
   (some (partial contains-every-key-value? variant) exclusions))
 
-(defn docker-tag [{:keys [jdk-version distro build-tool build-tool-version]}]
+(defn docker-tag
+  [{:keys [jdk-version distro build-tool build-tool-version]}]
   (if (= ::all build-tool)
     "latest"
     (let [jdk-label (if (= default-jdk-version jdk-version)
                       nil
                       (str base-image "-" jdk-version))
           dd (default-distro jdk-version)
-          distro-label (if (= dd distro) nil distro)]
+          distro-label (if (= dd distro) nil (when distro (name distro)))]
       (str/join "-" (remove nil? [jdk-label build-tool build-tool-version
                                   distro-label])))))
 

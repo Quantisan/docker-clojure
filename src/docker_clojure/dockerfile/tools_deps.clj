@@ -2,12 +2,12 @@
   (:require [docker-clojure.dockerfile.shared :refer :all]))
 
 (def distro-deps
-  {"slim-buster" {:build   #{"wget" "curl"}
-                  :runtime #{"rlwrap" "make"}}
-   "buster"      {:build   #{}
-                  :runtime #{"rlwrap" "make"}}
-   "alpine"      {:build   #{"curl"}
-                  :runtime #{"bash" "make"}}})
+  {:debian-slim {:build   #{"wget" "curl"}
+                 :runtime #{"rlwrap" "make"}}
+   :debian      {:build   #{}
+                 :runtime #{"rlwrap" "make"}}
+   :alpine      {:build   #{"curl"}
+                 :runtime #{"bash" "make"}}})
 
 (def install-deps (partial install-distro-deps distro-deps))
 

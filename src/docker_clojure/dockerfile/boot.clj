@@ -3,10 +3,10 @@
             [clojure.string :as str]))
 
 (def distro-deps
-  {"slim-buster" {:build   #{"wget"}
-                  :runtime #{}}
-   "alpine"      {:build   #{"openssl"}
-                  :runtime #{"bash"}}})
+  {:debian-slim {:build   #{"wget"}
+                 :runtime #{}}
+   :alpine      {:build   #{"openssl"}
+                 :runtime #{"bash"}}})
 
 (def install-deps (partial install-distro-deps distro-deps))
 
