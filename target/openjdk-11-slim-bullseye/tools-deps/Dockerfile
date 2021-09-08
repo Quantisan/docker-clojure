@@ -6,7 +6,7 @@ WORKDIR /tmp
 
 RUN \
 apt-get update && \
-apt-get install -y curl make rlwrap wget && \
+apt-get install -y curl make git rlwrap wget && \
 rm -rf /var/lib/apt/lists/* && \
 wget https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh && \
 sha256sum linux-install-$CLOJURE_VERSION.sh && \
