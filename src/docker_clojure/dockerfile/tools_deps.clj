@@ -3,11 +3,11 @@
 
 (def distro-deps
   {:debian-slim {:build   #{"wget" "curl"}
-                 :runtime #{"rlwrap" "make"}}
+                 :runtime #{"rlwrap" "make" "git"}}
    :debian      {:build   #{}
                  :runtime #{"rlwrap" "make"}}
    :alpine      {:build   #{"curl"}
-                 :runtime #{"bash" "make"}}})
+                 :runtime #{"bash" "make" "git"}}})
 
 (def install-deps (partial install-distro-deps distro-deps))
 
