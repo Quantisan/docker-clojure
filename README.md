@@ -50,15 +50,20 @@ JDK 1.8 leiningen on Debian slim-bullseye: `clojure:openjdk-8` or `clojure:openj
 JDK 1.8 leiningen on Debian buster: `clojure:openjdk-8-buster` or `clojure:openjdk-8-lein-buster`
 JDK 11 tools-deps on Debian slim-bullseye: `clojure:tools-deps` or `clojure:openjdk-11-tools-deps` or `clojure:openjdk-11-tools-deps-slim-bullseye`
 
-## Alpine Linux
+### Alpine Linux
 
-Most of the upstream alpine-based openjdk builds have been deprecated, so we have followed suit. Typically upstream
-only provides alpine variants of the current early access release. They tend to disappear once it becomes a full
-release.
+Sometimes there are upstream openjdk images for early access JDK releases based
+on Alpine Linux, but they have often later been deprecated once that version is
+released.
 
-For other versions of OpenJDK, we recommend migrating to the `slim-bullseye` variant instead. The older `alpine` images
-won't go away, but neither will they receive security updates, version bumps, etc. We recommend that you cease using
-them until / unless official upstream support resumes.
+As of 2021-09-08, there are alpine variants for OpenJDK 16, 17, and 18. As long
+as those remain available upstream, we'll provide clojure variants based on
+them.
+
+Some example tags:
+
+JDK 16 tools-deps on Alpine: `clojure:openjdk-16-tools-deps-alpine`
+JDK 18 leiningen on Alpine: `clojure:openjdk-18-lein-alpine`
 
 ### `clojure:slim-buster` / `clojure:slim-bullseye`
 
