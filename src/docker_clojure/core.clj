@@ -54,12 +54,6 @@
   #{{:jdk-version 8
      :distro      :alpine/alpine}
     {:jdk-version 11
-     :distro      :alpine/alpine}
-    {:jdk-version 16
-     :distro      :alpine/alpine}
-    {:jdk-version 17
-     :distro      :alpine/alpine}
-    {:jdk-version 18
      :distro      :alpine/alpine}})
 
 (def maintainers
