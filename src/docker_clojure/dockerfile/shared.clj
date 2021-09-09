@@ -31,7 +31,7 @@
          "rm -rf /var/lib/apt/lists/*"]
 
         :alpine
-        [(str/join " " (concat ["apk add --update --no-cache"] deps))]
+        [(str/join " " (concat ["apk add --no-cache"] deps))]
 
         nil))))
 
