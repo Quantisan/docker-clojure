@@ -3,12 +3,12 @@
             [docker-clojure.dockerfile.shared :refer :all]))
 
 (def distro-deps
-  {"slim-buster" {:build   #{"wget" "gnupg"}
-                  :runtime #{}}
-   "buster"      {:build   #{"gnupg"}
-                  :runtime #{}}
-   "alpine"      {:build   #{"tar" "gnupg" "openssl" "ca-certificates"}
-                  :runtime #{"bash"}}})
+  {:debian-slim {:build   #{"wget" "gnupg"}
+                 :runtime #{}}
+   :debian      {:build   #{"gnupg"}
+                 :runtime #{}}
+   :alpine      {:build   #{"tar" "gnupg" "openssl" "ca-certificates"}
+                 :runtime #{"bash"}}})
 
 (def install-deps (partial install-distro-deps distro-deps))
 

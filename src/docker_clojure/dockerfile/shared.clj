@@ -10,11 +10,12 @@
                 commands)
            (when end? [(last cmds)]))))
 
-(defn build-deps [distro-deps distro]
-  (-> distro-deps (get distro) :build))
+(defn get-deps [type distro-deps distro]
+  (some->> distro namespace keyword (get distro-deps) type))
 
-(defn runtime-deps [distro-deps distro]
-  (-> distro-deps (get distro) :runtime))
+(def build-deps (partial get-deps :build))
+
+(def runtime-deps (partial get-deps :runtime))
 
 (defn all-deps [distro-deps distro]
   (set (concat (build-deps distro-deps distro)
@@ -23,13 +24,13 @@
 (defn install-distro-deps [distro-deps {:keys [distro]}]
   (let [deps (all-deps distro-deps distro)]
     (when (seq deps)
-      (case distro
-        ("slim-buster" "buster")
+      (case (-> distro namespace keyword)
+        (:debian :debian-slim)
         ["apt-get update"
          (str/join " " (concat ["apt-get install -y"] deps))
          "rm -rf /var/lib/apt/lists/*"]
 
-        "alpine"
+        :alpine
         [(str/join " " (concat ["apk add --update --no-cache"] deps))]
 
         nil))))
@@ -37,11 +38,11 @@
 (defn uninstall-distro-build-deps [distro-deps {:keys [distro]}]
   (let [deps (build-deps distro-deps distro)]
     (when (seq deps)
-      (case distro
-        ("slim-buster" "buster")
+      (case (-> distro namespace keyword)
+        (:debian :debian-slim)
         [(str/join " " (concat ["apt-get purge -y --auto-remove"] deps))]
 
-        "alpine"
+        :alpine
         [(str/join " " (concat ["apk del"] deps))]
 
         nil))))

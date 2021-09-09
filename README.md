@@ -2,7 +2,7 @@
 
 This is the repository for the [official Docker image for Clojure](https://registry.hub.docker.com/_/clojure/).
 It is automatically pulled and built by Stackbrew into the Docker registry.
-This image runs on OpenJDK 8, 11, 14, 15, and 16 and includes [Leiningen](http://leiningen.org),
+This image runs on OpenJDK 8, 11, and more recent releases and includes [Leiningen](http://leiningen.org),
 [boot](http://boot-clj.com), and/or [tools-deps](https://clojure.org/reference/deps_and_cli)
 (see below for tags and building instructions).
 
@@ -11,11 +11,11 @@ This image runs on OpenJDK 8, 11, 14, 15, and 16 and includes [Leiningen](http:/
 The version tags on these images look like `(openjdk-major-version-)lein-N.N.N(-distro)`,
 `(openjdk-major-version-)boot-N.N.N(-distro)`, and `(openjdk-major-version-)tools-deps(-distro)`.
 These refer to which version of leiningen, boot, or tools-deps is packaged in the image (because they can then install
-and use any version of Clojure at runtime). The `lein` (or `lein-slim-buster`, `openjdk-14-lein`, etc.)
+and use any version of Clojure at runtime). The `lein` (or `lein-slim-bullseye`, `openjdk-14-lein`, etc.)
 images will always have a recent version of leiningen installed. If you want boot, specify either `clojure:boot`,
-`clojure:boot-slim-buster`, or `clojure:boot-N.N.N`, `clojure:boot-N.N.N-slim-buster`,
-`clojure:openjdk-14-boot-N.N.N-slim-buster`, etc. (where `N.N.N` is the version of boot you want installed). If
-you want to use tools-deps, specify either `clojure:tools-deps`, `clojure:tools-deps-slim-buster` or other similar
+`clojure:boot-slim-bullseye`, or `clojure:boot-N.N.N`, `clojure:boot-N.N.N-slim-bullseye`,
+`clojure:openjdk-14-boot-N.N.N-slim-bullseye`, etc. (where `N.N.N` is the version of boot you want installed). If
+you want to use tools-deps, specify either `clojure:tools-deps`, `clojure:tools-deps-slim-bullseye` or other similar
 variants.
 
 ### Note about the latest tag
@@ -42,14 +42,13 @@ JDK 15 with boot 2.8.3: `clojure:openjdk-15-boot-2.8.3`
 ## Linux distro
 
 The upstream OpenJDK images are built on a few different variants of Debian Linux, so we have exposed those in our
-Docker tags as well. The default is now Debian slim-buster. But you can also specify which distro you'd like by
+Docker tags as well. The default is now Debian slim-bullseye. But you can also specify which distro you'd like by
 appending it to the end of your Docker tag as in the following examples (but note that not every combination is
 provided upstream and thus likewise for us):
 
-JDK 1.8 leiningen on Debian slim-buster: `clojure:openjdk-8` or `clojure:openjdk-8-lein` or `clojure:openjdk-8-lein-stretch`
+JDK 1.8 leiningen on Debian slim-bullseye: `clojure:openjdk-8` or `clojure:openjdk-8-lein` or `clojure:openjdk-8-lein-stretch`
 JDK 1.8 leiningen on Debian buster: `clojure:openjdk-8-buster` or `clojure:openjdk-8-lein-buster`
-JDK 11 tools-deps on Debian slim-buster: `clojure:tools-deps` or `clojure:openjdk-11-tools-deps` or `clojure:openjdk-11-tools-deps-slim-buster`
-JDK 15 tools-deps on Alpine: `clojure:openjdk-15-tools-deps-alpine`
+JDK 11 tools-deps on Debian slim-bullseye: `clojure:tools-deps` or `clojure:openjdk-11-tools-deps` or `clojure:openjdk-11-tools-deps-slim-bullseye`
 
 ## Alpine Linux
 
@@ -57,11 +56,11 @@ Most of the upstream alpine-based openjdk builds have been deprecated, so we hav
 only provides alpine variants of the current early access release. They tend to disappear once it becomes a full
 release.
 
-For other versions of OpenJDK, we recommend migrating to the `slim-buster` variant instead. The older `alpine` images
+For other versions of OpenJDK, we recommend migrating to the `slim-bullseye` variant instead. The older `alpine` images
 won't go away, but neither will they receive security updates, version bumps, etc. We recommend that you cease using
 them until / unless official upstream support resumes.
 
-### `clojure:slim-buster`
+### `clojure:slim-buster` / `clojure:slim-bullseye`
 
 These images are based on the Debian buster distribution but have fewer packages installed and are thus much smaller
 than the `stretch` or `buster` images. Their use is recommended.
