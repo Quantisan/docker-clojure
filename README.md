@@ -56,14 +56,12 @@ Sometimes there are upstream openjdk images for early access JDK releases based
 on Alpine Linux, but they have often later been deprecated once that version is
 released.
 
-As of 2021-09-08, there are alpine variants for OpenJDK 16, 17, and 18. As long
-as those remain available upstream, we'll provide clojure variants based on
-them.
+As of 2021-09-08, there are alpine variants only for OpenJDK 18 early access.
 
 Some example tags:
 
-JDK 16 tools-deps on Alpine: `clojure:openjdk-16-tools-deps-alpine`
-JDK 18 leiningen on Alpine: `clojure:openjdk-18-lein-alpine`
+JDK 18 leiningen on Alpine: `clojure:openjdk-18-alpine` `clojure:openjdk-18-lein-alpine`
+JDK 18 tools-deps on Alpine: `clojure:openjdk-18-tools-deps-alpine`
 
 ### `clojure:slim-buster` / `clojure:slim-bullseye`
 
