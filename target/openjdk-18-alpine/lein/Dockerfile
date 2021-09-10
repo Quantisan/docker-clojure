@@ -7,7 +7,7 @@ WORKDIR /tmp
 
 # Download the whole repo as an archive
 RUN \
-apk add --update --no-cache ca-certificates bash tar openssl gnupg && \
+apk add --no-cache ca-certificates bash tar openssl gnupg && \
 mkdir -p $LEIN_INSTALL && \
 wget -q https://raw.githubusercontent.com/technomancy/leiningen/$LEIN_VERSION/bin/lein-pkg && \
 echo "Comparing lein-pkg checksum ..." && \
@@ -32,4 +32,5 @@ ENV LEIN_ROOT 1
 RUN echo '(defproject dummy "" :dependencies [[org.clojure/clojure "1.10.3"]])' > project.clj \
   && lein deps && rm project.clj
 
-CMD ["lein", "repl"]
+ENTRYPOINT ["lein"]
+CMD ["repl"]

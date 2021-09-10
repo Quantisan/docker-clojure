@@ -18,5 +18,10 @@ apt-get purge -y --auto-remove curl wget
 
 # Docker bug makes rlwrap crash w/o short sleep first
 # Bug: https://github.com/moby/moby/issues/28009
-# As of 2019-10-2 this bug still exists, despite that issue being closed
-CMD ["sh", "-c", "sleep 1 && exec clj"]
+# As of 2021-09-10 this bug still exists, despite that issue being closed
+RUN mv /usr/bin/rlwrap /usr/bin/rlwrap.real && \
+echo "#!/bin/sh\n\nsleep 0.1 && exec /usr/bin/rlwrap.real \"\$@\"\n" > /usr/bin/rlwrap && \
+chmod +x /usr/bin/rlwrap
+
+ENTRYPOINT ["clj"]
+CMD ["-M", "--repl"]

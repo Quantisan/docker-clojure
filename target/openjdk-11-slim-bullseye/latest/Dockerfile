@@ -79,4 +79,5 @@ chmod +x linux-install-$CLOJURE_VERSION.sh && \
 clojure -e "(clojure-version)" && \
 apt-get purge -y --auto-remove curl wget
 
-CMD ["lein", "repl"]
+ENTRYPOINT ["lein"]
+CMD ["repl"]
