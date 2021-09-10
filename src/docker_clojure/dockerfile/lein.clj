@@ -54,8 +54,11 @@
 
         (->> (remove nil?)))))
 
+(def entrypoint
+  ["ENTRYPOINT [\"lein\"]"])
+
 (def command
-  ["CMD [\"lein\", \"repl\"]"])
+  ["CMD [\"repl\"]"])
 
 (defn contents [variant]
-  (concat (install variant) [""] command))
+  (concat (install variant) [""] entrypoint command))

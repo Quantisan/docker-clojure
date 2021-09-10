@@ -27,7 +27,8 @@
     (tools-deps/install
      (assoc variant :build-tool-version
             (get-in variant [:build-tool-versions "tools-deps"])))
-    ["" "CMD [\"lein\", \"repl\"]"]))
+    ["" "ENTRYPOINT [\"lein\"]"]
+    ["" "CMD [\"repl\"]"]))
 
 (defn contents [{:keys [build-tool] :as variant}]
   (str/join "\n"

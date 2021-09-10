@@ -33,11 +33,25 @@
 
         (->> (remove nil?)))))
 
+(def workaround-ancient-docker-bug
+  (-> ["# Docker bug makes rlwrap crash w/o short sleep first"
+       "# Bug: https://github.com/moby/moby/issues/28009"
+       "# As of 2021-09-10 this bug still exists, despite that issue being closed"]
+      (concat-commands
+        ["RUN mv /usr/bin/rlwrap /usr/bin/rlwrap.real"
+         "echo \"#!/bin/sh\\n\\nsleep 0.1 && exec /usr/bin/rlwrap.real \\\"\\$@\\\"\\n\" > /usr/bin/rlwrap"
+         "chmod +x /usr/bin/rlwrap"] :end)))
+
+(def entrypoint
+  ["ENTRYPOINT [\"clj\"]"])
+
 (def command
-  ["# Docker bug makes rlwrap crash w/o short sleep first"
-   "# Bug: https://github.com/moby/moby/issues/28009"
-   "# As of 2019-10-2 this bug still exists, despite that issue being closed"
-   "CMD [\"sh\", \"-c\", \"sleep 1 && exec clj\"]"])
+  ["CMD [\"--repl\"]"])
 
 (defn contents [variant]
-  (concat (install variant) [""] command))
+  (concat (install variant)
+          [""]
+          workaround-ancient-docker-bug
+          [""]
+          entrypoint
+          command))

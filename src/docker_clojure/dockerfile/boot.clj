@@ -43,8 +43,11 @@
 
         (->> (remove nil?)))))
 
+(def entrypoint
+  ["ENTRYPOINT [\"boot\"]"])
+
 (def command
-  ["CMD [\"boot\", \"repl\"]"])
+  ["CMD [\"repl\"]"])
 
 (defn contents [variant]
-  (concat (install variant) [""] command))
+  (concat (install variant) [""] entrypoint command))
