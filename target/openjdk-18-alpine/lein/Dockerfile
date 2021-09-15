@@ -40,4 +40,5 @@ ENV LEIN_ROOT 1
 RUN echo '(defproject dummy "" :dependencies [[org.clojure/clojure "1.10.3"]])' > project.clj \
   && lein deps && rm project.clj
 
-CMD ["lein", "repl"]
+ENTRYPOINT ["lein"]
+CMD ["repl"]

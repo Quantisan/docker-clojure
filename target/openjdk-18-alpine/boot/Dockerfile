@@ -24,4 +24,5 @@ ENV BOOT_AS_ROOT=yes
 
 RUN boot
 
-CMD ["boot", "repl"]
+ENTRYPOINT ["boot"]
+CMD ["repl"]
