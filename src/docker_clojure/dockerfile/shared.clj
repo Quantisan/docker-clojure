@@ -33,6 +33,9 @@
         :alpine
         [(str/join " " (concat ["apk add --no-cache"] deps))]
 
+        :oracle-linux
+        [(str/join " " (concat ["microdnf install -y"] deps))]
+
         nil))))
 
 (defn uninstall-distro-build-deps [distro-deps {:keys [distro]}]
@@ -44,5 +47,8 @@
 
         :alpine
         [(str/join " " (concat ["apk del"] deps))]
+
+        :oracle-linux
+        [(str/join " " (concat ["microdnf remove -y"] deps))]
 
         nil))))

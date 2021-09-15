@@ -6,7 +6,9 @@
   {:debian-slim {:build   #{"wget"}
                  :runtime #{}}
    :alpine      {:build   #{"openssl"}
-                 :runtime #{"bash"}}})
+                 :runtime #{"bash"}}
+   :oracle-linux {:build   #{"wget"}
+                  :runtime #{}}})
 
 (def install-deps (partial install-distro-deps distro-deps))
 

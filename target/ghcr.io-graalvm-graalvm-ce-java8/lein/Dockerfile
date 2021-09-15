@@ -1,4 +1,8 @@
-FROM openjdk:18-alpine
+FROM ghcr.io/graalvm/graalvm-ce:java8
+
+COPY ol8-epel.repo /etc/yum.repos.d/ol8-epel.repo
+
+RUN gu install native-image
 
 ENV LEIN_VERSION=2.9.6
 ENV LEIN_INSTALL=/usr/local/bin/
@@ -7,7 +11,7 @@ WORKDIR /tmp
 
 # Download the whole repo as an archive
 RUN \
-apk add --no-cache ca-certificates bash tar openssl gnupg && \
+microdnf install -y wget && \
 mkdir -p $LEIN_INSTALL && \
 wget -q https://raw.githubusercontent.com/technomancy/leiningen/$LEIN_VERSION/bin/lein-pkg && \
 echo "Comparing lein-pkg checksum ..." && \
@@ -23,7 +27,7 @@ gpg --batch --verify leiningen-$LEIN_VERSION-standalone.zip.asc leiningen-$LEIN_
 rm leiningen-$LEIN_VERSION-standalone.zip.asc && \
 mkdir -p /usr/share/java && \
 mv leiningen-$LEIN_VERSION-standalone.zip /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar && \
-apk del ca-certificates tar openssl gnupg
+microdnf remove -y wget
 
 ENV PATH=$PATH:$LEIN_INSTALL
 ENV LEIN_ROOT 1

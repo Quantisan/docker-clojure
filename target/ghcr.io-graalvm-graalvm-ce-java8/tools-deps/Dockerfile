@@ -1,18 +1,22 @@
-FROM openjdk:18-alpine
+FROM ghcr.io/graalvm/graalvm-ce:java8
+
+COPY ol8-epel.repo /etc/yum.repos.d/ol8-epel.repo
+
+RUN gu install native-image
 
 ENV CLOJURE_VERSION=1.10.3.967
 
 WORKDIR /tmp
 
 RUN \
-apk add --no-cache curl bash make git && \
+microdnf install -y git rlwrap wget && \
 wget https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh && \
 sha256sum linux-install-$CLOJURE_VERSION.sh && \
 echo "d1fba0cd0733b7cb66e47620845ecedfd757a9bf84e8b276fdb37ed9c272d3ae *linux-install-$CLOJURE_VERSION.sh" | sha256sum -c - && \
 chmod +x linux-install-$CLOJURE_VERSION.sh && \
 ./linux-install-$CLOJURE_VERSION.sh && \
 clojure -e "(clojure-version)" && \
-apk del curl
+microdnf remove -y wget
 
 # Docker bug makes rlwrap crash w/o short sleep first
 # Bug: https://github.com/moby/moby/issues/28009

@@ -1,10 +1,10 @@
 (ns docker-clojure.core
   (:require
-   [clojure.java.shell :refer [sh with-sh-dir]]
-   [clojure.math.combinatorics :as combo]
-   [clojure.spec.alpha :as s]
-   [clojure.string :as str]
-   [docker-clojure.dockerfile :as df]))
+    [clojure.java.shell :refer [sh with-sh-dir]]
+    [clojure.math.combinatorics :as combo]
+    [clojure.spec.alpha :as s]
+    [clojure.string :as str]
+    [docker-clojure.dockerfile :as df]))
 
 (s/def ::non-blank-string
   (s/and string? #(not (str/blank? %))))
@@ -31,7 +31,9 @@
 (s/def ::maintainers
   (s/coll-of ::non-blank-string :distinct true :into #{}))
 
-(def base-image "openjdk")
+(def base-images #{"openjdk" "ghcr.io/graalvm/graalvm-ce"})
+
+(def default-base-image "openjdk")
 
 (def jdk-versions #{8 11 16 17 18})
 
@@ -39,18 +41,21 @@
 (def default-jdk-version 11)
 
 (def distros
-  #{:debian/buster :debian-slim/slim-buster :debian/bullseye :debian-slim/slim-bullseye :alpine/alpine})
+  {"openjdk"                    #{:debian/buster :debian-slim/slim-buster :debian/bullseye
+                                  :debian-slim/slim-bullseye :alpine/alpine}
+   "ghcr.io/graalvm/graalvm-ce" #{:oracle-linux/ol8}})
 
-;; The default distro to use for tags that don't specify one, keyed by jdk-version.
+;; The default distro to use for tags that don't specify one, keyed by base-image.
 (def default-distros
-  {:default :debian-slim/slim-bullseye})
+  {"openjdk"                    :debian-slim/slim-bullseye
+   "ghcr.io/graalvm/graalvm-ce" :oracle-linux/ol8})
 
 (def build-tools
   {"lein"       "2.9.6"
    "boot"       "2.8.3"
    "tools-deps" "1.10.3.967"})
 
-(def exclusions ; don't build these for whatever reason(s)
+(def exclusions                                             ; don't build these for whatever reason(s)
   #{{:jdk-version 8
      :distro      :alpine/alpine}
     {:jdk-version 11
@@ -58,13 +63,16 @@
     {:jdk-version 16
      :distro      :alpine/alpine}
     {:jdk-version 17
-     :distro      :alpine/alpine}})
+     :distro      :alpine/alpine}
+    {:base-image "ghcr.io/graalvm/graalvm-ce:java16"}
+    {:base-image "ghcr.io/graalvm/graalvm-ce:java17"}
+    {:base-image "ghcr.io/graalvm/graalvm-ce:java18"}})
 
 (def maintainers
   "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>")
 
-(defn default-distro [jdk-version]
-  (get default-distros jdk-version (:default default-distros)))
+(defn default-distro [base-image]
+  (get default-distros base-image (:default default-distros)))
 
 (defn contains-every-key-value?
   "Returns true if the map `haystack` contains every key-value pair in the map
@@ -76,8 +84,21 @@
             (= v (get haystack k)))
           needles))
 
-(defn base-image-name [jdk-version distro]
-  (str base-image ":" jdk-version "-" (name distro)))
+(defn base-image-short-name [base-image]
+  (cond-> base-image
+    (str/includes? base-image "/") (-> (str/split #"/") second)
+    (str/includes? base-image ":") (-> (str/split #":") first)))
+
+(defn jdk-version-tag [base-image jdk-version]
+  (case base-image
+    "openjdk" jdk-version
+    "ghcr.io/graalvm/graalvm-ce" (str "java" jdk-version)))
+
+(defn base-image-tag [base-image jdk-version distro]
+  (let [base (str base-image ":" (jdk-version-tag base-image jdk-version))]
+    (case base-image
+      "openjdk" (str base "-" (name distro))
+      "ghcr.io/graalvm/graalvm-ce" base)))
 
 (defn exclude?
   "Returns true if `variant` matches one of `exclusions` elements (meaning
@@ -85,16 +106,22 @@
   [exclusions variant]
   (some (partial contains-every-key-value? variant) exclusions))
 
+(defn jdk-label [base-image jdk-version]
+  (let [bisn (base-image-short-name base-image)]
+    (if (and (= bisn default-base-image)
+             (= default-jdk-version jdk-version))
+      nil
+      (str bisn "-" jdk-version))))
+
 (defn docker-tag
-  [{:keys [jdk-version distro build-tool build-tool-version]}]
+  [{:keys [base-image jdk-version distro build-tool build-tool-version]
+    :or   {base-image default-base-image}}]
   (if (= ::all build-tool)
     "latest"
-    (let [jdk-label (if (= default-jdk-version jdk-version)
-                      nil
-                      (str base-image "-" jdk-version))
-          dd (default-distro jdk-version)
+    (let [jdk-tag (jdk-label base-image jdk-version)
+          dd (default-distro base-image)
           distro-label (if (= dd distro) nil (when distro (name distro)))]
-      (str/join "-" (remove nil? [jdk-label build-tool build-tool-version
+      (str/join "-" (remove nil? [jdk-tag build-tool build-tool-version
                                   distro-label])))))
 
 (s/def ::variant
@@ -107,9 +134,9 @@
     (assoc m k v)
     m))
 
-(defn variant-map [[jdk-version distro [build-tool build-tool-version]]]
+(defn variant-map [[base-image jdk-version distro [build-tool build-tool-version] :as all]]
   (let [base {:jdk-version        jdk-version
-              :base-image         (base-image-name jdk-version distro)
+              :base-image         (base-image-tag base-image jdk-version distro)
               :distro             distro
               :build-tool         build-tool
               :build-tool-version build-tool-version
@@ -143,14 +170,17 @@
 (def latest-variant
   "The latest variant is special because we include all 3 build tools via the
   [::all] value on the end."
-  (list default-jdk-version (default-distro default-jdk-version) [::all]))
+  (list default-base-image default-jdk-version
+        (default-distro default-base-image) [::all]))
 
-(defn image-variants [jdk-versions distros build-tools]
-  (->> (combo/cartesian-product jdk-versions distros build-tools)
-       (cons latest-variant)
-       (map variant-map)
-       (remove #(= ::s/invalid (s/conform ::variant %)))
-       set))
+(defn image-variants [base-image jdk-versions distros build-tools]
+  (cond->> (combo/cartesian-product jdk-versions (get distros base-image)
+                                     build-tools)
+           true (map #(cons base-image %))
+           (= base-image "openjdk") (cons latest-variant)
+           true (map variant-map)
+           true (remove #(= ::s/invalid (s/conform ::variant %)))
+           true set))
 
 (defn build-images [variants]
   (println "Building images")
@@ -164,17 +194,17 @@
     (println "Generating" (str build-dir "/" filename))
     (df/write-file build-dir filename variant)
     (assoc variant
-           :build-dir build-dir
-           :dockerfile filename)))
+      :build-dir build-dir
+      :dockerfile filename)))
 
-(defn generate-dockerfiles! []
-  (for [variant (image-variants jdk-versions distros build-tools)
+(defn generate-dockerfiles! [base-image]
+  (for [variant (image-variants base-image jdk-versions distros build-tools)
         :when (not (exclude? exclusions variant))]
     (generate-dockerfile! variant)))
 
 (defn -main [& args]
   (case (first args)
     "clean" (df/clean-all)
-    "dockerfiles" (dorun (generate-dockerfiles!))
-    (build-images (generate-dockerfiles!)))
+    "dockerfiles" (dorun (map #(dorun (generate-dockerfiles! %)) base-images))
+    (build-images (map generate-dockerfiles! base-images)))
   (System/exit 0))

@@ -2,19 +2,21 @@
   (:require [docker-clojure.dockerfile.shared :refer :all]))
 
 (def distro-deps
-  {:debian-slim {:build   #{"wget" "curl"}
-                 :runtime #{"rlwrap" "make" "git"}}
-   :debian      {:build   #{}
-                 :runtime #{"rlwrap" "make"}}
-   :alpine      {:build   #{"curl"}
-                 :runtime #{"bash" "make" "git"}}})
+  {:debian-slim  {:build   #{"wget" "curl"}
+                  :runtime #{"rlwrap" "make" "git"}}
+   :debian       {:build   #{}
+                  :runtime #{"rlwrap" "make"}}
+   :alpine       {:build   #{"curl"}
+                  :runtime #{"bash" "make" "git"}}
+   :oracle-linux {:build   #{"wget"}
+                  :runtime #{"rlwrap" "git"}}})
 
 (def install-deps (partial install-distro-deps distro-deps))
 
 (def uninstall-build-deps (partial uninstall-distro-build-deps distro-deps))
 
 (defn install [{:keys [build-tool-version] :as variant}]
-  (let [install-dep-cmds   (install-deps variant)
+  (let [install-dep-cmds (install-deps variant)
         uninstall-dep-cmds (uninstall-build-deps variant)]
     (-> [(format "ENV CLOJURE_VERSION=%s" build-tool-version)
          ""

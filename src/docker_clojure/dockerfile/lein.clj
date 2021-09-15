@@ -8,7 +8,9 @@
    :debian      {:build   #{"gnupg"}
                  :runtime #{}}
    :alpine      {:build   #{"tar" "gnupg" "openssl" "ca-certificates"}
-                 :runtime #{"bash"}}})
+                 :runtime #{"bash"}}
+   :oracle-linux {:build   #{"wget"}
+                  :runtime #{}}})
 
 (def install-deps (partial install-distro-deps distro-deps))
 

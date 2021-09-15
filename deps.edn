@@ -2,6 +2,8 @@
  {org.clojure/clojure {:mvn/version "1.10.3"}
   org.clojure/math.combinatorics {:mvn/version "0.1.6"}}
 
+ :paths ["src" "resources"]
+
  :aliases
  {:test {:extra-paths ["test"]
          :extra-deps {com.cognitect/test-runner {:git/url "https://github.com/cognitect-labs/test-runner.git"

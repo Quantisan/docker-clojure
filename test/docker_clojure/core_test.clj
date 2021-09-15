@@ -6,8 +6,9 @@
 (deftest image-variants-test
   (testing "generates the expected set of variants"
     (with-redefs [default-distro (constantly :debian/slim-buster)]
-      (let [variants (image-variants #{8 11 14 15}
-                                     #{:debian/buster :debian/slim-buster :alpine/alpine}
+      (let [variants (image-variants "openjdk"
+                                     #{8 11 14 15}
+                                     {"openjdk" #{:debian/buster :debian/slim-buster :alpine/alpine}}
                                      {"lein"       "2.9.1"
                                       "boot"       "2.8.3"
                                       "tools-deps" "1.10.1.478"})]
@@ -91,7 +92,7 @@
             :docker-tag         "openjdk-8-build-tool-1.2.3-distro"
             :build-tool-version "1.2.3"
             :maintainer         "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"}
-           (variant-map '(8 :distro/distro ["build-tool" "1.2.3"]))))))
+           (variant-map '("openjdk" 8 :distro/distro ["build-tool" "1.2.3"]))))))
 
 (deftest exclude?-test
   (testing "excludes variant that matches all key-values in any exclusion"
@@ -107,14 +108,14 @@
   (with-redefs [default-jdk-version 11                      ; TODO: Make this an arg to the fn instead
                 default-distro (constantly :debian/slim-buster)] ; TODO: Rethink this too?
     (testing "default java version is left out"
-      (is (not (str/includes? (docker-tag {:jdk-version 11})
+      (is (not (str/includes? (docker-tag {:base-image "openjdk" :jdk-version 11})
                               "openjdk-11"))))
     (testing "non-default version is added as a prefix"
-      (is (str/starts-with? (docker-tag {:jdk-version 14})
+      (is (str/starts-with? (docker-tag {:base-image "openjdk" :jdk-version 14})
                             "openjdk-14")))
     (testing "default distro is left out"
-      (is (not (str/includes? (docker-tag {:jdk-version 14
-                                           :distro      :debian/slim-buster})
+      (is (not (str/includes? (docker-tag {:base-image "openjdk" :jdk-version 14
+                                           :distro     :debian/slim-buster})
                               "slim-buster"))))
     (testing "alpine is added as a suffix"
       (is (str/ends-with? (docker-tag {:jdk-version 8
