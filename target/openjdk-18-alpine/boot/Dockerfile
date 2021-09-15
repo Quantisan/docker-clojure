@@ -9,7 +9,7 @@ WORKDIR /tmp
 # on its first run. We always download the latest version of boot.sh because
 # it is just the installer script.
 RUN \
-apk add --update --no-cache bash openssl && \
+apk add --no-cache bash openssl && \
 mkdir -p $BOOT_INSTALL && \
 wget -q https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh && \
 echo "Comparing installer checksum..." && \
