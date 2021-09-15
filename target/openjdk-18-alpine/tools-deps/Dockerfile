@@ -11,6 +11,7 @@ sha256sum linux-install-$CLOJURE_VERSION.sh && \
 echo "d1fba0cd0733b7cb66e47620845ecedfd757a9bf84e8b276fdb37ed9c272d3ae *linux-install-$CLOJURE_VERSION.sh" | sha256sum -c - && \
 chmod +x linux-install-$CLOJURE_VERSION.sh && \
 ./linux-install-$CLOJURE_VERSION.sh && \
+rm linux-install-$CLOJURE_VERSION.sh && \
 clojure -e "(clojure-version)" && \
 apk del curl
 
