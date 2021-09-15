@@ -1,5 +1,10 @@
 (ns docker-clojure.dockerfile.tools-deps
-  (:require [docker-clojure.dockerfile.shared :refer :all]))
+  (:require [docker-clojure.dockerfile.shared :refer :all]
+            [clojure.java.io :as io]))
+
+(defn prereqs [dir _variant]
+  (io/copy (-> "rlwrap.retry" io/resource io/file)
+           (io/file dir "rlwrap.retry")))
 
 (def distro-deps
   {:debian-slim {:build   #{"wget" "curl"}
@@ -12,6 +17,11 @@
 (def install-deps (partial install-distro-deps distro-deps))
 
 (def uninstall-build-deps (partial uninstall-distro-build-deps distro-deps))
+
+(def docker-bug-notice
+  ["# Docker bug makes rlwrap crash w/o short sleep first"
+   "# Bug: https://github.com/moby/moby/issues/28009"
+   "# As of 2021-09-10 this bug still exists, despite that issue being closed"])
 
 (defn install [installer-hashes {:keys [build-tool-version] :as variant}]
   (let [install-dep-cmds   (install-deps variant)
@@ -32,13 +42,27 @@
            "clojure -e \"(clojure-version)\""] (empty? uninstall-dep-cmds))
         (concat-commands uninstall-dep-cmds :end)
 
+        (concat [""] docker-bug-notice
+                ["COPY rlwrap.retry /usr/bin/rlwrap.retry"])
+        (concat-commands
+          ["RUN mv /usr/bin/rlwrap /usr/bin/rlwrap.real"
+           "mv /usr/bin/rlwrap.retry /usr/bin/rlwrap"
+           "chmod +x /usr/bin/rlwrap"] :end)
+
         (->> (remove nil?)))))
 
-(def command
-  ["# Docker bug makes rlwrap crash w/o short sleep first"
-   "# Bug: https://github.com/moby/moby/issues/28009"
-   "# As of 2019-10-2 this bug still exists, despite that issue being closed"
-   "CMD [\"sh\", \"-c\", \"sleep 1 && exec clj\"]"])
+(defn entrypoint [{:keys [jdk-version]}]
+  (if (>= 11 jdk-version)
+    nil
+    [(str "ENTRYPOINT [\"clj\"]")]))
+
+(defn command [{:keys [jdk-version]}]
+  (if (>= 11 jdk-version)
+    [(str "CMD [\"clj\"]")]
+    ["CMD [\"-M\", \"--repl\"]"]))
 
 (defn contents [installer-hashes variant]
-  (concat (install installer-hashes variant) [""] command))
+  (concat (install installer-hashes variant)
+          [""]
+          (entrypoint variant)
+          (command variant)))

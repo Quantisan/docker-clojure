@@ -1,6 +1,8 @@
 (ns docker-clojure.dockerfile.lein
   (:require [docker-clojure.dockerfile.shared :refer :all]))
 
+(defn prereqs [_ _] nil)
+
 (def distro-deps
   {:debian-slim {:build   #{"wget" "gnupg"}
                  :runtime #{}}
@@ -61,8 +63,15 @@
 
         (->> (remove nil?)))))
 
-(def command
-  ["CMD [\"lein\", \"repl\"]"])
+(defn entrypoint [{:keys [jdk-version]}]
+  (if (>= 11 jdk-version)
+    nil
+    ["ENTRYPOINT [\"lein\"]"]))
+
+(defn command [{:keys [jdk-version]}]
+  (if (>= 11 jdk-version)
+    ["CMD [\"lein\", \"repl\"]"]
+    ["CMD [\"repl\"]"]))
 
 (defn contents [installer-hashes variant]
-  (concat (install installer-hashes variant) [""] command))
+  (concat (install installer-hashes variant) [""] (entrypoint variant) (command variant)))

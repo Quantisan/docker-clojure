@@ -1,6 +1,7 @@
 (ns docker-clojure.dockerfile.boot
-  (:require [docker-clojure.dockerfile.shared :refer :all]
-            [clojure.string :as str]))
+  (:require [docker-clojure.dockerfile.shared :refer :all]))
+
+(defn prereqs [_ _] nil)
 
 (def distro-deps
   {:debian-slim {:build   #{"wget"}
@@ -43,8 +44,15 @@
 
         (->> (remove nil?)))))
 
-(def command
-  ["CMD [\"boot\", \"repl\"]"])
+(defn entrypoint [{:keys [jdk-version]}]
+  (if (>= 11 jdk-version)
+    nil
+    ["ENTRYPOINT [\"boot\"]"]))
+
+(defn command [{:keys [jdk-version]}]
+  (if (>= 11 jdk-version)
+    ["CMD [\"boot\", \"repl\"]"]
+    ["CMD [\"repl\"]"]))
 
 (defn contents [installer-hashes variant]
-  (concat (install installer-hashes variant) [""] command))
+  (concat (install installer-hashes variant) [""] (entrypoint variant) (command variant)))
