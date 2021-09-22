@@ -14,7 +14,7 @@
 
 (def uninstall-build-deps (partial uninstall-distro-build-deps distro-deps))
 
-(defn install [{:keys [build-tool-version] :as variant}]
+(defn install [installer-hashes {:keys [build-tool-version] :as variant}]
   (let [install-dep-cmds   (install-deps variant)
         uninstall-dep-cmds (uninstall-build-deps variant)]
     (-> [(format "ENV LEIN_VERSION=%s" build-tool-version)
@@ -30,7 +30,7 @@
            "wget -q https://raw.githubusercontent.com/technomancy/leiningen/$LEIN_VERSION/bin/lein-pkg"
            "echo \"Comparing lein-pkg checksum ...\""
            "sha256sum lein-pkg"
-           "echo \"094b58e2b13b42156aaf7d443ed5f6665aee27529d9512f8d7282baa3cc01429 *lein-pkg\" | sha256sum -c -"
+           (str "echo \"" (get-in installer-hashes ["lein" build-tool-version]) " *lein-pkg\" | sha256sum -c -")
            "mv lein-pkg $LEIN_INSTALL/lein"
            "chmod 0755 $LEIN_INSTALL/lein"
            "wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.zip"
@@ -57,5 +57,5 @@
 (def command
   ["CMD [\"lein\", \"repl\"]"])
 
-(defn contents [variant]
-  (concat (install variant) [""] command))
+(defn contents [installer-hashes variant]
+  (concat (install installer-hashes variant) [""] command))

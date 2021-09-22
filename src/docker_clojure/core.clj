@@ -50,6 +50,12 @@
    "boot"       "2.8.3"
    "tools-deps" "1.10.3.967"})
 
+(def installer-hashes
+  {"lein"       {"2.9.7" "f78f20d1931f028270e77bc0f0c00a5a0efa4ecb7a5676304a34ae4f469e281d"
+                 "2.9.6" "094b58e2b13b42156aaf7d443ed5f6665aee27529d9512f8d7282baa3cc01429"}
+   "boot"       {"2.8.3" "0ccd697f2027e7e1cd3be3d62721057cbc841585740d0aaa9fbb485d7b1f17c3"}
+   "tools-deps" {"1.10.3.967" "d1fba0cd0733b7cb66e47620845ecedfd757a9bf84e8b276fdb37ed9c272d3ae"}})
+
 (def exclusions ; don't build these for whatever reason(s)
   #{{:jdk-version 8
      :distro      :alpine/alpine}
@@ -121,15 +127,15 @@
 (defn pull-image [image]
   (sh "docker" "pull" image))
 
-(defn build-image [{:keys [docker-tag dockerfile build-dir base-image] :as variant}]
+(defn build-image [installer-hashes {:keys [docker-tag dockerfile build-dir base-image] :as variant}]
   (let [image-tag (str "clojure:" docker-tag)
         ;; TODO: Build for all appropriate platforms instead of just linux/amd64.
-        ;;       alpine & JDK 8 won't build for arm64.
+        ;;       alpine won't build for arm64.
         build-cmd ["docker" "buildx" "build" "--no-cache" "--platform"
                    "linux/amd64" "--load" "-t" image-tag "-f" dockerfile "."]]
     (println "Pulling base image" base-image)
     (pull-image base-image)
-    (df/write-file build-dir dockerfile variant)
+    (df/write-file build-dir dockerfile installer-hashes variant)
     (apply println "Running" build-cmd)
     (let [{:keys [out err exit]}
           (with-sh-dir build-dir (apply sh build-cmd))]
@@ -152,29 +158,32 @@
        (remove #(= ::s/invalid (s/conform ::variant %)))
        set))
 
-(defn build-images [variants]
+(defn build-images [installer-hashes variants]
   (println "Building images")
   (doseq [variant variants]
     (when-not (exclude? exclusions variant)
-      (build-image variant))))
+      (build-image installer-hashes variant))))
 
-(defn generate-dockerfile! [variant]
+(defn generate-dockerfile! [installer-hashes variant]
   (let [build-dir (df/build-dir variant)
         filename "Dockerfile"]
     (println "Generating" (str build-dir "/" filename))
-    (df/write-file build-dir filename variant)
+    (df/write-file build-dir filename installer-hashes variant)
     (assoc variant
            :build-dir build-dir
            :dockerfile filename)))
 
-(defn generate-dockerfiles! []
-  (for [variant (image-variants jdk-versions distros build-tools)
-        :when (not (exclude? exclusions variant))]
-    (generate-dockerfile! variant)))
+(defn generate-dockerfiles! [installer-hashes variants]
+  (for [variant variants]
+    (generate-dockerfile! installer-hashes variant)))
+
+(defn valid-variants []
+  (remove (partial exclude? exclusions)
+          (image-variants jdk-versions distros build-tools)))
 
 (defn -main [& args]
   (case (first args)
     "clean" (df/clean-all)
-    "dockerfiles" (dorun (generate-dockerfiles!))
-    (build-images (generate-dockerfiles!)))
+    "dockerfiles" (dorun (generate-dockerfiles! installer-hashes (valid-variants)))
+    (build-images installer-hashes (valid-variants)))
   (System/exit 0))
