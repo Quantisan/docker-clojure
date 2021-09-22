@@ -127,15 +127,27 @@
 (defn pull-image [image]
   (sh "docker" "pull" image))
 
-(defn build-image [installer-hashes {:keys [docker-tag dockerfile build-dir base-image] :as variant}]
+(defn generate-dockerfile! [installer-hashes variant]
+  (let [build-dir (df/build-dir variant)
+        filename "Dockerfile"]
+    (println "Generating" (str build-dir "/" filename))
+    (df/write-file build-dir filename installer-hashes variant)
+    (assoc variant
+      :build-dir build-dir
+      :dockerfile filename)))
+
+(defn build-image [installer-hashes {:keys [docker-tag base-image] :as variant}]
   (let [image-tag (str "clojure:" docker-tag)
+        _         (println "Pulling base image" base-image)
+        _         (pull-image base-image)
+
+        {:keys [dockerfile build-dir]}
+        (generate-dockerfile! installer-hashes variant)
+
         ;; TODO: Build for all appropriate platforms instead of just linux/amd64.
         ;;       alpine won't build for arm64.
         build-cmd ["docker" "buildx" "build" "--no-cache" "--platform"
                    "linux/amd64" "--load" "-t" image-tag "-f" dockerfile "."]]
-    (println "Pulling base image" base-image)
-    (pull-image base-image)
-    (df/write-file build-dir dockerfile installer-hashes variant)
     (apply println "Running" build-cmd)
     (let [{:keys [out err exit]}
           (with-sh-dir build-dir (apply sh build-cmd))]
@@ -161,20 +173,10 @@
 (defn build-images [installer-hashes variants]
   (println "Building images")
   (doseq [variant variants]
-    (when-not (exclude? exclusions variant)
-      (build-image installer-hashes variant))))
-
-(defn generate-dockerfile! [installer-hashes variant]
-  (let [build-dir (df/build-dir variant)
-        filename "Dockerfile"]
-    (println "Generating" (str build-dir "/" filename))
-    (df/write-file build-dir filename installer-hashes variant)
-    (assoc variant
-           :build-dir build-dir
-           :dockerfile filename)))
+    (build-image installer-hashes variant)))
 
 (defn generate-dockerfiles! [installer-hashes variants]
-  (for [variant variants]
+  (doseq [variant variants]
     (generate-dockerfile! installer-hashes variant)))
 
 (defn valid-variants []
@@ -184,6 +186,6 @@
 (defn -main [& args]
   (case (first args)
     "clean" (df/clean-all)
-    "dockerfiles" (dorun (generate-dockerfiles! installer-hashes (valid-variants)))
+    "dockerfiles" (generate-dockerfiles! installer-hashes (valid-variants))
     (build-images installer-hashes (valid-variants)))
   (System/exit 0))
