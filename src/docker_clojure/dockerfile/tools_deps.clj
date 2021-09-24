@@ -13,7 +13,7 @@
 
 (def uninstall-build-deps (partial uninstall-distro-build-deps distro-deps))
 
-(defn install [{:keys [build-tool-version] :as variant}]
+(defn install [installer-hashes {:keys [build-tool-version] :as variant}]
   (let [install-dep-cmds   (install-deps variant)
         uninstall-dep-cmds (uninstall-build-deps variant)]
     (-> [(format "ENV CLOJURE_VERSION=%s" build-tool-version)
@@ -25,7 +25,7 @@
         (concat-commands
           ["wget https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh"
            "sha256sum linux-install-$CLOJURE_VERSION.sh"
-           "echo \"d1fba0cd0733b7cb66e47620845ecedfd757a9bf84e8b276fdb37ed9c272d3ae *linux-install-$CLOJURE_VERSION.sh\" | sha256sum -c -"
+           (str "echo \"" (get-in installer-hashes ["tools-deps" build-tool-version]) " *linux-install-$CLOJURE_VERSION.sh\" | sha256sum -c -")
            "chmod +x linux-install-$CLOJURE_VERSION.sh"
            "./linux-install-$CLOJURE_VERSION.sh"
            "rm linux-install-$CLOJURE_VERSION.sh"
@@ -40,5 +40,5 @@
    "# As of 2019-10-2 this bug still exists, despite that issue being closed"
    "CMD [\"sh\", \"-c\", \"sleep 1 && exec clj\"]"])
 
-(defn contents [variant]
-  (concat (install variant) [""] command))
+(defn contents [installer-hashes variant]
+  (concat (install installer-hashes variant) [""] command))

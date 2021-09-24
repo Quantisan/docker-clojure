@@ -13,37 +13,40 @@
                    "latest"
                    build-tool)]))
 
-(defn all-contents [variant]
+(defn all-contents [installer-hashes variant]
   (concat
     ["### INSTALL BOOT ###"]
     (boot/install
-     (assoc variant :build-tool-version
-            (get-in variant [:build-tool-versions "boot"])))
+      installer-hashes
+      (assoc variant :build-tool-version
+             (get-in variant [:build-tool-versions "boot"])))
     ["" "### INSTALL LEIN ###"]
     (lein/install
-     (assoc variant :build-tool-version
-            (get-in variant [:build-tool-versions "lein"])))
+      installer-hashes
+      (assoc variant :build-tool-version
+             (get-in variant [:build-tool-versions "lein"])))
     ["" "### INSTALL TOOLS-DEPS ###"]
     (tools-deps/install
-     (assoc variant :build-tool-version
-            (get-in variant [:build-tool-versions "tools-deps"])))
+      installer-hashes
+      (assoc variant :build-tool-version
+             (get-in variant [:build-tool-versions "tools-deps"])))
     ["" "CMD [\"lein\", \"repl\"]"]))
 
-(defn contents [{:keys [build-tool] :as variant}]
+(defn contents [installer-hashes {:keys [build-tool] :as variant}]
   (str/join "\n"
             (concat [(format "FROM %s" (:base-image variant))
                      ""]
                     (case build-tool
-                      :docker-clojure.core/all (all-contents variant)
-                      "boot" (boot/contents variant)
-                      "lein" (lein/contents variant)
-                      "tools-deps" (tools-deps/contents variant)))))
+                      :docker-clojure.core/all (all-contents installer-hashes variant)
+                      "boot" (boot/contents installer-hashes variant)
+                      "lein" (lein/contents installer-hashes variant)
+                      "tools-deps" (tools-deps/contents installer-hashes variant)))))
 
-(defn write-file [dir file variant]
+(defn write-file [dir file installer-hashes variant]
   (let [{:keys [exit err]} (sh "mkdir" "-p" dir)]
     (if (zero? exit)
       (spit (str/join "/" [dir file])
-            (contents variant))
+            (contents installer-hashes variant))
       (throw (ex-info (str "Error creating directory " dir)
                       {:error err})))))
 
