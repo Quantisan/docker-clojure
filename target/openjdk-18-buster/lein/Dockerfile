@@ -1,6 +1,6 @@
 FROM openjdk:18-buster
 
-ENV LEIN_VERSION=2.9.6
+ENV LEIN_VERSION=2.9.7
 ENV LEIN_INSTALL=/usr/local/bin/
 
 WORKDIR /tmp
@@ -14,7 +14,7 @@ mkdir -p $LEIN_INSTALL && \
 wget -q https://raw.githubusercontent.com/technomancy/leiningen/$LEIN_VERSION/bin/lein-pkg && \
 echo "Comparing lein-pkg checksum ..." && \
 sha256sum lein-pkg && \
-echo "094b58e2b13b42156aaf7d443ed5f6665aee27529d9512f8d7282baa3cc01429 *lein-pkg" | sha256sum -c - && \
+echo "f78f20d1931f028270e77bc0f0c00a5a0efa4ecb7a5676304a34ae4f469e281d *lein-pkg" | sha256sum -c - && \
 mv lein-pkg $LEIN_INSTALL/lein && \
 chmod 0755 $LEIN_INSTALL/lein && \
 export GNUPGHOME="$(mktemp -d)" && \
@@ -24,7 +24,7 @@ if printf '%s\n%s\n' "2.9.7" "$LEIN_VERSION" | sort -cV; then \
             else \
               gpg --batch --keyserver hkps://keyserver.ubuntu.com --recv-keys 20242BACBBE95ADA22D0AFD7808A33D379C806C3; \
               FILENAME_EXT=zip; \
-           fi && \
+            fi && \
 wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT && \
 wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT.asc && \
 echo "Verifying file PGP signature..." && \
