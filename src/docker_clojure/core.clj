@@ -46,7 +46,7 @@
   {:default :debian-slim/slim-bullseye})
 
 (def build-tools
-  {"lein"       "2.9.6"
+  {"lein"       "2.9.7"
    "boot"       "2.8.3"
    "tools-deps" "1.10.3.967"})
 
