@@ -146,10 +146,21 @@
         {:keys [dockerfile build-dir]}
         (generate-dockerfile! installer-hashes variant)
 
-        ;; TODO: Build for all appropriate platforms instead of just linux/amd64.
-        ;;       alpine won't build for arm64.
-        build-cmd ["docker" "buildx" "build" "--no-cache" "--platform"
-                   "linux/amd64" "--load" "-t" image-tag "-f" dockerfile "."]]
+        ;; alpine won't build for arm64.
+        ;; boot crashes under qemu (i.e. non-host arch) but does anyone even
+        ;; use boot anymore?
+        platform-arg (cond
+                       (str/includes? image-tag "alpine")
+                       "--platform=linux/amd64"
+
+                       (str/includes? image-tag "boot")
+                       nil ; default to host arch
+
+                       :else
+                       "--platform=linux/amd64,linux/arm64")
+        build-cmd (remove nil? ["docker" "buildx" "build" "--no-cache"
+                                platform-arg "--output=type=tar,dest=images.tar"
+                                "-t" image-tag "-f" dockerfile "."])]
     (apply println "Running" build-cmd)
     (let [{:keys [out err exit]}
           (with-sh-dir build-dir (apply sh build-cmd))]
