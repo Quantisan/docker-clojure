@@ -48,16 +48,17 @@
 (def build-tools
   {"lein"       "2.9.7"
    "boot"       "2.8.3"
-   "tools-deps" "1.10.3.998"})
+   "tools-deps" "1.10.3.1020"})
 
 (def installer-hashes
   {"lein"       {"2.9.7" "f78f20d1931f028270e77bc0f0c00a5a0efa4ecb7a5676304a34ae4f469e281d"
                  "2.9.6" "094b58e2b13b42156aaf7d443ed5f6665aee27529d9512f8d7282baa3cc01429"}
    "boot"       {"2.8.3" "0ccd697f2027e7e1cd3be3d62721057cbc841585740d0aaa9fbb485d7b1f17c3"}
-   "tools-deps" {"1.10.3.967" "d1fba0cd0733b7cb66e47620845ecedfd757a9bf84e8b276fdb37ed9c272d3ae"
-                 "1.10.3.981" "c6463a4f8950de6ce7982d01b72b660b9849c9a66d870081f5ee6b108220cf29"
-                 "1.10.3.986" "f2a271d6892fb04f7377148f6770185486ca194245721ab34a62ae03e8d1149f"
-                 "1.10.3.998" "c58df29f0c919b90282ace43e92fffd914ba50ba619c837d232bbf686f6ee4a8"}})
+   "tools-deps" {"1.10.3.967"  "d1fba0cd0733b7cb66e47620845ecedfd757a9bf84e8b276fdb37ed9c272d3ae"
+                 "1.10.3.981"  "c6463a4f8950de6ce7982d01b72b660b9849c9a66d870081f5ee6b108220cf29"
+                 "1.10.3.986"  "f2a271d6892fb04f7377148f6770185486ca194245721ab34a62ae03e8d1149f"
+                 "1.10.3.998"  "c58df29f0c919b90282ace43e92fffd914ba50ba619c837d232bbf686f6ee4a8"
+                 "1.10.3.1020" "afc87e2c8cfbf87e43553439c69a4c8e36bc2094405d08f39ca542b4cca0920a"}})
 
 (def exclusions ; don't build these for whatever reason(s)
   #{{:jdk-version 8
@@ -145,10 +146,21 @@
         {:keys [dockerfile build-dir]}
         (generate-dockerfile! installer-hashes variant)
 
-        ;; TODO: Build for all appropriate platforms instead of just linux/amd64.
-        ;;       alpine won't build for arm64.
-        build-cmd ["docker" "buildx" "build" "--no-cache" "--platform"
-                   "linux/amd64" "--load" "-t" image-tag "-f" dockerfile "."]]
+        ;; alpine won't build for arm64.
+        ;; boot crashes under qemu (i.e. non-host arch) but does anyone even
+        ;; use boot anymore?
+        platform-arg (cond
+                       (str/includes? image-tag "alpine")
+                       "--platform=linux/amd64"
+
+                       (str/includes? image-tag "boot")
+                       nil ; default to host arch
+
+                       :else
+                       "--platform=linux/amd64,linux/arm64")
+        build-cmd (remove nil? ["docker" "buildx" "build" "--no-cache"
+                                platform-arg "--output=type=tar,dest=images.tar"
+                                "-t" image-tag "-f" dockerfile "."])]
     (apply println "Running" build-cmd)
     (let [{:keys [out err exit]}
           (with-sh-dir build-dir (apply sh build-cmd))]

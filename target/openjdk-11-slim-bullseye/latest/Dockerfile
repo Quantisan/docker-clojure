@@ -71,7 +71,7 @@ RUN echo '(defproject dummy "" :dependencies [[org.clojure/clojure "1.10.3"]])' 
   && lein deps && rm project.clj
 
 ### INSTALL TOOLS-DEPS ###
-ENV CLOJURE_VERSION=1.10.3.998
+ENV CLOJURE_VERSION=1.10.3.1020
 
 WORKDIR /tmp
 
@@ -81,7 +81,7 @@ apt-get install -y curl make git rlwrap wget && \
 rm -rf /var/lib/apt/lists/* && \
 wget https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh && \
 sha256sum linux-install-$CLOJURE_VERSION.sh && \
-echo "c58df29f0c919b90282ace43e92fffd914ba50ba619c837d232bbf686f6ee4a8 *linux-install-$CLOJURE_VERSION.sh" | sha256sum -c - && \
+echo "afc87e2c8cfbf87e43553439c69a4c8e36bc2094405d08f39ca542b4cca0920a *linux-install-$CLOJURE_VERSION.sh" | sha256sum -c - && \
 chmod +x linux-install-$CLOJURE_VERSION.sh && \
 ./linux-install-$CLOJURE_VERSION.sh && \
 rm linux-install-$CLOJURE_VERSION.sh && \
