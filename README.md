@@ -95,9 +95,16 @@ build. Often this just means installing the `clojure` package for your system.
 
 The `./build-images.sh` script will generate the Dockerfiles and build all of the images.
 
+### buildx
+
 Note that you'll need to enable the new `buildx` feature and set as the default
 builder in the Docker daemon you're using to build the images. The build script
 uses some flags that require it.
+
+You'll also need to create a builder container with `docker buildx create --use`
+in order to build images for all supported platforms (currently linux/amd64 and
+linux/arm64).
+
 [Read the docs here](https://docs.docker.com/buildx/working-with-buildx/) for more info.
 
 ## Tests
