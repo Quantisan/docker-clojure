@@ -3,8 +3,10 @@
             [clojure.java.io :as io]))
 
 (defn prereqs [dir _variant]
-  (io/copy (-> "rlwrap.retry" io/resource io/file)
-           (io/file dir "rlwrap.retry")))
+  (let [filename "rlwrap.retry"
+        src      (-> filename io/resource io/file)
+        dest     (io/file dir filename)]
+    (io/copy src dest)))
 
 (def distro-deps
   {:debian-slim {:build   #{"wget" "curl"}

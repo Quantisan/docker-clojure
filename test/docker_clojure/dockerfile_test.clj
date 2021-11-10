@@ -23,8 +23,8 @@
     (is (not (str/includes? (contents core/installer-hashes
                                       {:base-image  "base:foo"
                                        :build-tool  "boot"
-                                       :maintainer  "Me Myself"})
-                            :jdk-version 11
+                                       :maintainer  "Me Myself"
+                                       :jdk-version 11})
                             "LABEL "))))
   (testing "lein variant includes lein-specific contents"
     (with-redefs [lein/contents (constantly ["leiningen vs. the ants"])]
