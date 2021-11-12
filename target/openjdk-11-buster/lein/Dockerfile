@@ -1,6 +1,6 @@
 FROM openjdk:11-buster
 
-ENV LEIN_VERSION=2.9.7
+ENV LEIN_VERSION=2.9.8
 ENV LEIN_INSTALL=/usr/local/bin/
 
 WORKDIR /tmp
@@ -14,7 +14,7 @@ mkdir -p $LEIN_INSTALL && \
 wget -q https://raw.githubusercontent.com/technomancy/leiningen/$LEIN_VERSION/bin/lein-pkg && \
 echo "Comparing lein-pkg checksum ..." && \
 sha256sum lein-pkg && \
-echo "f78f20d1931f028270e77bc0f0c00a5a0efa4ecb7a5676304a34ae4f469e281d *lein-pkg" | sha256sum -c - && \
+echo "9952cba539cc6454c3b7385ebce57577087bf2b9001c3ab5c55d668d0aeff6e9 *lein-pkg" | sha256sum -c - && \
 mv lein-pkg $LEIN_INSTALL/lein && \
 chmod 0755 $LEIN_INSTALL/lein && \
 export GNUPGHOME="$(mktemp -d)" && \
