@@ -46,13 +46,14 @@
   {:default :debian-slim/slim-bullseye})
 
 (def build-tools
-  {"lein"       "2.9.7"
+  {"lein"       "2.9.8"
    "boot"       "2.8.3"
    "tools-deps" "1.10.3.1020"})
 
 (def installer-hashes
-  {"lein"       {"2.9.7" "f78f20d1931f028270e77bc0f0c00a5a0efa4ecb7a5676304a34ae4f469e281d"
-                 "2.9.6" "094b58e2b13b42156aaf7d443ed5f6665aee27529d9512f8d7282baa3cc01429"}
+  {"lein"       {"2.9.6" "094b58e2b13b42156aaf7d443ed5f6665aee27529d9512f8d7282baa3cc01429"
+                 "2.9.7" "f78f20d1931f028270e77bc0f0c00a5a0efa4ecb7a5676304a34ae4f469e281d"
+                 "2.9.8" "9952cba539cc6454c3b7385ebce57577087bf2b9001c3ab5c55d668d0aeff6e9"}
    "boot"       {"2.8.3" "0ccd697f2027e7e1cd3be3d62721057cbc841585740d0aaa9fbb485d7b1f17c3"}
    "tools-deps" {"1.10.3.967"  "d1fba0cd0733b7cb66e47620845ecedfd757a9bf84e8b276fdb37ed9c272d3ae"
                  "1.10.3.981"  "c6463a4f8950de6ce7982d01b72b660b9849c9a66d870081f5ee6b108220cf29"
