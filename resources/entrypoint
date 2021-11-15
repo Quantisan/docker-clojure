@@ -4,7 +4,7 @@ set -eou pipefail
 
 entrypoint=@@entrypoint@@
 
-cmd=${1:''}
+cmd=${1:-}
 
 # check if the first arg starts with a hyphen
 if [ "$#" -eq 0 ] || [ "${1#-}" != "$1" ]; then
