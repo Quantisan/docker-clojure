@@ -16,6 +16,7 @@ clojure -e "(clojure-version)" && \
 apk del curl
 
 COPY entrypoint /usr/local/bin/entrypoint
+RUN chmod +x /usr/local/bin/entrypoint
 
 # Docker bug makes rlwrap crash w/o short sleep first
 # Bug: https://github.com/moby/moby/issues/28009

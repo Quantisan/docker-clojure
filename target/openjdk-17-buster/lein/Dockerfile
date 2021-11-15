@@ -36,6 +36,7 @@ mv leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT /usr/share/java/leiningen-$L
 apt-get purge -y --auto-remove gnupg
 
 COPY entrypoint /usr/local/bin/entrypoint
+RUN chmod +x /usr/local/bin/entrypoint
 
 ENV PATH=$PATH:$LEIN_INSTALL
 ENV LEIN_ROOT 1
