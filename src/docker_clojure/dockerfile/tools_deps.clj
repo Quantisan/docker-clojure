@@ -1,12 +1,8 @@
 (ns docker-clojure.dockerfile.tools-deps
-  (:require [docker-clojure.dockerfile.shared :refer :all]
-            [clojure.java.io :as io]))
+  (:require [docker-clojure.dockerfile.shared :refer :all]))
 
 (defn prereqs [dir _variant]
-  (let [filename "rlwrap.retry"
-        src      (-> filename io/resource io/file)
-        dest     (io/file dir filename)]
-    (io/copy src dest)))
+  (copy-resource-file dir "rlwrap.retry"))
 
 (def distro-deps
   {:debian-slim {:build   #{"wget" "curl"}
