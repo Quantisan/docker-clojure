@@ -40,7 +40,8 @@
            "clojure -e \"(clojure-version)\""] (empty? uninstall-dep-cmds))
         (concat-commands uninstall-dep-cmds :end)
         (#(if (>= jdk-version 16) 
-            (concat % [""] ["COPY entrypoint /usr/local/bin/entrypoint"])
+            (concat % [""] ["COPY entrypoint /usr/local/bin/entrypoint"]
+                    ["RUN chmod +x /usr/local/bin/entrypoint"])
             %))
         (concat [""] docker-bug-notice
                 ["COPY rlwrap.retry /usr/bin/rlwrap.retry"])
