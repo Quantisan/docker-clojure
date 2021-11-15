@@ -4,7 +4,8 @@
    [clojure.string :as str]
    [docker-clojure.dockerfile.boot :as boot]
    [docker-clojure.dockerfile.lein :as lein]
-   [docker-clojure.dockerfile.tools-deps :as tools-deps]))
+   [docker-clojure.dockerfile.tools-deps :as tools-deps]
+   [docker-clojure.dockerfile.shared :refer :all]))
 
 (defn build-dir [{:keys [base-image build-tool]}]
   (str/join "/" ["target"
@@ -33,7 +34,7 @@
       installer-hashes
      (assoc variant :build-tool-version
             (get-in variant [:build-tool-versions "tools-deps"])))
-    ["" "ENTRYPOINT [\"lein\"]" "CMD [\"repl\"]"]))
+    ["" "ENTRYPOINT [\"entrypoint\"]" "CMD [\"repl\"]"]))
 
 (defn contents [installer-hashes {:keys [build-tool] :as variant}]
   (str/join "\n"
@@ -45,7 +46,16 @@
                       "lein" (lein/contents installer-hashes variant)
                       "tools-deps" (tools-deps/contents installer-hashes variant)))))
 
+(defn shared-prereqs [dir {:keys [build-tool]}]
+  (let [entrypoint (case build-tool
+                     "tools-deps"             "clj"
+                     :docker-clojure.core/all "lein"
+                     build-tool)]
+    (copy-resource-file dir "entrypoint"
+                        #(str/replace % "@@entrypoint@@" entrypoint))))
+
 (defn do-prereqs [dir {:keys [build-tool] :as variant}]
+  (shared-prereqs dir variant)
   (case build-tool
     :docker-clojure.core/all (all-prereqs dir variant)
     "boot" (boot/prereqs dir variant)
