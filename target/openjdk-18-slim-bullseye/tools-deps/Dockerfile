@@ -17,6 +17,8 @@ rm linux-install-$CLOJURE_VERSION.sh && \
 clojure -e "(clojure-version)" && \
 apt-get purge -y --auto-remove curl wget
 
+COPY entrypoint /usr/local/bin/entrypoint
+
 # Docker bug makes rlwrap crash w/o short sleep first
 # Bug: https://github.com/moby/moby/issues/28009
 # As of 2021-09-10 this bug still exists, despite that issue being closed
@@ -25,5 +27,5 @@ RUN mv /usr/bin/rlwrap /usr/bin/rlwrap.real && \
 mv /usr/bin/rlwrap.retry /usr/bin/rlwrap && \
 chmod +x /usr/bin/rlwrap
 
-ENTRYPOINT ["clj"]
+ENTRYPOINT ["entrypoint"]
 CMD ["-M", "--repl"]

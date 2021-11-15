@@ -96,5 +96,5 @@ RUN mv /usr/bin/rlwrap /usr/bin/rlwrap.real && \
 mv /usr/bin/rlwrap.retry /usr/bin/rlwrap && \
 chmod +x /usr/bin/rlwrap
 
-ENTRYPOINT ["lein"]
+ENTRYPOINT ["entrypoint"]
 CMD ["repl"]

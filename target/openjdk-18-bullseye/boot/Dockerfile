@@ -17,10 +17,12 @@ echo "0ccd697f2027e7e1cd3be3d62721057cbc841585740d0aaa9fbb485d7b1f17c3 *boot.sh"
 mv boot.sh $BOOT_INSTALL/boot && \
 chmod 0755 $BOOT_INSTALL/boot
 
+COPY entrypoint /usr/local/bin/entrypoint
+
 ENV PATH=$PATH:$BOOT_INSTALL
 ENV BOOT_AS_ROOT=yes
 
 RUN boot
 
-ENTRYPOINT ["boot"]
+ENTRYPOINT ["entrypoint"]
 CMD ["repl"]
