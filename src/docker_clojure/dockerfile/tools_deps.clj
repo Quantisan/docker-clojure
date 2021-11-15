@@ -21,7 +21,7 @@
    "# Bug: https://github.com/moby/moby/issues/28009"
    "# As of 2021-09-10 this bug still exists, despite that issue being closed"])
 
-(defn install [installer-hashes {:keys [build-tool-version] :as variant}]
+(defn install [installer-hashes {:keys [build-tool-version jdk-version] :as variant}]
   (let [install-dep-cmds   (install-deps variant)
         uninstall-dep-cmds (uninstall-build-deps variant)]
     (-> [(format "ENV CLOJURE_VERSION=%s" build-tool-version)
@@ -39,7 +39,9 @@
            "rm linux-install-$CLOJURE_VERSION.sh"
            "clojure -e \"(clojure-version)\""] (empty? uninstall-dep-cmds))
         (concat-commands uninstall-dep-cmds :end)
-
+        (#(if (>= jdk-version 16) 
+            (concat % [""] ["COPY entrypoint /usr/local/bin/entrypoint"])
+            %))
         (concat [""] docker-bug-notice
                 ["COPY rlwrap.retry /usr/bin/rlwrap.retry"])
         (concat-commands
@@ -50,14 +52,14 @@
         (->> (remove nil?)))))
 
 (defn entrypoint [{:keys [jdk-version]}]
-  (if (>= 11 jdk-version)
-    nil
-    [(str "ENTRYPOINT [\"clj\"]")]))
+  (if (>= jdk-version 16)
+    [(str "ENTRYPOINT [\"entrypoint\"]")]
+    nil))
 
 (defn command [{:keys [jdk-version]}]
-  (if (>= 11 jdk-version)
-    [(str "CMD [\"clj\"]")]
-    ["CMD [\"-M\", \"--repl\"]"]))
+  (if (>= jdk-version 16)
+    ["CMD [\"-M\", \"--repl\"]"]
+    [(str "CMD [\"clj\"]")]))
 
 (defn contents [installer-hashes variant]
   (concat (install installer-hashes variant)
