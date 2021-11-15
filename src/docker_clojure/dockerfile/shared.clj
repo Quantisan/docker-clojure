@@ -49,12 +49,11 @@
         nil))))
 
 (defn copy-resource-file 
-  "Copy a file named `filename` from resources to a dir in the image
-  `image-dir`. The file contents will be passed to the `processor`
-  fn and whatever that returns used in the image (default processor is
-  `identity`)."
-  ([image-dir filename] (copy-resource-file image-dir filename identity))
-  ([image-dir filename processor]
+  "Copy a file named `filename` from resources to a specified `build-dir`.
+  The file contents will be passed to the `processor` fn and whatever that
+  returns used in the image (default processor is `identity`)."
+  ([build-dir filename] (copy-resource-file build-dir filename identity))
+  ([build-dir filename processor]
    (let [src  (-> filename io/resource io/file)
-         dest (io/file image-dir filename)]
+         dest (io/file build-dir filename)]
      (->> src slurp processor (spit dest)))))
