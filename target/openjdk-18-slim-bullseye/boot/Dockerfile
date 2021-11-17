@@ -21,13 +21,13 @@ mv boot.sh $BOOT_INSTALL/boot && \
 chmod 0755 $BOOT_INSTALL/boot && \
 apt-get purge -y --auto-remove wget
 
-COPY entrypoint /usr/local/bin/entrypoint
-RUN chmod +x /usr/local/bin/entrypoint
-
 ENV PATH=$PATH:$BOOT_INSTALL
 ENV BOOT_AS_ROOT=yes
 
 RUN boot
+
+COPY entrypoint /usr/local/bin/entrypoint
+RUN chmod +x /usr/local/bin/entrypoint
 
 ENTRYPOINT ["entrypoint"]
 CMD ["repl"]
