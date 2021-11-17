@@ -15,7 +15,7 @@
 
 (def uninstall-build-deps (partial uninstall-distro-build-deps distro-deps))
 
-(defn install [installer-hashes {:keys [build-tool-version jdk-version] :as variant}]
+(defn install [installer-hashes {:keys [build-tool-version] :as variant}]
   (let [install-dep-cmds   (install-deps variant)
         uninstall-dep-cmds (uninstall-build-deps variant)]
     (-> [(format "ENV LEIN_VERSION=%s" build-tool-version)
@@ -52,10 +52,6 @@
            "mv leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar"]
           (empty? uninstall-dep-cmds))
         (concat-commands uninstall-dep-cmds :end)
-        (#(if (>= jdk-version 16) 
-            (concat % [""] ["COPY entrypoint /usr/local/bin/entrypoint"]
-                    ["RUN chmod +x /usr/local/bin/entrypoint"])
-            %))
         (concat
           [""
            "ENV PATH=$PATH:$LEIN_INSTALL"
@@ -66,11 +62,6 @@
            "  && lein deps && rm project.clj"])
 
         (->> (remove nil?)))))
-
-(defn entrypoint [{:keys [jdk-version]}]
-  (if (>= jdk-version 16)
-    ["ENTRYPOINT [\"entrypoint\"]"]
-    nil))
 
 (defn command [{:keys [jdk-version]}]
   (if (>= jdk-version 16)
