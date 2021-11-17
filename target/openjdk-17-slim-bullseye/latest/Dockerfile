@@ -1,4 +1,4 @@
-FROM openjdk:11-slim-bullseye
+FROM openjdk:17-slim-bullseye
 
 ### INSTALL BOOT ###
 ENV BOOT_VERSION=2.8.3
@@ -96,4 +96,9 @@ RUN mv /usr/bin/rlwrap /usr/bin/rlwrap.real && \
 mv /usr/bin/rlwrap.retry /usr/bin/rlwrap && \
 chmod +x /usr/bin/rlwrap
 
-CMD ["lein" "repl"]
+COPY entrypoint /usr/local/bin/entrypoint
+RUN chmod +x /usr/local/bin/entrypoint
+
+ENTRYPOINT ["entrypoint"]
+
+CMD ["repl"]

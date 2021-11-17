@@ -34,7 +34,9 @@
       installer-hashes
      (assoc variant :build-tool-version
             (get-in variant [:build-tool-versions "tools-deps"])))
-    ["" "CMD [\"lein\" \"repl\"]"]))
+    [""]
+    (entrypoint variant)
+    ["" "CMD [\"repl\"]"]))
 
 (defn contents [installer-hashes {:keys [build-tool] :as variant}]
   (str/join "\n"

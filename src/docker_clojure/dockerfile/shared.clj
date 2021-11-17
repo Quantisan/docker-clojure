@@ -48,7 +48,7 @@
 
         nil))))
 
-(defn copy-resource-file 
+(defn copy-resource-file
   "Copy a file named `filename` from resources to a specified `build-dir`.
   The file contents will be passed to the `processor` fn and whatever that
   returns used in the image (default processor is `identity`)."
@@ -57,3 +57,15 @@
    (let [src  (-> filename io/resource io/file)
          dest (io/file build-dir filename)]
      (->> src slurp processor (spit dest)))))
+
+(defn entrypoint
+  "This is the same for every build-tool so far, so it's in here. If that
+  changes move it into the build-tool-specific namespaces (or future protocol)."
+  [{:keys [jdk-version]}]
+  (if (>= jdk-version 16)
+    (concat
+      ["COPY entrypoint /usr/local/bin/entrypoint"]
+      ["RUN chmod +x /usr/local/bin/entrypoint"]
+      [""]
+      ["ENTRYPOINT [\"entrypoint\"]"])
+    nil))
