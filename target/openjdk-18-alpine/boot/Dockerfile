@@ -19,9 +19,13 @@ mv boot.sh $BOOT_INSTALL/boot && \
 chmod 0755 $BOOT_INSTALL/boot && \
 apk del openssl
 
+COPY entrypoint /usr/local/bin/entrypoint
+RUN chmod +x /usr/local/bin/entrypoint
+
 ENV PATH=$PATH:$BOOT_INSTALL
 ENV BOOT_AS_ROOT=yes
 
 RUN boot
 
-CMD ["boot", "repl"]
+ENTRYPOINT ["entrypoint"]
+CMD ["repl"]

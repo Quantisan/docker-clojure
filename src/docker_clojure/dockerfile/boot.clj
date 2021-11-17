@@ -1,6 +1,7 @@
 (ns docker-clojure.dockerfile.boot
-  (:require [docker-clojure.dockerfile.shared :refer :all]
-            [clojure.string :as str]))
+  (:require [docker-clojure.dockerfile.shared :refer :all]))
+
+(defn prereqs [_ _] nil)
 
 (def distro-deps
   {:debian-slim {:build   #{"wget"}
@@ -12,7 +13,7 @@
 
 (def uninstall-build-deps (partial uninstall-distro-build-deps distro-deps))
 
-(defn install [installer-hashes {:keys [build-tool-version] :as variant}]
+(defn install [installer-hashes {:keys [build-tool-version jdk-version] :as variant}]
   (let [install-dep-cmds   (install-deps variant)
         uninstall-dep-cmds (uninstall-build-deps variant)]
     (-> [(format "ENV BOOT_VERSION=%s" build-tool-version)
@@ -34,6 +35,10 @@
            "mv boot.sh $BOOT_INSTALL/boot"
            "chmod 0755 $BOOT_INSTALL/boot"] (empty? uninstall-dep-cmds))
         (concat-commands uninstall-dep-cmds :end)
+        (#(if (>= jdk-version 16) 
+            (concat % [""] ["COPY entrypoint /usr/local/bin/entrypoint"]
+                    ["RUN chmod +x /usr/local/bin/entrypoint"])
+            %))
         (concat
           [""
            "ENV PATH=$PATH:$BOOT_INSTALL"
@@ -43,8 +48,15 @@
 
         (->> (remove nil?)))))
 
-(def command
-  ["CMD [\"boot\", \"repl\"]"])
+(defn entrypoint [{:keys [jdk-version]}]
+  (if (>= jdk-version 16)
+    ["ENTRYPOINT [\"entrypoint\"]"]
+    nil))
+
+(defn command [{:keys [jdk-version]}]
+  (if (>= jdk-version 16)
+    ["CMD [\"repl\"]"]
+    ["CMD [\"boot\", \"repl\"]"]))
 
 (defn contents [installer-hashes variant]
-  (concat (install installer-hashes variant) [""] command))
+  (concat (install installer-hashes variant) [""] (entrypoint variant) (command variant)))

@@ -15,14 +15,16 @@
 
 (deftest contents-test
   (testing "includes 'FROM base-image'"
-    (is (str/includes? (contents core/installer-hashes {:base-image "base:foo"
-                                                        :build-tool "boot"})
+    (is (str/includes? (contents core/installer-hashes {:base-image  "base:foo"
+                                                        :build-tool  "boot"
+                                                        :jdk-version 11})
                        "FROM base:foo")))
   (testing "has no labels (Docker recommends against for base images)"
     (is (not (str/includes? (contents core/installer-hashes
-                                      {:base-image "base:foo"
-                                       :build-tool "boot"
-                                       :maintainer "Me Myself"})
+                                      {:base-image  "base:foo"
+                                       :build-tool  "boot"
+                                       :maintainer  "Me Myself"
+                                       :jdk-version 11})
                             "LABEL "))))
   (testing "lein variant includes lein-specific contents"
     (with-redefs [lein/contents (constantly ["leiningen vs. the ants"])]

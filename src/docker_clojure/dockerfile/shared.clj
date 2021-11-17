@@ -1,5 +1,6 @@
 (ns docker-clojure.dockerfile.shared
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [clojure.java.io :as io]))
 
 (defn concat-commands [base cmds & [end?]]
   (let [commands (if end?
@@ -46,3 +47,13 @@
         [(str/join " " (concat ["apk del"] deps))]
 
         nil))))
+
+(defn copy-resource-file 
+  "Copy a file named `filename` from resources to a specified `build-dir`.
+  The file contents will be passed to the `processor` fn and whatever that
+  returns used in the image (default processor is `identity`)."
+  ([build-dir filename] (copy-resource-file build-dir filename identity))
+  ([build-dir filename processor]
+   (let [src  (-> filename io/resource io/file)
+         dest (io/file build-dir filename)]
+     (->> src slurp processor (spit dest)))))

@@ -35,6 +35,9 @@ mkdir -p /usr/share/java && \
 mv leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar && \
 apt-get purge -y --auto-remove gnupg
 
+COPY entrypoint /usr/local/bin/entrypoint
+RUN chmod +x /usr/local/bin/entrypoint
+
 ENV PATH=$PATH:$LEIN_INSTALL
 ENV LEIN_ROOT 1
 
@@ -42,4 +45,5 @@ ENV LEIN_ROOT 1
 RUN echo '(defproject dummy "" :dependencies [[org.clojure/clojure "1.10.3"]])' > project.clj \
   && lein deps && rm project.clj
 
-CMD ["lein", "repl"]
+ENTRYPOINT ["entrypoint"]
+CMD ["repl"]

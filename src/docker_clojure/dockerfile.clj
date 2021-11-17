@@ -4,7 +4,8 @@
    [clojure.string :as str]
    [docker-clojure.dockerfile.boot :as boot]
    [docker-clojure.dockerfile.lein :as lein]
-   [docker-clojure.dockerfile.tools-deps :as tools-deps]))
+   [docker-clojure.dockerfile.tools-deps :as tools-deps]
+   [docker-clojure.dockerfile.shared :refer :all]))
 
 (defn build-dir [{:keys [base-image build-tool]}]
   (str/join "/" ["target"
@@ -12,6 +13,9 @@
                  (if (= :docker-clojure.core/all build-tool)
                    "latest"
                    build-tool)]))
+
+(defn all-prereqs [dir variant]
+  (tools-deps/prereqs dir variant))
 
 (defn all-contents [installer-hashes variant]
   (concat
@@ -28,9 +32,9 @@
     ["" "### INSTALL TOOLS-DEPS ###"]
     (tools-deps/install
       installer-hashes
-      (assoc variant :build-tool-version
-             (get-in variant [:build-tool-versions "tools-deps"])))
-    ["" "CMD [\"lein\", \"repl\"]"]))
+     (assoc variant :build-tool-version
+            (get-in variant [:build-tool-versions "tools-deps"])))
+    ["" "CMD [\"lein\" \"repl\"]"]))
 
 (defn contents [installer-hashes {:keys [build-tool] :as variant}]
   (str/join "\n"
@@ -42,11 +46,29 @@
                       "lein" (lein/contents installer-hashes variant)
                       "tools-deps" (tools-deps/contents installer-hashes variant)))))
 
+(defn shared-prereqs [dir {:keys [build-tool]}]
+  (let [entrypoint (case build-tool
+                     "tools-deps"             "clj"
+                     :docker-clojure.core/all "lein"
+                     build-tool)]
+    (copy-resource-file dir "entrypoint"
+                        #(str/replace % "@@entrypoint@@" entrypoint))))
+
+(defn do-prereqs [dir {:keys [build-tool] :as variant}]
+  (shared-prereqs dir variant)
+  (case build-tool
+    :docker-clojure.core/all (all-prereqs dir variant)
+    "boot" (boot/prereqs dir variant)
+    "lein" (lein/prereqs dir variant)
+    "tools-deps" (tools-deps/prereqs dir variant)))
+
 (defn write-file [dir file installer-hashes variant]
   (let [{:keys [exit err]} (sh "mkdir" "-p" dir)]
     (if (zero? exit)
-      (spit (str/join "/" [dir file])
-            (contents installer-hashes variant))
+      (do
+        (do-prereqs dir variant)
+        (spit (str/join "/" [dir file])
+              (str (contents installer-hashes variant) "\n")))
       (throw (ex-info (str "Error creating directory " dir)
                       {:error err})))))
 
