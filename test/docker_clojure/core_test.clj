@@ -5,7 +5,8 @@
 
 (deftest image-variants-test
   (testing "generates the expected set of variants"
-    (with-redefs [default-distro (constantly :debian/slim-buster)]
+    (with-redefs [default-distro (constantly :debian/slim-buster)
+                  default-jdk-version 11]
       (let [variants (image-variants #{8 11 14 15}
                                      #{:debian/buster :debian/slim-buster :alpine/alpine}
                                      {"lein"       "2.9.1"
