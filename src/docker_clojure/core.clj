@@ -36,7 +36,7 @@
 (def jdk-versions #{8 11 17 18})
 
 ;; The default JDK version to use for tags that don't specify one; usually the latest LTS release
-(def default-jdk-version 11)
+(def default-jdk-version 17)
 
 (def distros
   #{:debian/buster :debian-slim/slim-buster :debian/bullseye :debian-slim/slim-bullseye :alpine/alpine})
