@@ -2,7 +2,7 @@
 
 set -eou pipefail
 
-entrypoint=lein
+entrypoint=clj
 
 cmd=${1:-}
 
