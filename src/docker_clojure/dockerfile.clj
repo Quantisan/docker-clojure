@@ -51,7 +51,7 @@
 (defn shared-prereqs [dir {:keys [build-tool]}]
   (let [entrypoint (case build-tool
                      "tools-deps"             "clj"
-                     :docker-clojure.core/all "lein"
+                     :docker-clojure.core/all "clj"
                      build-tool)]
     (copy-resource-file dir "entrypoint"
                         #(str/replace % "@@entrypoint@@" entrypoint))))
