@@ -53,8 +53,9 @@
                      "tools-deps"             "clj"
                      :docker-clojure.core/all "clj"
                      build-tool)]
-    (copy-resource-file dir "entrypoint"
-                        #(str/replace % "@@entrypoint@@" entrypoint))))
+    (copy-resource-file! dir "entrypoint"
+                         #(str/replace % "@@entrypoint@@" entrypoint)
+                         #(.setExecutable % true false))))
 
 (defn do-prereqs [dir {:keys [build-tool] :as variant}]
   (shared-prereqs dir variant)

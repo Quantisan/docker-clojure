@@ -1,15 +1,16 @@
 #!/bin/sh
 
 # This script works around a Docker bug that prevents rlwrap from starting
-# right when a container is first started. It is intended to replace rlwrap
-# (which should be renamed rlwrap.real and left in the PATH).
+# right when a container is first started. It is intended to replace
+# /usr/bin/rlwrap and also be named rlwrap but earlier in the PATH
+# (e.g. /usr/local/bin).
 
 max_tries=100 # 100 tries is ~1 second
 try=0
 
 while true; do
   # see if rlwrap can start at all
-  output=$(rlwrap.real true 2>&1 >/dev/null)
+  output=$(/usr/bin/rlwrap true 2>&1 >/dev/null)
   exit_code=$?
   if [ $exit_code -gt 0 ]; then
     # it didn't start
@@ -24,6 +25,6 @@ while true; do
     fi
   else
     # rlwrap can start so let's run it for real
-    exec rlwrap.real "$@"
+    exec /usr/bin/rlwrap "$@"
   fi
 done

@@ -23,7 +23,6 @@ ENV BOOT_AS_ROOT=yes
 RUN boot
 
 COPY entrypoint /usr/local/bin/entrypoint
-RUN chmod +x /usr/local/bin/entrypoint
 
 ENTRYPOINT ["entrypoint"]
 CMD ["repl"]

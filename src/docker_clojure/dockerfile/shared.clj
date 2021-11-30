@@ -48,15 +48,19 @@
 
         nil))))
 
-(defn copy-resource-file
+(defn copy-resource-file!
   "Copy a file named `filename` from resources to a specified `build-dir`.
   The file contents will be passed to the `processor` fn and whatever that
   returns used in the image (default processor is `identity`)."
-  ([build-dir filename] (copy-resource-file build-dir filename identity))
-  ([build-dir filename processor]
+  ([build-dir filename]
+   (copy-resource-file! build-dir filename identity identity))
+  ([build-dir filename contents-processor]
+   (copy-resource-file! build-dir filename contents-processor identity))
+  ([build-dir filename contents-processor file-processor]
    (let [src  (-> filename io/resource io/file)
          dest (io/file build-dir filename)]
-     (->> src slurp processor (spit dest)))))
+     (->> src slurp contents-processor (spit dest))
+     (file-processor dest))))
 
 (defn entrypoint
   "This is the same for every build-tool so far, so it's in here. If that
@@ -65,7 +69,6 @@
   (if (>= jdk-version 16)
     (concat
       ["COPY entrypoint /usr/local/bin/entrypoint"]
-      ["RUN chmod +x /usr/local/bin/entrypoint"]
       [""]
       ["ENTRYPOINT [\"entrypoint\"]"])
     nil))
