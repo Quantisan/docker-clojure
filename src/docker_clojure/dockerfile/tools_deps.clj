@@ -2,7 +2,8 @@
   (:require [docker-clojure.dockerfile.shared :refer :all]))
 
 (defn prereqs [dir _variant]
-  (copy-resource-file dir "rlwrap.retry"))
+  (copy-resource-file! dir "rlwrap.retry" identity
+                       #(.setExecutable % true false)))
 
 (def distro-deps
   {:debian-slim {:build   #{"wget" "curl"}
@@ -40,12 +41,7 @@
            "clojure -e \"(clojure-version)\""] (empty? uninstall-dep-cmds))
         (concat-commands uninstall-dep-cmds :end)
         (concat [""] docker-bug-notice
-                ["COPY rlwrap.retry /usr/bin/rlwrap.retry"])
-        (concat-commands
-          ["RUN mv /usr/bin/rlwrap /usr/bin/rlwrap.real"
-           "mv /usr/bin/rlwrap.retry /usr/bin/rlwrap"
-           "chmod +x /usr/bin/rlwrap"] :end)
-
+                ["COPY rlwrap.retry /usr/local/bin/rlwrap"])
         (->> (remove nil?)))))
 
 (defn command [{:keys [jdk-version]}]
