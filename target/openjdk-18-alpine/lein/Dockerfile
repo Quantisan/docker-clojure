@@ -41,7 +41,6 @@ RUN echo '(defproject dummy "" :dependencies [[org.clojure/clojure "1.10.3"]])' 
   && lein deps && rm project.clj
 
 COPY entrypoint /usr/local/bin/entrypoint
-RUN chmod +x /usr/local/bin/entrypoint
 
 ENTRYPOINT ["entrypoint"]
 CMD ["repl"]
