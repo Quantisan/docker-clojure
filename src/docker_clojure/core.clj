@@ -48,7 +48,7 @@
 (def build-tools
   {"lein"       "2.9.8"
    "boot"       "2.8.3"
-   "tools-deps" "1.10.3.1020"})
+   "tools-deps" "1.10.3.1040"})
 
 (def installer-hashes
   {"lein"       {"2.9.6" "094b58e2b13b42156aaf7d443ed5f6665aee27529d9512f8d7282baa3cc01429"
@@ -59,7 +59,8 @@
                  "1.10.3.981"  "c6463a4f8950de6ce7982d01b72b660b9849c9a66d870081f5ee6b108220cf29"
                  "1.10.3.986"  "f2a271d6892fb04f7377148f6770185486ca194245721ab34a62ae03e8d1149f"
                  "1.10.3.998"  "c58df29f0c919b90282ace43e92fffd914ba50ba619c837d232bbf686f6ee4a8"
-                 "1.10.3.1020" "afc87e2c8cfbf87e43553439c69a4c8e36bc2094405d08f39ca542b4cca0920a"}})
+                 "1.10.3.1020" "afc87e2c8cfbf87e43553439c69a4c8e36bc2094405d08f39ca542b4cca0920a"
+                 "1.10.3.1040" "665e35e8d7dd0996edaba36220fd5048fee95f5155ec0426f628f18770239821"}})
 
 (def exclusions ; don't build these for whatever reason(s)
   #{{:jdk-version 8
