@@ -7,7 +7,7 @@
   {:debian-slim {:build   #{"wget" "gnupg"}
                  :runtime #{}}
    :debian      {:build   #{"gnupg"}
-                 :runtime #{}}
+                 :runtime #{"make"}}
    :alpine      {:build   #{"tar" "gnupg" "openssl" "ca-certificates"}
                  :runtime #{"bash"}}})
 
