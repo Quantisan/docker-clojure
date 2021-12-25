@@ -149,7 +149,7 @@
         (generate-dockerfile! installer-hashes variant)
 
         build-cmd (remove nil? ["docker" "build" "--no-cache" "-t" image-tag
-                                "-f" dockerfile "."])]
+                                "--load" "-f" dockerfile "."])]
     (apply println "Running" build-cmd)
     (let [{:keys [out err exit]}
           (with-sh-dir build-dir (apply sh build-cmd))]
