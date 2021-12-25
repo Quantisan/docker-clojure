@@ -8,7 +8,7 @@ WORKDIR /tmp
 # Download the whole repo as an archive
 RUN set -eux; \
 apt-get update && \
-apt-get install -y gnupg && \
+apt-get install -y make gnupg && \
 rm -rf /var/lib/apt/lists/* && \
 mkdir -p $LEIN_INSTALL && \
 wget -q https://raw.githubusercontent.com/technomancy/leiningen/$LEIN_VERSION/bin/lein-pkg && \

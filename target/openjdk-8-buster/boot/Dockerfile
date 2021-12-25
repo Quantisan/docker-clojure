@@ -9,6 +9,9 @@ WORKDIR /tmp
 # on its first run. We always download the latest version of boot.sh because
 # it is just the installer script.
 RUN \
+apt-get update && \
+apt-get install -y make && \
+rm -rf /var/lib/apt/lists/* && \
 mkdir -p $BOOT_INSTALL && \
 wget -q https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh && \
 echo "Comparing installer checksum..." && \
