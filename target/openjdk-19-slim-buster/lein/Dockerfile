@@ -1,4 +1,4 @@
-FROM openjdk:18-alpine
+FROM openjdk:19-slim-buster
 
 ENV LEIN_VERSION=2.9.8
 ENV LEIN_INSTALL=/usr/local/bin/
@@ -7,7 +7,9 @@ WORKDIR /tmp
 
 # Download the whole repo as an archive
 RUN set -eux; \
-apk add --no-cache ca-certificates bash tar openssl gnupg && \
+apt-get update && \
+apt-get install -y gnupg wget && \
+rm -rf /var/lib/apt/lists/* && \
 mkdir -p $LEIN_INSTALL && \
 wget -q https://raw.githubusercontent.com/technomancy/leiningen/$LEIN_VERSION/bin/lein-pkg && \
 echo "Comparing lein-pkg checksum ..." && \
@@ -31,7 +33,7 @@ gpgconf --kill all && \
 rm -rf "$GNUPGHOME" leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT.asc && \
 mkdir -p /usr/share/java && \
 mv leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar && \
-apk del ca-certificates tar openssl gnupg
+apt-get purge -y --auto-remove gnupg wget
 
 ENV PATH=$PATH:$LEIN_INSTALL
 ENV LEIN_ROOT 1
