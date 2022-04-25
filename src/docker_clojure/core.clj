@@ -48,25 +48,16 @@
 (def build-tools
   {"lein"       "2.9.8"
    "boot"       "2.8.3"
-   "tools-deps" "1.11.1.1105"})
+   "tools-deps" "1.11.1.1113"})
 
 (def installer-hashes
   {"lein"       {"2.9.6" "094b58e2b13b42156aaf7d443ed5f6665aee27529d9512f8d7282baa3cc01429"
                  "2.9.7" "f78f20d1931f028270e77bc0f0c00a5a0efa4ecb7a5676304a34ae4f469e281d"
                  "2.9.8" "9952cba539cc6454c3b7385ebce57577087bf2b9001c3ab5c55d668d0aeff6e9"}
    "boot"       {"2.8.3" "0ccd697f2027e7e1cd3be3d62721057cbc841585740d0aaa9fbb485d7b1f17c3"}
-   "tools-deps" {"1.10.3.967"  "d1fba0cd0733b7cb66e47620845ecedfd757a9bf84e8b276fdb37ed9c272d3ae"
-                 "1.10.3.981"  "c6463a4f8950de6ce7982d01b72b660b9849c9a66d870081f5ee6b108220cf29"
-                 "1.10.3.986"  "f2a271d6892fb04f7377148f6770185486ca194245721ab34a62ae03e8d1149f"
-                 "1.10.3.998"  "c58df29f0c919b90282ace43e92fffd914ba50ba619c837d232bbf686f6ee4a8"
-                 "1.10.3.1020" "afc87e2c8cfbf87e43553439c69a4c8e36bc2094405d08f39ca542b4cca0920a"
-                 "1.10.3.1040" "665e35e8d7dd0996edaba36220fd5048fee95f5155ec0426f628f18770239821"
-                 "1.10.3.1058" "980168025a3827bd7ed9d5ab1681ce29808ac8e6cbced3ab6683db8b365b54df"
-                 "1.10.3.1069" "e9e8382971bf179048fc6b171a6216283e19a880b271e489d4b677ad4d4894a6"
-                 "1.10.3.1075" "4a6b72c9b23d348a0636813c5f59db5dda622e3b8dbb86124cbb51e3aced714d"
-                 "1.10.3.1087" "fd3d465ac30095157ce754f1551b840008a6e3503ce5023d042d0490f7bafb98"
-                 "1.11.0.1100" "a71bd520bd43d4be6e0cab0c525f5d1f85911fc276f3d0f37f00243fb0f1e594"
-                 "1.11.1.1105" "5655c3ee3ea495d0778d8a87ce05a719045d3ceae9dd5cc29033379d8f82cce5"}})
+   "tools-deps" {"1.11.0.1100" "a71bd520bd43d4be6e0cab0c525f5d1f85911fc276f3d0f37f00243fb0f1e594"
+                 "1.11.1.1105" "5655c3ee3ea495d0778d8a87ce05a719045d3ceae9dd5cc29033379d8f82cce5"
+                 "1.11.1.1113" "7677bb1179ebb15ebf954a87bd1078f1c547673d946dadafd23ece8cd61f5a9f"}})
 
 (def exclusions ; don't build these for whatever reason(s)
   #{{:jdk-version 8
