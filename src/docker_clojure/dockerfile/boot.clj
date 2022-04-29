@@ -7,6 +7,8 @@
   {:debian-slim {:build   #{"wget"}
                  :runtime #{}}
    :debian      {:runtime #{"make"}}
+   :ubuntu      {:build   #{"wget"}
+                 :runtime #{}}
    :alpine      {:build   #{"openssl"}
                  :runtime #{"bash"}}})
 

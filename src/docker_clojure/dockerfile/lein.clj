@@ -8,6 +8,8 @@
                  :runtime #{}}
    :debian      {:build   #{"gnupg"}
                  :runtime #{"make"}}
+   :ubuntu      {:build   #{"wget" "gnupg"}
+                 :runtime #{"make"}}
    :alpine      {:build   #{"tar" "gnupg" "openssl" "ca-certificates"}
                  :runtime #{"bash"}}})
 

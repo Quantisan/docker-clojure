@@ -7,9 +7,9 @@
    [docker-clojure.dockerfile.tools-deps :as tools-deps]
    [docker-clojure.dockerfile.shared :refer :all]))
 
-(defn build-dir [{:keys [base-image build-tool]}]
+(defn build-dir [{:keys [base-image-tag build-tool]}]
   (str/join "/" ["target"
-                 (str/replace base-image ":" "-")
+                 (str/replace base-image-tag ":" "-")
                  (if (= :docker-clojure.core/all build-tool)
                    "latest"
                    build-tool)]))
@@ -40,7 +40,7 @@
 
 (defn contents [installer-hashes {:keys [build-tool] :as variant}]
   (str/join "\n"
-            (concat [(format "FROM %s" (:base-image variant))
+            (concat [(format "FROM %s" (:base-image-tag variant))
                      ""]
                     (case build-tool
                       :docker-clojure.core/all (all-contents installer-hashes variant)
