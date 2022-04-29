@@ -26,7 +26,7 @@
   (let [deps (all-deps distro-deps distro)]
     (when (seq deps)
       (case (-> distro namespace keyword)
-        (:debian :debian-slim)
+        (:debian :debian-slim :ubuntu)
         ["apt-get update"
          (str/join " " (concat ["apt-get install -y"] deps))
          "rm -rf /var/lib/apt/lists/*"]
@@ -40,7 +40,7 @@
   (let [deps (build-deps distro-deps distro)]
     (when (seq deps)
       (case (-> distro namespace keyword)
-        (:debian :debian-slim)
+        (:debian :debian-slim :ubuntu)
         [(str/join " " (concat ["apt-get purge -y --auto-remove"] deps))]
 
         :alpine
