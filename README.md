@@ -51,7 +51,7 @@ combination is provided upstream and thus likewise for us):
 
 Java 8 leiningen on Debian slim-bullseye: `clojure:openjdk-8` or `clojure:openjdk-8-lein` or `clojure:openjdk-8-lein-bullseye`
 Java 11 leiningen on Debian buster: `clojure:openjdk-11-bullseye` or `clojure:openjdk-11-lein-bullseye`
-Java 17 tools-deps on Debian slim-bullseye: `clojure:tools-deps` or `clojure:temurin-17-tools-deps` or `clojure:temurin-17-tools-deps-focal`
+Java 17 tools-deps on Ubuntu focal: `clojure:tools-deps` or `clojure:temurin-17-tools-deps` or `clojure:temurin-17-tools-deps-focal`
 
 ### Alpine Linux
 
