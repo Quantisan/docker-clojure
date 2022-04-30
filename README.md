@@ -8,13 +8,13 @@ This image runs on OpenJDK 8, 11, and more recent releases and includes [Leining
 
 ## Leiningen vs. boot vs. tools-deps
 
-The version tags on these images look like `(openjdk-major-version-)lein-N.N.N(-distro)`,
-`(openjdk-major-version-)boot-N.N.N(-distro)`, and `(openjdk-major-version-)tools-deps(-distro)`.
+The version tags on these images look like `(temurin-major-version-)lein-N.N.N(-distro)`,
+`(temurin-major-version-)boot-N.N.N(-distro)`, and `(temurin-major-version-)tools-deps(-distro)`.
 These refer to which version of leiningen, boot, or tools-deps is packaged in the image (because they can then install
-and use any version of Clojure at runtime). The `lein` (or `lein-slim-bullseye`, `openjdk-14-lein`, etc.)
+and use any version of Clojure at runtime). The `lein` (or `lein-slim-bullseye`, `temurin-17-lein`, etc.)
 images will always have a recent version of leiningen installed. If you want boot, specify either `clojure:boot`,
 `clojure:boot-slim-bullseye`, or `clojure:boot-N.N.N`, `clojure:boot-N.N.N-slim-bullseye`,
-`clojure:openjdk-14-boot-N.N.N-slim-bullseye`, etc. (where `N.N.N` is the version of boot you want installed). If
+`clojure:temurin-17-boot-N.N.N-slim-bullseye`, etc. (where `N.N.N` is the version of boot you want installed). If
 you want to use tools-deps, specify either `clojure:tools-deps`, `clojure:tools-deps-slim-bullseye` or other similar
 variants.
 
@@ -25,48 +25,54 @@ tools-deps installed.
 
 Previously this tag only had leiningen installed. Installing the others is helpful for quick start examples, newcomers,
 etc. as leiningen is by no means the de facto standard build tool these days. The downside is that the image is larger.
-But for the `latest` tag it's a good trade off because for anything real we have always recommended using more specific
+But for the `latest` tag it's a good trade-off because for anything real we have always recommended using more specific
 tags. No other tags are affected by this change.
 
 ## JDK versions
 
-Java has recently introduced a new release cadence of every 6 months and dropped the leading `1` major version number.
-As of 2019-9-25, our images will default to the latest LTS release of OpenJDK (currently 11). But we also now provide
+Java follows a release cadence of every 6 months with an LTS (long-term support) release every 3 years.
+As of 2019-9-25, our images will default to the latest LTS release of OpenJDK (currently 17). But we also now provide
 the ability to specify which version of Java you'd like via Docker tags:
 
 JDK 1.8 tools-deps image: `clojure:openjdk-8-tools-deps`
 JDK 11 variant of that image: `clojure:openjdk-11-tools-deps` or `clojure:tool-deps`
-JDK 14 with the latest release of leiningen: `clojure:openjdk-14`
-JDK 15 with boot 2.8.3: `clojure:openjdk-15-boot-2.8.3`
+JDK 17 with the latest release of leiningen: `clojure:temurin-17`
+JDK 18 with boot 2.8.3: `clojure:temurin-18-boot-2.8.3`
 
 ## Linux distro
 
-The upstream OpenJDK images are built on a few different variants of Debian Linux, so we have exposed those in our
-Docker tags as well. The default is now Debian slim-bullseye. But you can also specify which distro you'd like by
-appending it to the end of your Docker tag as in the following examples (but note that not every combination is
-provided upstream and thus likewise for us):
+The upstream openjdk (java versions 11 and below) and eclipse-temurin
+(java versions 17+) images are built on a few different variants of Debian
+Linux or Ubuntu (respectively), so we have exposed those in our Docker tags as
+well. The defaults are now Debian slim-bullseye and Ubuntu focal.
+But you can also specify which distro you'd like by appending it to the end of
+your Docker tag as in the following examples (but note that not every
+combination is provided upstream and thus likewise for us):
 
-JDK 1.8 leiningen on Debian slim-bullseye: `clojure:openjdk-8` or `clojure:openjdk-8-lein` or `clojure:openjdk-8-lein-stretch`
-JDK 1.8 leiningen on Debian buster: `clojure:openjdk-8-buster` or `clojure:openjdk-8-lein-buster`
-JDK 11 tools-deps on Debian slim-bullseye: `clojure:tools-deps` or `clojure:openjdk-11-tools-deps` or `clojure:openjdk-11-tools-deps-slim-bullseye`
+Java 8 leiningen on Debian slim-bullseye: `clojure:openjdk-8` or `clojure:openjdk-8-lein` or `clojure:openjdk-8-lein-bullseye`
+Java 11 leiningen on Debian buster: `clojure:openjdk-11-bullseye` or `clojure:openjdk-11-lein-bullseye`
+Java 17 tools-deps on Ubuntu focal: `clojure:tools-deps` or `clojure:temurin-17-tools-deps` or `clojure:temurin-17-tools-deps-focal`
 
 ### Alpine Linux
 
-Sometimes there are upstream openjdk images for early access JDK releases based
-on Alpine Linux, but they have often later been deprecated once that version is
-released.
+Sometimes there are upstream openjdk or eclipse-temurin images based on Alpine
+Linux.
 
-As of 2021-09-08, there are alpine variants only for OpenJDK 18 early access.
+As of 2022-4-29 these are available for linux/amd64 only.
 
 Some example tags:
 
-JDK 18 leiningen on Alpine: `clojure:openjdk-18-alpine` `clojure:openjdk-18-lein-alpine`
-JDK 18 tools-deps on Alpine: `clojure:openjdk-18-tools-deps-alpine`
+Java 17 leiningen on Alpine: `clojure:temurin-17-alpine` `clojure:temurin-17-lein-alpine`
+Java 18 tools-deps on Alpine: `clojure:temurin-18-tools-deps-alpine`
 
 ### `clojure:slim-buster` / `clojure:slim-bullseye`
 
-These images are based on the Debian buster distribution but have fewer packages installed and are thus much smaller
-than the `stretch` or `buster` images. Their use is recommended.
+These images are based on the Debian buster distribution but have fewer
+packages installed and are thus a bit smaller than the `buster` or `bullseye`
+images. Their use is recommended.
+
+Note that as of 2022-4-29 there are no `slim-focal` images published by the
+eclipse-temurin maintainers, so the slim option there is the `alpine` variant.
 
 ## Examples
 
