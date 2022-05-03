@@ -8,13 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Install deps
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y default-jre-headless rlwrap curl
-        curl -O https://download.clojure.org/install/linux-install-1.10.1.697.sh
-        chmod +x linux-install-1.10.1.697.sh
-        sudo ./linux-install-1.10.1.697.sh
+    - uses: turtlequeue/setup-babashka@v1.3.0
+      with:
+        babashka-version: 0.8.1
     - uses: actions/checkout@v2
     - name: Run tests
-      run: ./test.sh
+      run: bb run test
