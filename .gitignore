@@ -2,3 +2,4 @@
 .nrepl-port
 target/**/images.tar
 
+/clojure.manifest
