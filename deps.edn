@@ -1,11 +1,11 @@
 {:deps
- {org.clojure/clojure {:mvn/version "1.10.3"}
+ {org.clojure/clojure            {:mvn/version "1.11.1"}
   org.clojure/math.combinatorics {:mvn/version "0.1.6"}}
 
  :paths ["src" "resources"]
 
  :aliases
  {:test {:extra-paths ["test"]
-         :extra-deps {com.cognitect/test-runner {:git/url "https://github.com/cognitect-labs/test-runner.git"
-                                                 :sha "4e7e1c0dfd5291fa2134df052443dc29695d8cbe"}}
-         :main-opts ["-m" "cognitect.test-runner"]}}}
+         :extra-deps  {com.cognitect/test-runner {:git/url "https://github.com/cognitect-labs/test-runner.git"
+                                                  :sha     "4e7e1c0dfd5291fa2134df052443dc29695d8cbe"}}
+         :main-opts   ["-m" "cognitect.test-runner"]}}}
