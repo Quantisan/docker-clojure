@@ -9,17 +9,23 @@
   (let [short-tag (:docker-tag variant)
         full-tag  (full-docker-tag variant)
         base      (into #{} [short-tag full-tag])]
-    (conj base
+    (-> base
+        (conj
           (docker-tag {:omit-jdk? true} variant)
           (docker-tag {:omit-build-tool? true} variant)
           (docker-tag {:omit-build-tool-version? true} variant)
-          (docker-tag {:omit-distro? true} variant))))
+          (docker-tag {:omit-distro? true} variant))
+        vec
+        sort)))
 
 (defn variant->manifest
   [variant]
   (str/join "\n"
             (conj
-              (remove nil? [(str/join " " (conj ["Tags:"] (str/join ", " (variant-tags variant))))
+              (remove nil? [(str/join " " (conj ["Tags:"]
+                                                (->> variant
+                                                     variant-tags
+                                                     (str/join ", "))))
                             (when-let [arch (:architectures variant)]
                               (str/join " " ["Architectures:" (str/join ", " arch)]))
                             (str/join " " ["Directory:" (df/build-dir variant)])])
