@@ -8,7 +8,8 @@
     [docker-clojure.dockerfile :as df]
     [docker-clojure.manifest :as manifest]
     [docker-clojure.util :refer [get-or-default default-docker-tag
-                                 full-docker-tag]]))
+                                 full-docker-tag]]
+    [clojure.edn :as edn]))
 
 (defn contains-every-key-value?
   "Returns true if the map `haystack` contains every key-value pair in the map
@@ -48,13 +49,14 @@
                     [build-tool build-tool-version]]]
   (let [variant-arch (get cfg/distro-architectures
                           (-> distro namespace keyword))
-        base {:jdk-version        jdk-version
-              :base-image         base-image
-              :base-image-tag     (base-image-tag base-image jdk-version distro)
-              :distro             distro
-              :build-tool         build-tool
-              :build-tool-version build-tool-version
-              :maintainer         (str/join " & " cfg/maintainers)}]
+        base         {:jdk-version        jdk-version
+                      :base-image         base-image
+                      :base-image-tag     (base-image-tag base-image
+                                                          jdk-version distro)
+                      :distro             distro
+                      :build-tool         build-tool
+                      :build-tool-version build-tool-version
+                      :maintainer         (str/join " & " cfg/maintainers)}]
     (-> base
         (assoc :docker-tag (default-docker-tag base))
         (assoc-if #(nil? (:build-tool-version base)) :build-tool-versions
@@ -139,9 +141,9 @@
 
 (defn generate-manifest! [variants]
   (let [git-head (->> ["git" "rev-parse" "HEAD"] (apply sh) :out)
-        manifest (manifest/generate {:maintainers cfg/maintainers
+        manifest (manifest/generate {:maintainers   cfg/maintainers
                                      :architectures cfg/default-architectures
-                                     :git-repo cfg/git-repo}
+                                     :git-repo      cfg/git-repo}
                                     git-head variants)]
     (println "Writing manifest of" (count variants) "variants to clojure.manifest...")
     (spit "clojure.manifest" manifest)))
@@ -165,9 +167,17 @@
     variants))
 
 (defn -main [& args]
-  (case (first args)
-    "clean" (df/clean-all)
-    "dockerfiles" (generate-dockerfiles! cfg/installer-hashes (valid-variants))
-    "manifest" (-> (valid-variants) sort-variants generate-manifest!)
-    (build-images cfg/installer-hashes (valid-variants)))
-  (System/exit 0))
+  (let [variant-filter-key (some-> args second edn/read-string)
+        variant-filter-val (nth args 2 nil)
+        variant-filter     (if variant-filter-key
+                             (if variant-filter-val
+                               #(= (get % variant-filter-key)
+                                   variant-filter-val)
+                               #(contains? % variant-filter-key))
+                             (constantly true))
+        variants           (filter variant-filter (valid-variants))]
+    (case (first args)
+      "clean" (df/clean-all)
+      "dockerfiles" (generate-dockerfiles! cfg/installer-hashes variants)
+      "manifest" (->> variants sort-variants generate-manifest!)
+      (build-images cfg/installer-hashes variants))))
