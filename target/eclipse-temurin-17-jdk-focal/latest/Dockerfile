@@ -97,4 +97,4 @@ COPY entrypoint /usr/local/bin/entrypoint
 
 ENTRYPOINT ["entrypoint"]
 
-CMD ["repl"]
+CMD ["-M", "--repl"]

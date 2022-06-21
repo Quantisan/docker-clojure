@@ -36,7 +36,7 @@
             (get-in variant [:build-tool-versions "tools-deps"])))
     [""]
     (entrypoint variant)
-    ["" "CMD [\"repl\"]"]))
+    ["" "CMD [\"-M\", \"--repl\"]"]))
 
 (defn contents [installer-hashes {:keys [build-tool] :as variant}]
   (str/join "\n"
