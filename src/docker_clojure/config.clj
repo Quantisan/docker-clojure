@@ -75,7 +75,7 @@
 (def build-tools
   {"lein"       "2.9.8"
    "boot"       "2.8.3"
-   "tools-deps" "1.11.1.1139"})
+   "tools-deps" "1.11.1.1149"})
 
 (def default-build-tool "tools-deps")
 
@@ -84,11 +84,11 @@
                  "2.9.7" "f78f20d1931f028270e77bc0f0c00a5a0efa4ecb7a5676304a34ae4f469e281d"
                  "2.9.8" "9952cba539cc6454c3b7385ebce57577087bf2b9001c3ab5c55d668d0aeff6e9"}
    "boot"       {"2.8.3" "0ccd697f2027e7e1cd3be3d62721057cbc841585740d0aaa9fbb485d7b1f17c3"}
-   "tools-deps" {"1.11.1.1105" "5655c3ee3ea495d0778d8a87ce05a719045d3ceae9dd5cc29033379d8f82cce5"
-                 "1.11.1.1113" "7677bb1179ebb15ebf954a87bd1078f1c547673d946dadafd23ece8cd61f5a9f"
+   "tools-deps" {"1.11.1.1113" "7677bb1179ebb15ebf954a87bd1078f1c547673d946dadafd23ece8cd61f5a9f"
                  "1.11.1.1124" "9c7d226ae1c08b6dbb7f10c9ca1ab8c80f8d5021b6a1e535b5dd92ba3ff062db"
                  "1.11.1.1129" "02bec16a9bc0a7a1a7912ca72fc8042f46e106369e572ca7185a8522e8f40123"
-                 "1.11.1.1139" "2ba0de34f122f26580e3e6337bd04c8e3f9f648299367b17da85f00d930e191c"}})
+                 "1.11.1.1139" "2ba0de34f122f26580e3e6337bd04c8e3f9f648299367b17da85f00d930e191c"
+                 "1.11.1.1149" "9aadc1a1840a458517a6efb111eba72be93c17bbdc874c833ef781e77aacc55e"}})
 
 (def exclusions ; don't build these for whatever reason(s)
   #{{:jdk-version 8
