@@ -43,9 +43,7 @@
 
 (def base-images
   "Map of JDK version to base image name with :default as a fallback"
-  {8        "openjdk"
-   11       "openjdk"
-   :default "eclipse-temurin"})
+  {:default "eclipse-temurin"})
 
 ;; The default JDK version to use for tags that don't specify one; usually the latest LTS release
 (def default-jdk-version 17)
@@ -53,9 +51,7 @@
 (def distros
   "Map of base image name to set of distro tags to use, namespaced by Linux
   distro type. :default key is a fallback for base images not o/w specified."
-  {"openjdk" #{:debian/buster :debian-slim/slim-buster :debian/bullseye
-               :debian-slim/slim-bullseye :alpine/alpine}
-   :default  #{:alpine/alpine :ubuntu/focal}})
+  {:default  #{:alpine/alpine :ubuntu/focal :ubuntu/jammy}})
 
 (def default-architectures
   #{"amd64" "arm64v8"})
@@ -68,9 +64,7 @@
 (def default-distros
   "The default distro to use for tags that don't specify one, keyed by jdk-version.
   :default is a fallback for jdk versions not o/w specified."
-  {8        :debian-slim/slim-bullseye
-   11       :debian-slim/slim-bullseye
-   :default :ubuntu/focal})
+  {:default :ubuntu/jammy})
 
 (def build-tools
   {"lein"       "2.9.8"
@@ -91,10 +85,9 @@
                  "1.11.1.1149" "9aadc1a1840a458517a6efb111eba72be93c17bbdc874c833ef781e77aacc55e"}})
 
 (def exclusions ; don't build these for whatever reason(s)
-  #{{:jdk-version 8
-     :distro      :alpine/alpine}
-    {:jdk-version 11
-     :distro      :alpine/alpine}})
+  ;; commented out example
+  #{#_{:jdk-version 8
+       :distro      :alpine/alpine}})
 
 (def maintainers
   ["Paul Lam <paul@quantisan.com> (@Quantisan)"

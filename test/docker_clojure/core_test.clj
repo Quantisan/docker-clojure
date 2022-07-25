@@ -10,9 +10,12 @@
     (with-redefs [cfg/default-distros     {8        :debian-slim/slim-buster
                                            11       :debian-slim/slim-buster
                                            :default :ubuntu/focal}
+                  cfg/base-images         {8        "openjdk"
+                                           11       "openjdk"
+                                           :default "eclipse-temurin"}
                   cfg/default-jdk-version 11
-                  cfg/maintainers ["Paul Lam <paul@quantisan.com>"
-                                   "Wes Morgan <wesmorgan@icloud.com>"]]
+                  cfg/maintainers         ["Paul Lam <paul@quantisan.com>"
+                                           "Wes Morgan <wesmorgan@icloud.com>"]]
       (let [variants (image-variants {8        "openjdk"
                                       11       "openjdk"
                                       :default "eclipse-temurin"}
