@@ -75,16 +75,28 @@
       :build-dir build-dir
       :dockerfile filename)))
 
-(defn build-image [installer-hashes {:keys [docker-tag base-image] :as variant}]
-  (let [image-tag (str "clojure:" docker-tag)
-        _         (println "Pulling base image" base-image)
-        _         (pull-image base-image)
+(defn build-image
+  [installer-hashes {:keys [docker-tag base-image architectures] :as variant}]
+  (let [image-tag     (str "clojure:" docker-tag)
+        _             (println "Pulling base image" base-image)
+        _             (pull-image base-image)
 
         {:keys [dockerfile build-dir]}
         (generate-dockerfile! installer-hashes variant)
 
-        build-cmd (remove nil? ["docker" "build" "--no-cache" "-t" image-tag
-                                "--load" "-f" dockerfile "."])]
+        host-arch     (let [jvm-arch (System/getProperty "os.arch")]
+                        (if (= "aarch64" jvm-arch)
+                          "arm64v8"
+                          jvm-arch))
+        platform-flag (if (contains? (or architectures
+                                         cfg/default-architectures)
+                                     host-arch)
+                        nil
+                        (str "--platform=linux/" (first architectures)))
+
+        build-cmd     (remove nil? ["docker" "buildx" "build" "--no-cache"
+                                    "-t" image-tag platform-flag "--load"
+                                    "-f" dockerfile "."])]
     (apply println "Running" build-cmd)
     (let [{:keys [out err exit]}
           (with-sh-dir build-dir (apply sh build-cmd))]
@@ -166,7 +178,8 @@
                                  {:v1 v1, :v2 v2}))))))))
     variants))
 
-(defn -main [& args]
+(defn generate-variants
+  [& args]
   (let [variant-filter-key (some-> args second edn/read-string)
         variant-filter-val (nth args 2 nil)
         variant-filter     (if variant-filter-key
@@ -174,8 +187,12 @@
                                #(= (get % variant-filter-key)
                                    variant-filter-val)
                                #(contains? % variant-filter-key))
-                             (constantly true))
-        variants           (filter variant-filter (valid-variants))]
+                             (constantly true))]
+    (filter variant-filter (valid-variants))))
+
+(defn -main
+  [& args]
+  (let [variants (apply generate-variants args)]
     (case (first args)
       "clean" (df/clean-all)
       "dockerfiles" (generate-dockerfiles! cfg/installer-hashes variants)
