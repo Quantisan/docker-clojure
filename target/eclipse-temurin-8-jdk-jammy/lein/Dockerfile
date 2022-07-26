@@ -1,33 +1,5 @@
-FROM eclipse-temurin:17-jdk-focal
+FROM eclipse-temurin:8-jdk-jammy
 
-### INSTALL BOOT ###
-ENV BOOT_VERSION=2.8.3
-ENV BOOT_INSTALL=/usr/local/bin/
-
-WORKDIR /tmp
-
-# NOTE: BOOT_VERSION tells the boot.sh script which version of boot to install
-# on its first run. We always download the latest version of boot.sh because
-# it is just the installer script.
-RUN \
-apt-get update && \
-apt-get install -y wget && \
-rm -rf /var/lib/apt/lists/* && \
-mkdir -p $BOOT_INSTALL && \
-wget -q https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh && \
-echo "Comparing installer checksum..." && \
-sha256sum boot.sh && \
-echo "0ccd697f2027e7e1cd3be3d62721057cbc841585740d0aaa9fbb485d7b1f17c3 *boot.sh" | sha256sum -c - && \
-mv boot.sh $BOOT_INSTALL/boot && \
-chmod 0755 $BOOT_INSTALL/boot && \
-apt-get purge -y --auto-remove wget
-
-ENV PATH=$PATH:$BOOT_INSTALL
-ENV BOOT_AS_ROOT=yes
-
-RUN boot
-
-### INSTALL LEIN ###
 ENV LEIN_VERSION=2.9.8
 ENV LEIN_INSTALL=/usr/local/bin/
 
@@ -70,31 +42,4 @@ ENV LEIN_ROOT 1
 RUN echo '(defproject dummy "" :dependencies [[org.clojure/clojure "1.11.1"]])' > project.clj \
   && lein deps && rm project.clj
 
-### INSTALL TOOLS-DEPS ###
-ENV CLOJURE_VERSION=1.11.1.1149
-
-WORKDIR /tmp
-
-RUN \
-apt-get update && \
-apt-get install -y make git rlwrap wget && \
-rm -rf /var/lib/apt/lists/* && \
-wget https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh && \
-sha256sum linux-install-$CLOJURE_VERSION.sh && \
-echo "9aadc1a1840a458517a6efb111eba72be93c17bbdc874c833ef781e77aacc55e *linux-install-$CLOJURE_VERSION.sh" | sha256sum -c - && \
-chmod +x linux-install-$CLOJURE_VERSION.sh && \
-./linux-install-$CLOJURE_VERSION.sh && \
-rm linux-install-$CLOJURE_VERSION.sh && \
-clojure -e "(clojure-version)" && \
-apt-get purge -y --auto-remove wget
-
-# Docker bug makes rlwrap crash w/o short sleep first
-# Bug: https://github.com/moby/moby/issues/28009
-# As of 2021-09-10 this bug still exists, despite that issue being closed
-COPY rlwrap.retry /usr/local/bin/rlwrap
-
-COPY entrypoint /usr/local/bin/entrypoint
-
-ENTRYPOINT ["entrypoint"]
-
-CMD ["-M", "--repl"]
+CMD ["lein", "repl"]
