@@ -41,8 +41,8 @@
                                             (= build-tool cfg/default-build-tool))
                                      nil
                                      build-tool)
-          build-tool-version-label (if (and (or omit-all? omit-build-tool?
-                                                omit-build-tool-version?))
+          build-tool-version-label (if (or omit-all? omit-build-tool?
+                                           omit-build-tool-version?)
                                      nil
                                      build-tool-version)]
       (str/join "-" (remove nil? [jdk build-tool-label
