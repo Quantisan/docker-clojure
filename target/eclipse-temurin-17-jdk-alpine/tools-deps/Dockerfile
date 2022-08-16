@@ -1,6 +1,6 @@
 FROM eclipse-temurin:17-jdk-alpine
 
-ENV CLOJURE_VERSION=1.11.1.1149
+ENV CLOJURE_VERSION=1.11.1.1155
 
 WORKDIR /tmp
 
@@ -8,7 +8,7 @@ RUN \
 apk add --no-cache curl bash make git && \
 wget https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh && \
 sha256sum linux-install-$CLOJURE_VERSION.sh && \
-echo "9aadc1a1840a458517a6efb111eba72be93c17bbdc874c833ef781e77aacc55e *linux-install-$CLOJURE_VERSION.sh" | sha256sum -c - && \
+echo "7eb9aa2ecc6c0abfdb1578d4b99ca7c2055111aafa38524a12a6fb76fe01f30b *linux-install-$CLOJURE_VERSION.sh" | sha256sum -c - && \
 chmod +x linux-install-$CLOJURE_VERSION.sh && \
 ./linux-install-$CLOJURE_VERSION.sh && \
 rm linux-install-$CLOJURE_VERSION.sh && \
