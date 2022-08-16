@@ -51,7 +51,7 @@
 (def distros
   "Map of base image name to set of distro tags to use, namespaced by Linux
   distro type. :default key is a fallback for base images not o/w specified."
-  {:default  #{:alpine/alpine :ubuntu/focal :ubuntu/jammy}})
+  {:default #{:alpine/alpine :ubuntu/focal :ubuntu/jammy}})
 
 (def default-architectures
   #{"amd64" "arm64v8"})
@@ -67,16 +67,14 @@
   {:default :ubuntu/jammy})
 
 (def build-tools
-  {"lein"       "2.9.8"
+  {"lein"       "2.9.10"
    "boot"       "2.8.3"
    "tools-deps" "1.11.1.1149"})
 
 (def default-build-tool "tools-deps")
 
 (def installer-hashes
-  {"lein"       {"2.9.6" "094b58e2b13b42156aaf7d443ed5f6665aee27529d9512f8d7282baa3cc01429"
-                 "2.9.7" "f78f20d1931f028270e77bc0f0c00a5a0efa4ecb7a5676304a34ae4f469e281d"
-                 "2.9.8" "9952cba539cc6454c3b7385ebce57577087bf2b9001c3ab5c55d668d0aeff6e9"}
+  {"lein"       {"2.9.10" "dbb84d13d6df5b85bbf7f89a39daeed103133c24a4686d037fe6bd65e38e7f32"}
    "boot"       {"2.8.3" "0ccd697f2027e7e1cd3be3d62721057cbc841585740d0aaa9fbb485d7b1f17c3"}
    "tools-deps" {"1.11.1.1113" "7677bb1179ebb15ebf954a87bd1078f1c547673d946dadafd23ece8cd61f5a9f"
                  "1.11.1.1124" "9c7d226ae1c08b6dbb7f10c9ca1ab8c80f8d5021b6a1e535b5dd92ba3ff062db"
