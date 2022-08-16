@@ -1,6 +1,6 @@
 FROM eclipse-temurin:11-jdk-focal
 
-ENV LEIN_VERSION=2.9.8
+ENV LEIN_VERSION=2.9.10
 ENV LEIN_INSTALL=/usr/local/bin/
 
 WORKDIR /tmp
@@ -11,10 +11,10 @@ apt-get update && \
 apt-get install -y make gnupg wget && \
 rm -rf /var/lib/apt/lists/* && \
 mkdir -p $LEIN_INSTALL && \
-wget -q https://raw.githubusercontent.com/technomancy/leiningen/$LEIN_VERSION/bin/lein-pkg && \
+wget -q https://codeberg.org/leiningen/leiningen/raw/tag/$LEIN_VERSION/bin/lein-pkg && \
 echo "Comparing lein-pkg checksum ..." && \
 sha256sum lein-pkg && \
-echo "9952cba539cc6454c3b7385ebce57577087bf2b9001c3ab5c55d668d0aeff6e9 *lein-pkg" | sha256sum -c - && \
+echo "dbb84d13d6df5b85bbf7f89a39daeed103133c24a4686d037fe6bd65e38e7f32 *lein-pkg" | sha256sum -c - && \
 mv lein-pkg $LEIN_INSTALL/lein && \
 chmod 0755 $LEIN_INSTALL/lein && \
 export GNUPGHOME="$(mktemp -d)" && \
@@ -25,8 +25,8 @@ if printf '%s\n%s\n' "2.9.7" "$LEIN_VERSION" | sort -cV; then \
               gpg --batch --keyserver hkps://keyserver.ubuntu.com --recv-keys 20242BACBBE95ADA22D0AFD7808A33D379C806C3; \
               FILENAME_EXT=zip; \
             fi && \
-wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT && \
-wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT.asc && \
+wget -q https://codeberg.org/leiningen/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT && \
+wget -q https://codeberg.org/leiningen/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT.asc && \
 echo "Verifying file PGP signature..." && \
 gpg --batch --verify leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT.asc leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT && \
 gpgconf --kill all && \
