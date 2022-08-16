@@ -69,18 +69,15 @@
 (def build-tools
   {"lein"       "2.9.10"
    "boot"       "2.8.3"
-   "tools-deps" "1.11.1.1149"})
+   "tools-deps" "1.11.1.1155"})
 
 (def default-build-tool "tools-deps")
 
 (def installer-hashes
   {"lein"       {"2.9.10" "dbb84d13d6df5b85bbf7f89a39daeed103133c24a4686d037fe6bd65e38e7f32"}
    "boot"       {"2.8.3" "0ccd697f2027e7e1cd3be3d62721057cbc841585740d0aaa9fbb485d7b1f17c3"}
-   "tools-deps" {"1.11.1.1113" "7677bb1179ebb15ebf954a87bd1078f1c547673d946dadafd23ece8cd61f5a9f"
-                 "1.11.1.1124" "9c7d226ae1c08b6dbb7f10c9ca1ab8c80f8d5021b6a1e535b5dd92ba3ff062db"
-                 "1.11.1.1129" "02bec16a9bc0a7a1a7912ca72fc8042f46e106369e572ca7185a8522e8f40123"
-                 "1.11.1.1139" "2ba0de34f122f26580e3e6337bd04c8e3f9f648299367b17da85f00d930e191c"
-                 "1.11.1.1149" "9aadc1a1840a458517a6efb111eba72be93c17bbdc874c833ef781e77aacc55e"}})
+   "tools-deps" {"1.11.1.1149" "9aadc1a1840a458517a6efb111eba72be93c17bbdc874c833ef781e77aacc55e"
+                 "1.11.1.1155" "7eb9aa2ecc6c0abfdb1578d4b99ca7c2055111aafa38524a12a6fb76fe01f30b"}})
 
 (def exclusions ; don't build these for whatever reason(s)
   ;; commented out example
