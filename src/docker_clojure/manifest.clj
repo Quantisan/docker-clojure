@@ -15,6 +15,8 @@
           (docker-tag {:omit-build-tool? true} variant)
           (docker-tag {:omit-build-tool-version? true} variant)
           (docker-tag {:omit-distro? true} variant)
+          (docker-tag {:omit-distro? true, :omit-build-tool-version? true} variant)
+          (docker-tag {:omit-jdk? true, :omit-build-tool-version? true} variant)
           (docker-tag {:omit-jdk? true, :omit-distro? true
                        :omit-build-tool-version? true} variant))
         vec
