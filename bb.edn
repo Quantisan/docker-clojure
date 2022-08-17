@@ -12,4 +12,5 @@
                 :task    (apply dc/-main "build-images" *command-line-args*)}
   test         {:extra-paths ["test"]
                 :requires    ([docker-clojure.test-runner :as tr])
-                :task        (tr/-main 'docker-clojure.core-test 'docker-clojure.dockerfile-test)}}}
+                :task        (tr/-main 'docker-clojure.core-test 'docker-clojure.dockerfile-test
+                               'docker-clojure.manifest-test)}}}
