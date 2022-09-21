@@ -8,8 +8,7 @@
   dockerfiles  {:depends [clean]
                 :task    (apply dc/-main "dockerfiles" *command-line-args*)}
   manifest     (apply dc/-main "manifest" *command-line-args*)
-  build-images {:depends [clean]
-                :task    (apply dc/-main "build-images" *command-line-args*)}
+  build-images {:task    (apply dc/-main "build-images" *command-line-args*)}
   test         {:extra-paths ["test"]
                 :requires    ([docker-clojure.test-runner :as tr])
                 :task        (tr/-main 'docker-clojure.core-test 'docker-clojure.dockerfile-test
