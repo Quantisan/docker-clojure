@@ -8,7 +8,7 @@
 (def distro-deps
   {:debian-slim {:build   #{"wget" "curl"}
                  :runtime #{"rlwrap" "make" "git"}}
-   :debian      {:build   #{}
+   :debian      {:build   #{"wget" "curl"}
                  :runtime #{"rlwrap" "make"}}
    :ubuntu      {:build   #{"wget"}
                  :runtime #{"rlwrap" "make" "git"}}

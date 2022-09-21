@@ -7,9 +7,11 @@
    [docker-clojure.dockerfile.tools-deps :as tools-deps]
    [docker-clojure.dockerfile.shared :refer :all]))
 
-(defn build-dir [{:keys [base-image-tag build-tool]}]
+(defn build-dir [{:keys [base-image-tag jdk-version build-tool]}]
   (str/join "/" ["target"
-                 (str/replace base-image-tag ":" "-")
+                 (str (str/replace base-image-tag ":" "-")
+                      (when-not (str/includes? base-image-tag (str jdk-version))
+                        (str "-" jdk-version)))
                  (if (= :docker-clojure.core/all build-tool)
                    "latest"
                    build-tool)]))
@@ -38,10 +40,20 @@
     (entrypoint variant)
     ["" "CMD [\"-M\", \"--repl\"]"]))
 
-(defn contents [installer-hashes {:keys [build-tool] :as variant}]
+(defn copy-java-from-temurin-contents
+  [{:keys [jdk-version] :as _variant}]
+  ["ENV JAVA_HOME=/opt/java/openjdk"
+   (str "COPY --from=eclipse-temurin:" jdk-version " $JAVA_HOME $JAVA_HOME")
+   "ENV PATH=\"${JAVA_HOME}/bin:${PATH}\""
+   ""])
+
+(defn contents [installer-hashes {:keys [build-tool distro] :as variant}]
   (str/join "\n"
             (concat [(format "FROM %s" (:base-image-tag variant))
                      ""]
+                    (case (-> distro namespace keyword)
+                      (:debian :debian-slim) (copy-java-from-temurin-contents variant)
+                      [])
                     (case build-tool
                       :docker-clojure.core/all (all-contents installer-hashes variant)
                       "boot" (boot/contents installer-hashes variant)

@@ -24,9 +24,10 @@
           needles))
 
 (defn base-image-tag [base-image jdk-version distro]
-  (str base-image ":" jdk-version
+  (str base-image ":"
        (case base-image
-         "eclipse-temurin" "-jdk-"
+         "eclipse-temurin" (str jdk-version "-jdk-")
+         "debian" ""
          "-")
        (name distro)))
 
@@ -111,7 +112,7 @@
 (def latest-variant
   "The latest variant is special because we include all 3 build tools via the
   [::all] value on the end."
-  (list (:default cfg/base-images)
+  (list (-> cfg/base-images :default first)
         cfg/default-jdk-version
         (get-or-default cfg/default-distros cfg/default-jdk-version)
         [::all]))
@@ -121,11 +122,17 @@
     (fn [variants jdk-version]
       (concat
         variants
-        (let [base-image (get-or-default base-images jdk-version)]
-          (combo/cartesian-product #{(get-or-default base-images jdk-version)}
-                                   #{jdk-version}
-                                   (get-or-default distros base-image)
-                                   build-tools))))
+        (let [jdk-base-images (get-or-default base-images jdk-version)]
+          (loop [[bi & r] jdk-base-images
+                 acc #{}]
+            (let [vs   (combo/cartesian-product #{bi}
+                                                #{jdk-version}
+                                                (get-or-default distros bi)
+                                                build-tools)
+                  acc' (concat acc vs)]
+              (if (seq r)
+                (recur r acc')
+                acc'))))))
     #{} jdk-versions))
 
 (defn image-variants [base-images jdk-versions distros build-tools]
@@ -210,9 +217,8 @@
 
 (defn -main
   [& args]
-  (let [variants (apply generate-variants (rest args))]
-    (case (first args)
-      "clean" (df/clean-all)
-      "dockerfiles" (generate-dockerfiles! cfg/installer-hashes variants)
-      "manifest" (->> variants sort-variants generate-manifest!)
-      (build-images cfg/installer-hashes variants))))
+  (let [[cmd variant-filter-key variant-filter-val] args]
+    (run {:cmd                (if cmd (keyword cmd) :build-images)
+          :variant-filter-key variant-filter-key
+          :variant-filter-val variant-filter-val
+          :parallelization    4})))

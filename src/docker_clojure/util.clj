@@ -11,12 +11,12 @@
 (defn jdk-label
   [omit-default? jdk-version base-image]
   (if (and omit-default? (= cfg/default-jdk-version jdk-version)
-           (= (get-or-default cfg/base-images jdk-version)
+           (= (first (get-or-default cfg/base-images jdk-version))
               base-image))
     nil
     (str
       (case base-image
-        "eclipse-temurin" "temurin"
+        ("eclipse-temurin" "debian") "temurin"
         base-image)
       "-" jdk-version)))
 
