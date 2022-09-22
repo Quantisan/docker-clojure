@@ -7,22 +7,18 @@
 
 (deftest image-variants-test
   (testing "generates the expected set of variants"
-    (with-redefs [cfg/default-distros     {8        :debian-slim/slim-buster
-                                           11       :debian-slim/slim-buster
+    (with-redefs [cfg/default-distros     {8        :debian-slim/buster-slim
+                                           11       :debian-slim/buster-slim
                                            :default :ubuntu/focal}
-                  cfg/base-images         {8        "openjdk"
-                                           11       "openjdk"
-                                           :default "eclipse-temurin"}
                   cfg/default-jdk-version 11
                   cfg/maintainers         ["Paul Lam <paul@quantisan.com>"
                                            "Wes Morgan <wesmorgan@icloud.com>"]]
-      (let [variants (image-variants {8        "openjdk"
-                                      11       "openjdk"
-                                      :default "eclipse-temurin"}
-                                     #{8 11 17}
-                                     {"openjdk" #{:debian/buster
-                                                  :debian-slim/slim-buster
-                                                  :alpine/alpine}
+      (let [variants (image-variants {8        ["debian"]
+                                      11       ["debian"]
+                                      :default ["eclipse-temurin"]}
+                                     #{8 11 17 18}
+                                     {"debian" #{:debian/buster
+                                                 :debian-slim/buster-slim}
                                       :default  #{:alpine/alpine :ubuntu/focal}}
                                      {"lein"       "2.9.1"
                                       "boot"       "2.8.3"
@@ -35,52 +31,52 @@
                                                (= (:build-tool %) (:build-tool v))))
                                  set)
                             v)
-                 {:jdk-version 11, :distro :debian-slim/slim-buster, :build-tool "lein"
-                  :base-image  "openjdk" :base-image-tag "openjdk:11-slim-buster"
+                 {:jdk-version 11, :distro :debian-slim/buster-slim, :build-tool "lein"
+                  :base-image  "debian" :base-image-tag "debian:buster-slim"
                   :maintainer  "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
-                  :docker-tag  "lein-2.9.1", :build-tool-version "2.9.1"}
-                 {:jdk-version 11, :distro :debian-slim/slim-buster, :build-tool "boot"
-                  :base-image  "openjdk" :base-image-tag "openjdk:11-slim-buster"
+                  :docker-tag  "temurin-11-lein-2.9.1", :build-tool-version "2.9.1"}
+                 {:jdk-version 18, :distro :ubuntu/focal, :build-tool "boot"
+                  :base-image  "eclipse-temurin" :base-image-tag "eclipse-temurin:18-jdk-focal"
                   :maintainer  "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
-                  :docker-tag  "boot-2.8.3", :build-tool-version "2.8.3"}
-                 {:jdk-version        11, :distro :debian-slim/slim-buster
-                  :base-image         "openjdk"
-                  :base-image-tag     "openjdk:11-slim-buster"
+                  :docker-tag  "temurin-18-boot-2.8.3", :build-tool-version "2.8.3"}
+                 {:jdk-version        18, :distro :ubuntu/focal
+                  :base-image         "eclipse-temurin"
+                  :base-image-tag     "eclipse-temurin:18-jdk-focal"
                   :build-tool         "tools-deps"
                   :maintainer         "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
-                  :docker-tag         "tools-deps-1.10.1.478"
+                  :docker-tag         "temurin-18-tools-deps-1.10.1.478"
                   :build-tool-version "1.10.1.478"}
                  {:jdk-version 11, :distro :debian/buster, :build-tool "lein"
-                  :base-image  "openjdk" :base-image-tag "openjdk:11-buster"
+                  :base-image  "debian" :base-image-tag "debian:buster"
                   :maintainer  "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
-                  :docker-tag  "lein-2.9.1-buster", :build-tool-version "2.9.1"}
+                  :docker-tag  "temurin-11-lein-2.9.1-buster", :build-tool-version "2.9.1"}
                  {:jdk-version 11, :distro :debian/buster, :build-tool "boot"
-                  :base-image  "openjdk" :base-image-tag "openjdk:11-buster"
+                  :base-image  "debian" :base-image-tag "debian:buster"
                   :maintainer  "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
-                  :docker-tag  "boot-2.8.3-buster", :build-tool-version "2.8.3"}
+                  :docker-tag  "temurin-11-boot-2.8.3-buster", :build-tool-version "2.8.3"}
                  {:jdk-version        11, :distro :debian/buster
-                  :base-image         "openjdk"
-                  :base-image-tag     "openjdk:11-buster"
+                  :base-image         "debian"
+                  :base-image-tag     "debian:buster"
                   :build-tool         "tools-deps"
                   :maintainer         "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
-                  :docker-tag         "tools-deps-1.10.1.478-buster"
+                  :docker-tag         "temurin-11-tools-deps-1.10.1.478-buster"
                   :build-tool-version "1.10.1.478"}
-                 {:jdk-version    8, :distro :debian-slim/slim-buster, :build-tool "lein"
-                  :base-image     "openjdk"
-                  :base-image-tag "openjdk:8-slim-buster"
+                 {:jdk-version    8, :distro :debian-slim/buster-slim, :build-tool "lein"
+                  :base-image     "debian"
+                  :base-image-tag "debian:buster-slim"
                   :maintainer     "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
-                  :docker-tag     "openjdk-8-lein-2.9.1", :build-tool-version "2.9.1"}
-                 {:jdk-version    8, :distro :debian-slim/slim-buster, :build-tool "boot"
-                  :base-image     "openjdk"
-                  :base-image-tag "openjdk:8-slim-buster"
+                  :docker-tag     "temurin-8-lein-2.9.1", :build-tool-version "2.9.1"}
+                 {:jdk-version    8, :distro :debian-slim/buster-slim, :build-tool "boot"
+                  :base-image     "debian"
+                  :base-image-tag "debian:buster-slim"
                   :maintainer     "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
-                  :docker-tag     "openjdk-8-boot-2.8.3", :build-tool-version "2.8.3"}
-                 {:jdk-version        8, :distro :debian-slim/slim-buster
+                  :docker-tag     "temurin-8-boot-2.8.3", :build-tool-version "2.8.3"}
+                 {:jdk-version        8, :distro :debian-slim/buster-slim
                   :build-tool         "tools-deps"
-                  :base-image         "openjdk"
-                  :base-image-tag     "openjdk:8-slim-buster"
+                  :base-image         "debian"
+                  :base-image-tag     "debian:buster-slim"
                   :maintainer         "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
-                  :docker-tag         "openjdk-8-tools-deps-1.10.1.478"
+                  :docker-tag         "temurin-8-tools-deps-1.10.1.478"
                   :build-tool-version "1.10.1.478"}
                  {:jdk-version        17, :distro :ubuntu/focal, :build-tool "lein"
                   :base-image         "eclipse-temurin"
@@ -113,14 +109,14 @@
     (with-redefs [cfg/maintainers ["Paul Lam <paul@quantisan.com>"
                                    "Wes Morgan <wesmorgan@icloud.com>"]]
       (is (= {:jdk-version        8
-              :base-image         "openjdk"
-              :base-image-tag     "openjdk:8-distro"
+              :base-image         "eclipse-temurin"
+              :base-image-tag     "eclipse-temurin:8-jdk-distro"
               :distro             :distro/distro
               :build-tool         "build-tool"
-              :docker-tag         "openjdk-8-build-tool-1.2.3-distro"
+              :docker-tag         "temurin-8-build-tool-1.2.3-distro"
               :build-tool-version "1.2.3"
               :maintainer         "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"}
-             (variant-map '("openjdk" 8 :distro/distro ["build-tool" "1.2.3"])))))))
+             (variant-map '("eclipse-temurin" 8 :distro/distro ["build-tool" "1.2.3"])))))))
 
 (deftest exclude?-test
   (testing "excludes variant that matches all key-values in any exclusion"

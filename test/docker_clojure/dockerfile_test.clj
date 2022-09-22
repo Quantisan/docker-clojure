@@ -17,12 +17,14 @@
   (testing "includes 'FROM base-image'"
     (is (str/includes? (contents cfg/installer-hashes
                                  {:base-image-tag "base:foo"
+                                  :distro         :distro/distro
                                   :build-tool     "boot"
                                   :jdk-version    11})
                        "FROM base:foo")))
   (testing "has no labels (Docker recommends against for base images)"
     (is (not (str/includes? (contents cfg/installer-hashes
                                       {:base-image-tag "base:foo"
+                                       :distro         :distro/distro
                                        :build-tool     "boot"
                                        :maintainer     "Me Myself"
                                        :jdk-version    11})
@@ -31,6 +33,7 @@
     (with-redefs [lein/contents (constantly ["leiningen vs. the ants"])]
       (is (str/includes? (contents cfg/installer-hashes
                                    {:base-image-tag "base:foo"
+                                    :distro         :distro/distro
                                     :build-tool     "lein"
                                     :maintainer     "Me Myself"})
                          "leiningen vs. the ants"))))
@@ -38,6 +41,7 @@
     (with-redefs [boot/contents (constantly ["Booty McBootface"])]
       (is (str/includes? (contents cfg/installer-hashes
                                    {:base-image-tag "base:foo"
+                                    :distro         :distro/distro
                                     :build-tool     "boot"
                                     :maintainer     "Me Myself"})
                          "Booty McBootface"))))
@@ -46,6 +50,7 @@
                                         ["Tools Deps is not a build tool"])]
       (is (str/includes? (contents cfg/installer-hashes
                                    {:base-image-tag "base:foo"
+                                    :distro         :distro/distro
                                     :build-tool     "tools-deps"
                                     :maintainer     "Me Myself"})
                          "Tools Deps is not a build tool")))))
