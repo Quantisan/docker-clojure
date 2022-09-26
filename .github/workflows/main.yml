@@ -8,9 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: turtlequeue/setup-babashka@v1.3.0
+    - name: Install babashka
+      uses: DeLaGuardo/setup-clojure@9.5
       with:
-        babashka-version: 0.10.163
+        bb: 0.10.163
     - uses: actions/checkout@v2
     - name: Run tests
       run: bb run test
