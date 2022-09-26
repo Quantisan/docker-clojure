@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: turtlequeue/setup-babashka@v1.3.0
       with:
-        babashka-version: 0.8.1
+        babashka-version: 0.10.163
     - uses: actions/checkout@v2
     - name: Run tests
       run: bb run test
