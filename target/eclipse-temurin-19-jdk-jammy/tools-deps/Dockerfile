@@ -1,4 +1,4 @@
-FROM eclipse-temurin:18-jdk-jammy
+FROM eclipse-temurin:19-jdk-jammy
 
 ENV CLOJURE_VERSION=1.11.1.1165
 

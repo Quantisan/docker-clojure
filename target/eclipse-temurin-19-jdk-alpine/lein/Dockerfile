@@ -1,4 +1,4 @@
-FROM eclipse-temurin:18-jdk-focal
+FROM eclipse-temurin:19-jdk-alpine
 
 ENV LEIN_VERSION=2.9.10
 ENV LEIN_INSTALL=/usr/local/bin/
@@ -7,9 +7,7 @@ WORKDIR /tmp
 
 # Download the whole repo as an archive
 RUN set -eux; \
-apt-get update && \
-apt-get install -y make gnupg wget && \
-rm -rf /var/lib/apt/lists/* && \
+apk add --no-cache ca-certificates bash tar openssl gnupg && \
 mkdir -p $LEIN_INSTALL && \
 wget -q https://codeberg.org/leiningen/leiningen/raw/tag/$LEIN_VERSION/bin/lein-pkg && \
 echo "Comparing lein-pkg checksum ..." && \
@@ -33,7 +31,7 @@ gpgconf --kill all && \
 rm -rf "$GNUPGHOME" leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT.asc && \
 mkdir -p /usr/share/java && \
 mv leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar && \
-apt-get purge -y --auto-remove gnupg wget
+apk del ca-certificates tar openssl gnupg
 
 ENV PATH=$PATH:$LEIN_INSTALL
 ENV LEIN_ROOT 1

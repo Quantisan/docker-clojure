@@ -1,4 +1,4 @@
-FROM eclipse-temurin:18-jdk-jammy
+FROM eclipse-temurin:19-jdk-focal
 
 ENV BOOT_VERSION=2.8.3
 ENV BOOT_INSTALL=/usr/local/bin/
