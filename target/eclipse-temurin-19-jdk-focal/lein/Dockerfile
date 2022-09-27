@@ -1,4 +1,4 @@
-FROM eclipse-temurin:18-jdk-jammy
+FROM eclipse-temurin:19-jdk-focal
 
 ENV LEIN_VERSION=2.9.10
 ENV LEIN_INSTALL=/usr/local/bin/
