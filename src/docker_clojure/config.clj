@@ -42,8 +42,8 @@
 (def jdk-versions #{8 11 17 19})
 
 (def base-images
-  "Map of JDK version to base image name with :default as a fallback"
-  {:default "eclipse-temurin"})
+  "Map of JDK version to base image name(s) with :default as a fallback"
+  {:default ["eclipse-temurin" "debian"]})
 
 ;; The default JDK version to use for tags that don't specify one; usually the latest LTS release
 (def default-jdk-version 17)
@@ -51,7 +51,8 @@
 (def distros
   "Map of base image name to set of distro tags to use, namespaced by Linux
   distro type. :default key is a fallback for base images not o/w specified."
-  {:default #{:alpine/alpine :ubuntu/focal :ubuntu/jammy}})
+  {:default #{:alpine/alpine :ubuntu/focal :ubuntu/jammy}
+   "debian" #{:debian-slim/bullseye-slim :debian/bullseye}})
 
 (def default-architectures
   #{"amd64" "arm64v8"})

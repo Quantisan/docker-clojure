@@ -4,11 +4,13 @@
     [clojure.math.combinatorics :as combo]
     [clojure.spec.alpha :as s]
     [clojure.string :as str]
+    [clojure.core.async :refer [<!! chan to-chan! pipeline-blocking] :as async]
     [docker-clojure.config :as cfg]
     [docker-clojure.dockerfile :as df]
     [docker-clojure.manifest :as manifest]
     [docker-clojure.util :refer [get-or-default default-docker-tag
                                  full-docker-tag]]
+    [docker-clojure.log :refer [log] :as logger]
     [clojure.edn :as edn]))
 
 (defn contains-every-key-value?
@@ -22,9 +24,10 @@
           needles))
 
 (defn base-image-tag [base-image jdk-version distro]
-  (str base-image ":" jdk-version
+  (str base-image ":"
        (case base-image
-         "eclipse-temurin" "-jdk-"
+         "eclipse-temurin" (str jdk-version "-jdk-")
+         "debian" ""
          "-")
        (name distro)))
 
@@ -69,7 +72,7 @@
 (defn generate-dockerfile! [installer-hashes variant]
   (let [build-dir (df/build-dir variant)
         filename  "Dockerfile"]
-    (println "Generating" (str build-dir "/" filename))
+    (log "Generating" (str build-dir "/" filename))
     (df/write-file build-dir filename installer-hashes variant)
     (assoc variant
       :build-dir build-dir
@@ -78,7 +81,7 @@
 (defn build-image
   [installer-hashes {:keys [docker-tag base-image architectures] :as variant}]
   (let [image-tag     (str "clojure:" docker-tag)
-        _             (println "Pulling base image" base-image)
+        _             (log "Pulling base image" base-image)
         _             (pull-image base-image)
 
         {:keys [dockerfile build-dir]}
@@ -97,20 +100,19 @@
         build-cmd     (remove nil? ["docker" "buildx" "build" "--no-cache"
                                     "-t" image-tag platform-flag "--load"
                                     "-f" dockerfile "."])]
-    (apply println "Running" build-cmd)
+    (apply log "Running" build-cmd)
     (let [{:keys [out err exit]}
           (with-sh-dir build-dir (apply sh build-cmd))]
       (if (zero? exit)
-        (println "Succeeded")
-        (do
-          (println "ERROR:" err)
-          (print out)))))
-  (println))
+        (log "Succeeded building" (str "clojure:" docker-tag))
+        (log "ERROR building" (str "clojure:" docker-tag ":") err out))))
+  (log)
+  [::done variant])
 
 (def latest-variant
   "The latest variant is special because we include all 3 build tools via the
   [::all] value on the end."
-  (list (:default cfg/base-images)
+  (list (-> cfg/base-images :default first)
         cfg/default-jdk-version
         (get-or-default cfg/default-distros cfg/default-jdk-version)
         [::all]))
@@ -120,11 +122,17 @@
     (fn [variants jdk-version]
       (concat
         variants
-        (let [base-image (get-or-default base-images jdk-version)]
-          (combo/cartesian-product #{(get-or-default base-images jdk-version)}
-                                   #{jdk-version}
-                                   (get-or-default distros base-image)
-                                   build-tools))))
+        (let [jdk-base-images (get-or-default base-images jdk-version)]
+          (loop [[bi & r] jdk-base-images
+                 acc #{}]
+            (let [vs   (combo/cartesian-product #{bi}
+                                                #{jdk-version}
+                                                (get-or-default distros bi)
+                                                build-tools)
+                  acc' (concat acc vs)]
+              (if (seq r)
+                (recur r acc')
+                acc'))))))
     #{} jdk-versions))
 
 (defn image-variants [base-images jdk-versions distros build-tools]
@@ -137,10 +145,14 @@
                                       build-tools)
           latest-variant)))
 
-(defn build-images [installer-hashes variants]
-  (println "Building images")
-  (doseq [variant variants]
-    (build-image installer-hashes variant)))
+(defn build-images [parallelization installer-hashes variants]
+  (log "Building images" parallelization "at a time")
+  (let [variants-ch (to-chan! variants)
+        builds-ch   (chan parallelization)]
+    (async/thread (pipeline-blocking parallelization builds-ch
+                                     (map (partial build-image installer-hashes))
+                                     variants-ch))
+    (while (<!! builds-ch))))
 
 (defn generate-dockerfiles! [installer-hashes variants]
   (doseq [variant variants]
@@ -157,7 +169,7 @@
                                      :architectures cfg/default-architectures
                                      :git-repo      cfg/git-repo}
                                     git-head variants)]
-    (println "Writing manifest of" (count variants) "variants to clojure.manifest...")
+    (log "Writing manifest of" (count variants) "variants to clojure.manifest...")
     (spit "clojure.manifest" manifest)))
 
 (defn sort-variants
@@ -180,8 +192,8 @@
 
 (defn generate-variants
   [& args]
-  (let [variant-filter-key (some-> args second edn/read-string)
-        variant-filter-val (nth args 2 nil)
+  (let [variant-filter-key (some-> args first edn/read-string)
+        variant-filter-val (nth args 1 nil)
         variant-filter     (if variant-filter-key
                              (if variant-filter-val
                                #(= (get % variant-filter-key)
@@ -190,11 +202,23 @@
                              (constantly true))]
     (filter variant-filter (valid-variants))))
 
+(defn run
+  "Entrypoint for exec-fn. TODO: Make -main use this."
+  [args]
+  (logger/start)
+  (let [variants (generate-variants (:variant-filter-key args) (:variant-filter-val args))]
+    (log "Generated" (count variants) "variants")
+    (case (:cmd args)
+      :clean (df/clean-all)
+      :dockerfiles (generate-dockerfiles! cfg/installer-hashes variants)
+      :manifest (->> variants sort-variants generate-manifest!)
+      :build-images (build-images (:parallelization args) cfg/installer-hashes variants)))
+  (logger/stop))
+
 (defn -main
   [& args]
-  (let [variants (apply generate-variants args)]
-    (case (first args)
-      "clean" (df/clean-all)
-      "dockerfiles" (generate-dockerfiles! cfg/installer-hashes variants)
-      "manifest" (->> variants sort-variants generate-manifest!)
-      (build-images cfg/installer-hashes variants))))
+  (let [[cmd variant-filter-key variant-filter-val] args]
+    (run {:cmd                (if cmd (keyword cmd) :build-images)
+          :variant-filter-key variant-filter-key
+          :variant-filter-val variant-filter-val
+          :parallelization    4})))

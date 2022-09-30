@@ -6,7 +6,8 @@
 (def distro-deps
   {:debian-slim {:build   #{"wget"}
                  :runtime #{}}
-   :debian      {:runtime #{"make"}}
+   :debian      {:build   #{"wget"}
+                 :runtime #{"make"}}
    :ubuntu      {:build   #{"wget"}
                  :runtime #{}}
    :alpine      {:build   #{"openssl"}

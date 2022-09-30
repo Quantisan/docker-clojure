@@ -6,7 +6,7 @@
 (def distro-deps
   {:debian-slim {:build   #{"wget" "gnupg"}
                  :runtime #{}}
-   :debian      {:build   #{"gnupg"}
+   :debian      {:build   #{"wget" "gnupg"}
                  :runtime #{"make"}}
    :ubuntu      {:build   #{"wget" "gnupg"}
                  :runtime #{"make"}}
