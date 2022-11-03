@@ -145,12 +145,22 @@
                                       build-tools)
           latest-variant)))
 
+(defn rand-delay
+  "Runs argument f w/ any supplied args after a random delay of 100-1000 ms"
+  [f & args]
+  (let [rand-time (+ 100 (rand-int 900))]
+    (Thread/sleep rand-time)
+    (apply f args)))
+
 (defn build-images [parallelization installer-hashes variants]
   (log "Building images" parallelization "at a time")
   (let [variants-ch (to-chan! variants)
         builds-ch   (chan parallelization)]
+    ;; Kick off builds with a random delay so we don't have Docker race
+    ;; conditions (e.g. build container name collisions)
     (async/thread (pipeline-blocking parallelization builds-ch
-                                     (map (partial build-image installer-hashes))
+                                     (map (partial rand-delay build-image
+                                                   installer-hashes))
                                      variants-ch))
     (while (<!! builds-ch))))
 
