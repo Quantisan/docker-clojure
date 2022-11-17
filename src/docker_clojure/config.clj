@@ -82,8 +82,15 @@
                  "1.11.1.1200" "694381cb78d44f143bdcc38657507f012ebac4009bc57cec67abef1675447878"}})
 
 (def exclusions ; don't build these for whatever reason(s)
-  ;; commented out example
-  #{#_{:jdk-version 8
+  #{; boot on JDK 8 & Alpine is encountering a TLS handshake error trying to
+    ; download boot as of 2022-11-17. Probably would deprecate one or both of
+    ; JDK 8 and/or boot variants before spending much time working around an
+    ; issue like this.
+    {:jdk-version 8
+     :build-tool  "boot"
+     :distro      :alpine/alpine}
+    ;; commented out example
+    #_{:jdk-version 8
        :distro      :alpine/alpine}})
 
 (def maintainers
