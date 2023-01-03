@@ -9,7 +9,7 @@
   {:debian-slim {:build   #{"wget" "curl"}
                  :runtime #{"rlwrap" "make" "git"}}
    :debian      {:build   #{"wget" "curl"}
-                 :runtime #{"rlwrap" "make"}}
+                 :runtime #{"rlwrap" "make" "git"}}
    :ubuntu      {:build   #{"wget"}
                  :runtime #{"rlwrap" "make" "git"}}
    :alpine      {:build   #{"curl"}
