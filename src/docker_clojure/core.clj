@@ -230,7 +230,6 @@
 (defn -main
   [& cmd-args]
   (let [[cmd & args] cmd-args]
-    (println "args:" (pr-str args))
     (run {:cmd                (if cmd (keyword cmd) :build-images)
           :args               args
           :parallelization    4})))
