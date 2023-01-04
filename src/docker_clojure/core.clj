@@ -201,34 +201,36 @@
     variants))
 
 (defn generate-variants
-  [& args]
-  (let [variant-filter-key (some-> args first edn/read-string)
-        variant-filter-val (nth args 1 nil)
-        variant-filter     (if variant-filter-key
-                             (if variant-filter-val
-                               #(= (get % variant-filter-key)
-                                   variant-filter-val)
-                               #(contains? % variant-filter-key))
-                             (constantly true))]
+  [args]
+  (let [key-vals (->> args
+                      (map #(if (str/starts-with? % ":")
+                              (edn/read-string %)
+                              %)) ; TODO: Maybe replace this with bb/cli
+                      (partition 2))
+        variant-filter #(or
+                          (empty? key-vals)
+                          (every? (fn [[k v]]
+                                    (= (get % k) v))
+                                  key-vals))]
     (filter variant-filter (valid-variants))))
 
 (defn run
   "Entrypoint for exec-fn. TODO: Make -main use this."
-  [args]
+  [{:keys [cmd args parallelization]}]
   (logger/start)
-  (let [variants (generate-variants (:variant-filter-key args) (:variant-filter-val args))]
+  (let [variants (generate-variants args)]
     (log "Generated" (count variants) "variants")
-    (case (:cmd args)
+    (case cmd
       :clean (df/clean-all)
       :dockerfiles (generate-dockerfiles! cfg/installer-hashes variants)
       :manifest (->> variants sort-variants generate-manifest!)
-      :build-images (build-images (:parallelization args) cfg/installer-hashes variants)))
+      :build-images (build-images parallelization cfg/installer-hashes variants)))
   (logger/stop))
 
 (defn -main
-  [& args]
-  (let [[cmd variant-filter-key variant-filter-val] args]
+  [& cmd-args]
+  (let [[cmd & args] cmd-args]
+    (println "args:" (pr-str args))
     (run {:cmd                (if cmd (keyword cmd) :build-images)
-          :variant-filter-key variant-filter-key
-          :variant-filter-val variant-filter-val
+          :args               args
           :parallelization    4})))
