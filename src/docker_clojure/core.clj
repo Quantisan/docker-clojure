@@ -232,4 +232,4 @@
   (let [[cmd & args] cmd-args]
     (run {:cmd                (if cmd (keyword cmd) :build-images)
           :args               args
-          :parallelization    4})))
+          :parallelization    1})))
