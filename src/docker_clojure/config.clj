@@ -86,9 +86,12 @@
     ; download boot as of 2022-11-17. Probably would deprecate one or both of
     ; JDK 8 and/or boot variants before spending much time working around an
     ; issue like this.
-    {:jdk-version 8
-     :build-tool  "boot"
-     :distro      :alpine/alpine}
+    {:jdk-version 20
+     :distro      :ubuntu/focal} ; no more focal builds for JDK 20+
+    {:build-tool "boot"
+     :distro     :alpine/alpine} ; boot is breaking on Alpine
+    {:jdk-version 20
+     :build-tool  "boot"} ; we're no longer building boot variants for JDK 20+
     ;; commented out example
     #_{:jdk-version 8
        :distro      :alpine/alpine}})
