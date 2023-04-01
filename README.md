@@ -2,42 +2,54 @@
 
 This is the repository for the [official Docker image for Clojure](https://registry.hub.docker.com/_/clojure/).
 It is automatically pulled and built by Stackbrew into the Docker registry.
-This image runs on OpenJDK 8, 11, 17, and more recent releases and includes [Leiningen](http://leiningen.org),
-[boot](http://boot-clj.com), and/or [tools-deps](https://clojure.org/reference/deps_and_cli)
+This image runs on OpenJDK 8, 11, 17, and more recent releases and includes
+[Leiningen](http://leiningen.org) or [tools-deps](https://clojure.org/reference/deps_and_cli)
 (see below for tags and building instructions).
 
-## Leiningen vs. boot vs. tools-deps
+## Leiningen vs. tools-deps
 
 The version tags on these images look like `(temurin-major-version-)lein-N.N.N(-distro)`,
-`(temurin-major-version-)boot-N.N.N(-distro)`, and `(temurin-major-version-)tools-deps(-distro)`.
-These refer to which version of leiningen, boot, or tools-deps is packaged in the image (because they can then install
-and use any version of Clojure at runtime). The `lein` (or `lein-bullseye-slim`, `temurin-17-lein`, etc.)
-images will always have a recent version of leiningen installed. If you want boot, specify either `clojure:boot`,
-`clojure:boot-bullseye-slim`, or `clojure:boot-N.N.N`, `clojure:boot-N.N.N-bullseye-slim`,
-`clojure:temurin-17-boot-N.N.N-bullseye-slim`, etc. (where `N.N.N` is the version of boot you want installed). If
-you want to use tools-deps, specify either `clojure:tools-deps`, `clojure:tools-deps-bullseye-slim` or other similar
-variants.
+or `(temurin-major-version-)tools-deps(-distro)`. These refer to which version
+of leiningen or tools-deps is packaged in the image (because they can then install
+and use any version of Clojure at runtime). The `lein` (or `lein-bullseye-slim`,
+`temurin-17-lein`, etc.) images will always have a recent version of leiningen
+installed. If you want to use tools-deps, specify either `clojure:tools-deps`,
+`clojure:tools-deps-bullseye-slim` or other similar variants.
+
+### boot
+
+Prior to JDK 20 we provided [boot](https://boot-clj.github.io) variants as well. 
+Boot hasn't had a release since 2019, and it is breaking in more and more image
+variants. Boot variants are now deprecated and no new boot images will be
+provided for JDK 20+, it will no longer be installed in the `latest` image, and
+no alpine-based images will be provided for any JDK version (due to breakage).
+As long as the image builds don't break, we will continue providing boot images
+for non-alpine distros for JDK 19 and lower.
 
 ### Note about the latest tag
 
-As of 2020-3-20 the `clojure:latest` (also `clojure` because `latest` is the default) now has leiningen, boot, and
-tools-deps installed.
+As of 2020-3-20 the `clojure:latest` (also `clojure` because `latest` is the
+default) now has leiningen and tools-deps installed.
 
-Previously this tag only had leiningen installed. Installing the others is helpful for quick start examples, newcomers,
-etc. as leiningen is by no means the de facto standard build tool these days. The downside is that the image is larger.
-But for the `latest` tag it's a good trade-off because for anything real we have always recommended using more specific
-tags. No other tags are affected by this change.
+Previously this tag only had leiningen installed. Installing tools-deps too is
+helpful for quick start examples, newcomers, etc. as leiningen is by no means
+the de facto standard build tool these days. The downside is that the image is
+larger. But for the `latest` tag it's a good trade-off because for anything real
+we have always recommended using more specific tags. No other tags are affected
+by this change.
 
 ## JDK versions
 
-Java follows a release cadence of every 6 months with an LTS (long-term support) release every 3 years.
-As of 2019-9-25, our images will default to the latest LTS release of OpenJDK (currently 17). But we also now provide
-the ability to specify which version of Java you'd like via Docker tags:
+Java follows a release cadence of every 6 months with an LTS (long-term support)
+release every 3 years. As of 2019-9-25, our images will default to the latest
+LTS release of OpenJDK (currently 17). But we also now provide the ability to
+specify which version of Java you'd like via Docker tags:
 
 JDK 1.8 tools-deps image: `clojure:temurin-8-tools-deps`
 JDK 11 variant of the tools-deps image: `clojure:temurin-11-tools-deps` or `clojure:temurin-11`
 JDK 17 variant of the tools-deps image: `clojure:tools-deps` or `clojure:temurin-17` or `clojure:temurin-17-tools-deps`
 JDK 19 with boot 2.8.3: `clojure:temurin-19-boot-2.8.3`
+JDK 20 with the latest version of lein: `clojure:temurin-20-lein`
 
 ## Linux distro
 
