@@ -21,11 +21,6 @@
 
 (defn all-contents [installer-hashes variant]
   (concat
-    ["### INSTALL BOOT ###"]
-    (boot/install
-      installer-hashes
-      (assoc variant :build-tool-version
-             (get-in variant [:build-tool-versions "boot"])))
     ["" "### INSTALL LEIN ###"]
     (lein/install
       installer-hashes
