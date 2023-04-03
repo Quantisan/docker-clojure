@@ -24,7 +24,7 @@ variants. Boot variants are now deprecated and no new boot images will be
 provided for JDK 20+, it will no longer be installed in the `latest` image, and
 no alpine-based images will be provided for any JDK version (due to breakage).
 As long as the image builds don't break, we will continue providing boot images
-for non-alpine distros for JDK 19 and lower.
+for non-alpine distros for JDK 17 and lower until those versions are EOL'd.
 
 ### Note about the latest tag
 
@@ -48,7 +48,7 @@ specify which version of Java you'd like via Docker tags:
 JDK 1.8 tools-deps image: `clojure:temurin-8-tools-deps`
 JDK 11 variant of the tools-deps image: `clojure:temurin-11-tools-deps` or `clojure:temurin-11`
 JDK 17 variant of the tools-deps image: `clojure:tools-deps` or `clojure:temurin-17` or `clojure:temurin-17-tools-deps`
-JDK 19 with boot 2.8.3: `clojure:temurin-19-boot-2.8.3`
+JDK 17 with boot 2.8.3: `clojure:temurin-17-boot-2.8.3`
 JDK 20 with the latest version of lein: `clojure:temurin-20-lein`
 
 ## Linux distro
@@ -87,7 +87,7 @@ As of 2022-9-29 these are available for the linux/amd64 architecture only.
 Some example tags:
 
 Java 17 leiningen on Alpine: `clojure:temurin-17-alpine` `clojure:temurin-17-lein-alpine`
-Java 19 tools-deps on Alpine: `clojure:temurin-19-tools-deps-alpine` or `clojure:temurin-19-alpine`
+Java 20 tools-deps on Alpine: `clojure:temurin-20-tools-deps-alpine` or `clojure:temurin-20-alpine`
 
 ### `clojure:slim-buster` / `clojure:slim-bullseye`
 
