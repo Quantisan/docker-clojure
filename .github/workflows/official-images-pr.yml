@@ -28,7 +28,7 @@ jobs:
           retention-days: 1
   open-official-images-pr:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    depends-on: generate-manifest-file
     steps:
       - name: Download clojure.manifest artifact
         uses: actions/download-artifact@v3
