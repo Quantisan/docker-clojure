@@ -5,13 +5,25 @@ on:
     workflows: ["CI"]
     types: ["completed"]
     branches: ["master"]
-    paths: ["target/**"]
 
 jobs:
+  get-event-source:
+    runs-on: ubuntu-latest
+    outputs:
+      source-event: ${{ steps.event-source.outputs.sourceEvent }}
+    steps:
+      - name: Get workflow run source event
+        uses: potiuk/get-workflow-origin@v1_1
+        id: event-source
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          sourceRunId: ${{ github.event.workflow_run.id }}
   generate-manifest-file:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
+      - name: Output source event
+        run: echo '${{ toJSON(jobs.get-event-source.event-source) }}'
       - name: Checkout repo
         uses: actions/checkout@v3
       - name: Setup babashka
