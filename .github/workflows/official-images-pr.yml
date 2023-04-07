@@ -9,6 +9,7 @@ on:
 jobs:
   get-event-source:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     outputs:
       source-event: ${{ steps.event-source.outputs.sourceEvent }}
     steps:
@@ -20,10 +21,10 @@ jobs:
           sourceRunId: ${{ github.event.workflow_run.id }}
   generate-manifest-file:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    needs: get-event-source
     steps:
       - name: Output source event
-        run: echo '${{ toJSON(jobs.get-event-source.event-source) }}'
+        run: echo '${{ toJSON(jobs.get-event-source.outputs.event-source) }}'
       - name: Checkout repo
         uses: actions/checkout@v3
       - name: Setup babashka
