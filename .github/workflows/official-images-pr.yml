@@ -28,7 +28,7 @@ jobs:
           retention-days: 1
   open-official-images-pr:
     runs-on: ubuntu-latest
-    depends-on: generate-manifest-file
+    needs: generate-manifest-file
     steps:
       - name: Download clojure.manifest artifact
         uses: actions/download-artifact@v3
