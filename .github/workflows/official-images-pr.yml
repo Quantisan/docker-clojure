@@ -1,0 +1,55 @@
+name: Create pull request in docker-library/official-images repo
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: ["completed"]
+    branches: ["master"]
+
+jobs:
+  generate-manifest-file:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Setup babashka
+        uses: DeLaGuardo/setup-clojure@10.2
+        with:
+          bb: 1.3.176
+      - name: Generate clojure.manifest file
+        run: bb run manifest
+      - name: Upload clojure.manifest artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: clojure.manifest
+          path: clojure.manifest
+          retention-days: 1
+  open-official-images-pr:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Download clojure.manifest artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: clojure.manifest
+      - name: Rename manifest file
+        run: mv clojure.manifest clojure
+      - name: Get user email
+        id: email
+        uses: evvanErb/get-github-email-by-username-action@v1.25
+        with:
+          github-username: ${{ github.actor }}
+          token: ${{ secrets.API_TOKEN_GITHUB }}
+      - name: Open docker-library/official-images pull request
+        uses: paygoc6/action-pull-request-another-repo@v1.0.5
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source_folder: './clojure'
+          destination_repo: 'docker-library/official-images'
+          destination_folder: 'library'
+          destination_base_branch: 'master'
+          destination_head_branch: 'update/clojure'
+          user_name: ${{ github.actor }}
+          user_email: ${{ steps.email.outputs.email }}
