@@ -5,6 +5,7 @@ on:
     workflows: ["CI"]
     types: ["completed"]
     branches: ["master"]
+    paths: ["target/**"]
 
 jobs:
   generate-manifest-file:
