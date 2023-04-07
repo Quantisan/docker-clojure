@@ -24,7 +24,7 @@ jobs:
     needs: get-event-source
     steps:
       - name: Output source event
-        run: echo '${{ toJSON(needs.get-event-source.outputs.event-source) }}'
+        run: echo '${{ toJSON(needs.get-event-source.outputs.source-event) }}'
       - name: Checkout repo
         uses: actions/checkout@v3
       - name: Setup babashka
