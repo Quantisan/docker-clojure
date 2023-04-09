@@ -1,5 +1,4 @@
 .cpcache/
 .nrepl-port
 target/**/images.tar
-
-/clojure.manifest
+target/docker.manifest
