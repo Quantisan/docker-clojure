@@ -38,9 +38,8 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: manifest
-          path: clojure
       - name: Copy manifest into official-images library
-        run: cp clojure official-images/library/
+        run: cp docker.manifest official-images/library/clojure
       - name: Get user email
         id: email
         uses: evvanErb/get-github-email-by-username-action@v1.25
