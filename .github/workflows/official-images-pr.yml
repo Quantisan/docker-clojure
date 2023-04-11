@@ -25,15 +25,30 @@ jobs:
           name: manifest
           path: target/docker.manifest
           retention-days: 1
-  open-official-images-pr:
+  compare-manifests:
     runs-on: ubuntu-latest
     needs: [generate-docker-manifest]
+    outputs:
+      diff: ${{ steps.manifest-diff.outputs.diff }}
     steps:
       - name: Checkout docker-library/official-images repo
         uses: actions/checkout@v3
         with:
           repository: docker-library/official-images
           path: official-images
+      - name: Download manifest artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: manifest
+      - name: Compare manifest files
+        id: manifest-diff
+        # -IGitCommit: makes it ignore changes in the GitCommit: line b/c that will always be different
+        run: 'echo "diff=\"$(diff -q -IGitCommit: docker.manifest official-images/library/clojure)\"" >> $GITHUB_OUTPUT'
+  open-official-images-pr:
+    runs-on: ubuntu-latest
+    needs: [compare-manifests]
+    if: contains(needs.compare-manifests.diff, 'differ')
+    steps:
       - name: Download manifest artifact
         uses: actions/download-artifact@v3
         with:
