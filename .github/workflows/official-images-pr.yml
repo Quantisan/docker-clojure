@@ -53,6 +53,11 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: manifest
+      - name: Checkout docker-library/official-images repo
+        uses: actions/checkout@v3
+        with:
+          repository: docker-library/official-images
+          path: official-images
       - name: Copy manifest into official-images library
         run: cp docker.manifest official-images/library/clojure
       - name: Get user email
