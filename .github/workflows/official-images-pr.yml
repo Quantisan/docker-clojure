@@ -47,7 +47,7 @@ jobs:
   open-official-images-pr:
     runs-on: ubuntu-latest
     needs: [compare-manifests]
-    if: contains(needs.compare-manifests.diff, 'differ')
+    if: contains(needs.compare-manifests.outputs.diff, 'differ')
     steps:
       - name: Download manifest artifact
         uses: actions/download-artifact@v3
