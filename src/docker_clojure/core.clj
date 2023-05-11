@@ -155,8 +155,8 @@
 
 (defn build-images [parallelization installer-hashes variants]
   (log "Building images" parallelization "at a time")
-  (let [variants-ch (to-chan! variants)
-        builds-ch   (chan parallelization)]
+  (let [variants-ch   (to-chan! variants)
+        builds-ch     (chan parallelization)]
     ;; Kick off builds with a random delay so we don't have Docker race
     ;; conditions (e.g. build container name collisions)
     (async/thread (pipeline-blocking parallelization builds-ch
@@ -204,8 +204,8 @@
                    (if (not= c 0)
                      c
                      (throw
-                       (ex-info "No two variants should have the same full Docker tag"
-                                {:v1 v1, :v2 v2}))))))))
+                      (ex-info "No two variants should have the same full Docker tag"
+                               {:v1 v1, :v2 v2}))))))))
    variants))
 
 (defn generate-variants
@@ -240,4 +240,4 @@
   (let [[cmd & args] cmd-args]
     (run {:cmd             (if cmd (keyword cmd) :build-images)
           :args            args
-          :parallelization 1})))
+          :parallelization 4})))
