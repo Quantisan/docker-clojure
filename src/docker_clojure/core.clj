@@ -175,7 +175,6 @@
                           cfg/build-tools)))
 
 (defn generate-manifest! [variants args]
-  (log "generate-manifest! args:" (pr-str args))
   (let [git-head    (->> ["git" "rev-parse" "HEAD"] (apply sh) :out)
         target-file (or (first args) :stdout)
         manifest    (manifest/generate {:maintainers   cfg/maintainers
