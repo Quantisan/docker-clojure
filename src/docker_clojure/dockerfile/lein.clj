@@ -38,6 +38,7 @@
            "chmod 0755 $LEIN_INSTALL/lein"
            "export GNUPGHOME=\"$(mktemp -d)\""
            "export FILENAME_EXT=jar" ; used to be zip but hopefully it's always jar now?
+           ;; next lein release will use key ID 9D13D9426A0814B3373CF5E3D8A8243577A7859F
            "gpg --batch --keyserver hkps://keyserver.ubuntu.com --recv-keys 6A2D483DB59437EBB97D09B1040193357D0606ED"
            "wget -q https://codeberg.org/leiningen/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT"
            "wget -q https://codeberg.org/leiningen/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT.asc"
