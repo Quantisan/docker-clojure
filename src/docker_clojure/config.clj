@@ -39,14 +39,14 @@
 
 (def git-repo "https://github.com/Quantisan/docker-clojure.git")
 
-(def jdk-versions #{8 11 17 20})
+(def jdk-versions #{8 11 17 20 21})
 
 (def base-images
   "Map of JDK version to base image name(s) with :default as a fallback"
   {:default ["eclipse-temurin" "debian"]})
 
 ;; The default JDK version to use for tags that don't specify one; usually the latest LTS release
-(def default-jdk-version 17)
+(def default-jdk-version 21)
 
 (def distros
   "Map of base image name to set of distro tags to use, namespaced by Linux
@@ -86,12 +86,21 @@
     ; download boot as of 2022-11-17. Probably would deprecate one or both of
     ; JDK 8 and/or boot variants before spending much time working around an
     ; issue like this.
+
+    ; no more focal builds for JDK 20+
+    ; TODO: Add ability to specify version >= 20 for these
     {:jdk-version 20
-     :distro      :ubuntu/focal} ; no more focal builds for JDK 20+
+     :distro      :ubuntu/focal}
+    {:jdk-version 21
+     :distro      :ubuntu/focal}
     {:build-tool "boot"
      :distro     :alpine/alpine} ; boot is breaking on Alpine
+    ; we're no longer building boot variants for JDK 20+
+    ; TODO: Add ability to specify version >= 20 for these
     {:jdk-version 20
-     :build-tool  "boot"} ; we're no longer building boot variants for JDK 20+
+     :build-tool  "boot"}
+    {:jdk-version 21
+     :build-tool  "boot"}
     ;; commented out example
     #_{:jdk-version 8
        :distro      :alpine/alpine}})
