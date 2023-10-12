@@ -12,15 +12,19 @@
       (is ((set tags) "tools-deps"))))
   (testing "Generates jdk-version-build-tool tag for every jdk version"
     (are [jdk-version tag]
-      (let [tags (variant-tags {:base-image         "eclipse-temurin"
+      (let [tags (variant-tags {:base-image         (if (< jdk-version 21)
+                                                      "eclipse-temurin"
+                                                      "debian")
                                 :jdk-version        jdk-version
-                                :distro             :ubuntu/jammy
+                                :distro             (if (< jdk-version 21)
+                                                      :ubuntu/jammy
+                                                      :debian/bookworm)
                                 :build-tool         "tools-deps"
                                 :build-tool-version "1.11.1.1155"})]
         ((set tags) tag))
       11 "temurin-11-tools-deps"
       17 "temurin-17-tools-deps"
-      20 "temurin-20-tools-deps"))
+      21 "temurin-21-tools-deps"))
   (testing "Generates build-tool-distro tag for every distro"
     (are [distro tag]
       (let [tags (variant-tags {:base-image         "debian"

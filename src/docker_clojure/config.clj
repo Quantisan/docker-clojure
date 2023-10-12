@@ -39,14 +39,13 @@
 
 (def git-repo "https://github.com/Quantisan/docker-clojure.git")
 
-(def jdk-versions #{8 11 17 20 21})
+(def jdk-versions #{8 11 17 21})
 
 (def base-images
   "Map of JDK version to base image name(s) with :default as a fallback"
   {8        ["eclipse-temurin" "debian"]
    11       ["eclipse-temurin" "debian"]
    17       ["eclipse-temurin" "debian"]
-   20       ["eclipse-temurin" "debian"]
    :default ["debian" "eclipse-temurin"]})
 
 ;; The default JDK version to use for tags that don't specify one; usually the latest LTS release
@@ -73,7 +72,6 @@
   {8        :ubuntu/jammy
    11       :ubuntu/jammy
    17       :ubuntu/jammy
-   20       :ubuntu/jammy
    :default :debian/bookworm})
 
 (def build-tools
@@ -98,16 +96,12 @@
 
     ; no more focal builds for JDK 20+
     ; TODO: Add ability to specify version >= 20 for these
-    {:jdk-version 20
-     :distro      :ubuntu/focal}
     {:jdk-version 21
      :distro      :ubuntu/focal}
     {:build-tool "boot"
      :distro     :alpine/alpine} ; boot is breaking on Alpine
     ; we're no longer building boot variants for JDK 20+
     ; TODO: Add ability to specify version >= 20 for these
-    {:jdk-version 20
-     :build-tool  "boot"}
     {:jdk-version 21
      :build-tool  "boot"}
     ;; commented out example
