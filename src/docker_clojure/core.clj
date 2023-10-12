@@ -24,7 +24,8 @@
             (= v (get haystack k)))
           needles))
 
-(defn base-image-tag [base-image jdk-version distro]
+(defn base-image-tag
+  [base-image jdk-version distro]
   (str base-image ":"
        (case base-image
          "eclipse-temurin" (str jdk-version "-jdk-")
@@ -44,7 +45,8 @@
                    ::cfg/maintainer ::cfg/docker-tag]
           :opt-un [::cfg/build-tool-versions ::cfg/architectures]))
 
-(defn assoc-if [m pred k v]
+(defn assoc-if
+  [m pred k v]
   (if (pred)
     (assoc m k v)
     m))
@@ -118,7 +120,8 @@
         (get-or-default cfg/default-distros cfg/default-jdk-version)
         [::all]))
 
-(defn image-variant-combinations [base-images jdk-versions distros build-tools]
+(defn image-variant-combinations
+  [base-images jdk-versions distros build-tools]
   (reduce
    (fn [variants jdk-version]
      (concat
@@ -136,7 +139,8 @@
               acc'))))))
    #{} jdk-versions))
 
-(defn image-variants [base-images jdk-versions distros build-tools]
+(defn image-variants
+  [base-images jdk-versions distros build-tools]
   (into #{}
         (comp
          (map variant-map)
@@ -153,7 +157,8 @@
     (Thread/sleep rand-time)
     (apply f args)))
 
-(defn build-images [parallelization installer-hashes variants]
+(defn build-images
+  [parallelization installer-hashes variants]
   (log "Building images" parallelization "at a time")
   (let [variants-ch   (to-chan! variants)
         builds-ch     (chan parallelization)]
