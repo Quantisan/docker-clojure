@@ -41,15 +41,15 @@ by this change.
 ## JDK versions
 
 Java follows a release cadence of every 6 months with an LTS (long-term support)
-release every 3 years. As of 2019-9-25, our images will default to the latest
-LTS release of OpenJDK (currently 17). But we also now provide the ability to
+release every 2-3 years. As of 2019-9-25, our images will default to the latest
+LTS release of OpenJDK (currently 21). But we also now provide the ability to
 specify which version of Java you'd like via Docker tags:
 
 JDK 1.8 tools-deps image: `clojure:temurin-8-tools-deps`
 JDK 11 variant of the tools-deps image: `clojure:temurin-11-tools-deps` or `clojure:temurin-11`
-JDK 17 variant of the tools-deps image: `clojure:tools-deps` or `clojure:temurin-17` or `clojure:temurin-17-tools-deps`
 JDK 17 with boot 2.8.3: `clojure:temurin-17-boot-2.8.3`
 JDK 20 with the latest version of lein: `clojure:temurin-20-lein`
+JDK 21 variant of the tools-deps image: `clojure:tools-deps` or `clojure:temurin-21` or `clojure:temurin-21-tools-deps`
 
 ## Linux distro
 
@@ -64,10 +64,19 @@ want a different base image than what they provide). It is recommended to use
 the Debian variants unless you have a need to use Ubuntu or stick closer to the
 official upstream images.
 
-As of 2022-9-29 the default distro is Ubuntu jammy in order to maintain
-backwards compatibility. But you should not interpret this default as a
-recommendation. Use Debian bullseye or bullseye-slim variants unless you have
-a good, specific reason not to. There are fewer dead ends that way.
+As of 2023-10-12 the default distro is Debian bookworm (12) in JDK 21+ images
+and Ubuntu jammy (22.04) in JDK <=20 images in order to maintain backwards
+compatibility. But we recommend you use Debian variants on any JDK version
+unless you have a good, specific reason not to. There are fewer dead ends that
+way.
+
+### debian-slim
+
+For a lighter-weight image, try the Debian `-slim` variants. You can just put
+`bookworm-slim` (for Debian 12) or `bullseye-slim` (for Debian 11) in the distro
+slot of your Docker tag to get those.
+
+### Examples
 
 You can specify which distro & version you'd like by appending it to the end of
 your Docker tag as in the following examples (but note that not every
@@ -77,6 +86,7 @@ Java 8 leiningen on Debian bullseye-slim: `clojure:temurin-8-lein-bullseye-slim`
 Java 11 leiningen on Debian bullseye: `clojure:temurin-11-lein-bullseye`
 Java 17 tools-deps on Ubuntu focal: `clojure:tools-deps` or `clojure:temurin-17` or `clojure:temurin-17-tools-deps` or `clojure:temurin-17-tools-deps-focal`
 Java 17 tools-deps on Debian bullseye-slim: `clojure:bullseye-slim` or `clojure:tools-deps-bullseye-slim` or `clojure:temurin-17-bullseye-slim` or `clojure:temurin-17-tools-deps-bullseye-slim`
+Java 21 tools-deps on Debian bookworm: `clojure:tools-deps` or `clojure:temurin-21-tools-deps` or `clojure:temurin-21-bookworm`
 
 ### Alpine Linux
 
@@ -88,15 +98,6 @@ Some example tags:
 
 Java 17 leiningen on Alpine: `clojure:temurin-17-alpine` `clojure:temurin-17-lein-alpine`
 Java 20 tools-deps on Alpine: `clojure:temurin-20-tools-deps-alpine` or `clojure:temurin-20-alpine`
-
-### `clojure:slim-buster` / `clojure:slim-bullseye`
-
-These images are based on the Debian buster distribution but have fewer
-packages installed and are thus a bit smaller than the `buster` or `bullseye`
-images. Their use is recommended.
-
-Note that as of 2022-9-29 there are no `slim-focal` images published by the
-eclipse-temurin maintainers, so the slim option there is the `alpine` variant.
 
 ## Examples
 
