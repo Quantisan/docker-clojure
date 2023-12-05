@@ -1,8 +1,8 @@
 (ns docker-clojure.core-test
-  (:require [clojure.test :refer :all]
-            [docker-clojure.core :refer :all]
+  (:require [clojure.test :refer [deftest is are testing]]
+            [docker-clojure.core :refer [exclude? image-variants variant-map]]
             [docker-clojure.config :as cfg]
-            [docker-clojure.util :refer :all]
+            [docker-clojure.util :refer [default-docker-tag]]
             [clojure.string :as str]))
 
 (deftest image-variants-test

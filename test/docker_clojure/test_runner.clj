@@ -1,5 +1,5 @@
 (ns docker-clojure.test-runner
-  (:require [clojure.test :refer :all])
+  (:require [clojure.test :refer [run-tests]])
   (:gen-class))
 
 (defn -main [& namespaces]
@@ -9,4 +9,3 @@
         {:keys [fail error]} test-results
         failures-and-errors (+ fail error)]
     (System/exit failures-and-errors)))
-

@@ -1,5 +1,7 @@
 (ns docker-clojure.dockerfile.boot
-  (:require [docker-clojure.dockerfile.shared :refer :all]))
+  (:require [docker-clojure.dockerfile.shared
+             :refer [concat-commands entrypoint install-distro-deps
+                     uninstall-distro-build-deps]]))
 
 (defn prereqs [_ _] nil)
 

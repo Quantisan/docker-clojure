@@ -1,5 +1,7 @@
 (ns docker-clojure.dockerfile.tools-deps
-  (:require [docker-clojure.dockerfile.shared :refer :all]))
+  (:require [docker-clojure.dockerfile.shared
+             :refer [concat-commands copy-resource-file! entrypoint
+                     install-distro-deps uninstall-distro-build-deps]]))
 
 (defn prereqs [dir _variant]
   (copy-resource-file! dir "rlwrap.retry" identity

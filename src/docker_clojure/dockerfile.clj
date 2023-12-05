@@ -5,7 +5,7 @@
    [docker-clojure.dockerfile.boot :as boot]
    [docker-clojure.dockerfile.lein :as lein]
    [docker-clojure.dockerfile.tools-deps :as tools-deps]
-   [docker-clojure.dockerfile.shared :refer :all]))
+   [docker-clojure.dockerfile.shared :refer [copy-resource-file! entrypoint]]))
 
 (defn build-dir [{:keys [base-image-tag jdk-version build-tool]}]
   (str/join "/" ["target"
