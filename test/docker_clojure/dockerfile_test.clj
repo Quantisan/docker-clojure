@@ -1,7 +1,7 @@
 (ns docker-clojure.dockerfile-test
   (:require [clojure.string :as str]
-            [clojure.test :refer :all]
-            [docker-clojure.dockerfile :refer :all]
+            [clojure.test :refer [deftest is testing]]
+            [docker-clojure.dockerfile :refer [build-dir contents]]
             [docker-clojure.config :as cfg]
             [docker-clojure.dockerfile.lein :as lein]
             [docker-clojure.dockerfile.boot :as boot]

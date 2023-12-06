@@ -1,6 +1,6 @@
 (ns docker-clojure.manifest-test
-  (:require [clojure.test :refer :all]
-            [docker-clojure.manifest :refer :all]))
+  (:require [clojure.test :refer [deftest is are testing]]
+            [docker-clojure.manifest :refer [variant-tags]]))
 
 (deftest variant-tags-test
   (testing "Generates all-defaults tag for a build tool"
