@@ -77,7 +77,7 @@
 (def build-tools
   {"lein"       "2.10.0"
    "boot"       "2.8.3"
-   "tools-deps" "1.11.1.1429"})
+   "tools-deps" "1.11.1.1435"})
 
 (def default-build-tool "tools-deps")
 
@@ -85,8 +85,8 @@
   {"lein"       {"2.9.10" "dbb84d13d6df5b85bbf7f89a39daeed103133c24a4686d037fe6bd65e38e7f32"
                  "2.10.0" "b1757ce941e4cbf15cbf649b7b4f413365e612da892d22841ec1728391bb66af"}
    "boot"       {"2.8.3" "0ccd697f2027e7e1cd3be3d62721057cbc841585740d0aaa9fbb485d7b1f17c3"}
-   "tools-deps" {"1.11.1.1413" "ad9aa1e99c59a4f7eb66450914fbec543337d9fada60dd9d34eec7fe18ae4965"
-                 "1.11.1.1429" "bf08cfeb007118b7277aa7423734f5d507604b868f7fc44c0f9929ca9cd94ed4"}})
+   "tools-deps" {"1.11.1.1429" "bf08cfeb007118b7277aa7423734f5d507604b868f7fc44c0f9929ca9cd94ed4"
+                 "1.11.1.1435" "7edee5b12197a2dbe6338e672b109b18164cde84bea1f049ceceed41fc4dd10a"}})
 
 (def exclusions ; don't build these for whatever reason(s)
   #{; boot on JDK 8 & Alpine is encountering a TLS handshake error trying to
