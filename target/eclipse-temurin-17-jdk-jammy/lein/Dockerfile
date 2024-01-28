@@ -1,6 +1,6 @@
 FROM eclipse-temurin:17-jdk-jammy
 
-ENV LEIN_VERSION=2.10.0
+ENV LEIN_VERSION=2.11.0
 ENV LEIN_INSTALL=/usr/local/bin/
 
 WORKDIR /tmp
@@ -14,12 +14,12 @@ mkdir -p $LEIN_INSTALL && \
 wget -q https://codeberg.org/leiningen/leiningen/raw/tag/$LEIN_VERSION/bin/lein-pkg && \
 echo "Comparing lein-pkg checksum ..." && \
 sha256sum lein-pkg && \
-echo "b1757ce941e4cbf15cbf649b7b4f413365e612da892d22841ec1728391bb66af *lein-pkg" | sha256sum -c - && \
+echo "f2752eb4da8ff0045aafd0d94fd50b2ac4da46d2ab9aa3295ac10c6a058f5675 *lein-pkg" | sha256sum -c - && \
 mv lein-pkg $LEIN_INSTALL/lein && \
 chmod 0755 $LEIN_INSTALL/lein && \
 export GNUPGHOME="$(mktemp -d)" && \
 export FILENAME_EXT=jar && \
-gpg --batch --keyserver hkps://keyserver.ubuntu.com --recv-keys 6A2D483DB59437EBB97D09B1040193357D0606ED && \
+gpg --batch --keyserver hkps://keyserver.ubuntu.com --recv-keys 9D13D9426A0814B3373CF5E3D8A8243577A7859F && \
 wget -q https://codeberg.org/leiningen/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT && \
 wget -q https://codeberg.org/leiningen/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT.asc && \
 echo "Verifying file PGP signature..." && \
