@@ -1,5 +1,6 @@
 (ns docker-clojure.dockerfile.lein
-  (:require [docker-clojure.dockerfile.shared
+  (:require [clojure.string :as str]
+            [docker-clojure.dockerfile.shared
              :refer [concat-commands entrypoint install-distro-deps
                      uninstall-distro-build-deps]]))
 
@@ -18,6 +19,17 @@
 (def install-deps (partial install-distro-deps distro-deps))
 
 (def uninstall-build-deps (partial uninstall-distro-build-deps distro-deps))
+
+(def ^:const old-key "6A2D483DB59437EBB97D09B1040193357D0606ED")
+(def ^:const new-key "9D13D9426A0814B3373CF5E3D8A8243577A7859F")
+
+(defn gpg-key
+  [version]
+  (let [[major minor] (map #(Integer/parseInt %) (str/split version #"\."))]
+    (cond
+      (< 2 major) new-key
+      (and (= 2 major) (< 10 minor)) new-key
+      :else old-key)))
 
 (defn install [installer-hashes {:keys [build-tool-version] :as variant}]
   (let [install-dep-cmds   (install-deps variant)
@@ -40,8 +52,8 @@
            "chmod 0755 $LEIN_INSTALL/lein"
            "export GNUPGHOME=\"$(mktemp -d)\""
            "export FILENAME_EXT=jar" ; used to be zip but hopefully it's always jar now?
-           ;; next lein release will use key ID 9D13D9426A0814B3373CF5E3D8A8243577A7859F
-           "gpg --batch --keyserver hkps://keyserver.ubuntu.com --recv-keys 6A2D483DB59437EBB97D09B1040193357D0606ED"
+           (str "gpg --batch --keyserver hkps://keyserver.ubuntu.com --recv-keys "
+                (gpg-key build-tool-version))
            "wget -q https://codeberg.org/leiningen/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT"
            "wget -q https://codeberg.org/leiningen/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT.asc"
            "echo \"Verifying file PGP signature...\""
