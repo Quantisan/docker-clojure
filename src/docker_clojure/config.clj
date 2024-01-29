@@ -75,7 +75,7 @@
    :default :debian/bookworm})
 
 (def build-tools
-  {"lein"       "2.11.0"
+  {"lein"       "2.11.1"
    "boot"       "2.8.3"
    "tools-deps" "1.11.1.1435"})
 
@@ -83,7 +83,7 @@
 
 (def installer-hashes
   {"lein"       {"2.10.0" "b1757ce941e4cbf15cbf649b7b4f413365e612da892d22841ec1728391bb66af"
-                 "2.11.0" "f2752eb4da8ff0045aafd0d94fd50b2ac4da46d2ab9aa3295ac10c6a058f5675"}
+                 "2.11.1" "03b3fbf7e6fac262f88f843a87b712a2b37f39cffc4f4f384436a30d8b01d6e4"}
    "boot"       {"2.8.3" "0ccd697f2027e7e1cd3be3d62721057cbc841585740d0aaa9fbb485d7b1f17c3"}
    "tools-deps" {"1.11.1.1429" "bf08cfeb007118b7277aa7423734f5d507604b868f7fc44c0f9929ca9cd94ed4"
                  "1.11.1.1435" "7edee5b12197a2dbe6338e672b109b18164cde84bea1f049ceceed41fc4dd10a"}})
