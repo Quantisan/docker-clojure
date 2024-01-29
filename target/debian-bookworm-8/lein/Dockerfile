@@ -4,7 +4,7 @@ ENV JAVA_HOME=/opt/java/openjdk
 COPY --from=eclipse-temurin:8 $JAVA_HOME $JAVA_HOME
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
-ENV LEIN_VERSION=2.11.0
+ENV LEIN_VERSION=2.11.1
 ENV LEIN_INSTALL=/usr/local/bin/
 
 WORKDIR /tmp
@@ -18,7 +18,7 @@ mkdir -p $LEIN_INSTALL && \
 wget -q https://codeberg.org/leiningen/leiningen/raw/tag/$LEIN_VERSION/bin/lein-pkg && \
 echo "Comparing lein-pkg checksum ..." && \
 sha256sum lein-pkg && \
-echo "f2752eb4da8ff0045aafd0d94fd50b2ac4da46d2ab9aa3295ac10c6a058f5675 *lein-pkg" | sha256sum -c - && \
+echo "03b3fbf7e6fac262f88f843a87b712a2b37f39cffc4f4f384436a30d8b01d6e4 *lein-pkg" | sha256sum -c - && \
 mv lein-pkg $LEIN_INSTALL/lein && \
 chmod 0755 $LEIN_INSTALL/lein && \
 export GNUPGHOME="$(mktemp -d)" && \
