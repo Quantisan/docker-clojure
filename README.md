@@ -45,11 +45,12 @@ release every 2-3 years. As of 2019-9-25, our images will default to the latest
 LTS release of OpenJDK (currently 21). But we also now provide the ability to
 specify which version of Java you'd like via Docker tags:
 
-JDK 1.8 tools-deps image: `clojure:temurin-8-tools-deps`
-JDK 11 variant of the tools-deps image: `clojure:temurin-11-tools-deps` or `clojure:temurin-11`
-JDK 17 with boot 2.8.3: `clojure:temurin-17-boot-2.8.3`
-JDK 20 with the latest version of lein: `clojure:temurin-20-lein`
-JDK 21 variant of the tools-deps image: `clojure:tools-deps` or `clojure:temurin-21` or `clojure:temurin-21-tools-deps`
+JDK 1.8 tools-deps image: `clojure:temurin-8-tools-deps`  
+JDK 11 variant of the tools-deps image: `clojure:temurin-11-tools-deps` or `clojure:temurin-11`  
+JDK 17 with boot 2.8.3: `clojure:temurin-17-boot-2.8.3`  
+JDK 20 with the latest version of lein: `clojure:temurin-20-lein`  
+JDK 21 variant of the tools-deps image: `clojure:tools-deps` or `clojure:temurin-21` or `clojure:temurin-21-tools-deps`  
+JDK 22 variant of the tools-deps image: `clojure:temurin-22` or `clojure:temurin-22-tools-deps`
 
 ## Linux distro
 
@@ -82,11 +83,12 @@ You can specify which distro & version you'd like by appending it to the end of
 your Docker tag as in the following examples (but note that not every
 combination is provided upstream and thus likewise for us):
 
-Java 8 leiningen on Debian bullseye-slim: `clojure:temurin-8-lein-bullseye-slim`
-Java 11 leiningen on Debian bullseye: `clojure:temurin-11-lein-bullseye`
-Java 17 tools-deps on Ubuntu focal: `clojure:tools-deps` or `clojure:temurin-17` or `clojure:temurin-17-tools-deps` or `clojure:temurin-17-tools-deps-focal`
-Java 17 tools-deps on Debian bullseye-slim: `clojure:bullseye-slim` or `clojure:tools-deps-bullseye-slim` or `clojure:temurin-17-bullseye-slim` or `clojure:temurin-17-tools-deps-bullseye-slim`
-Java 21 tools-deps on Debian bookworm: `clojure:tools-deps` or `clojure:temurin-21-tools-deps` or `clojure:temurin-21-bookworm`
+Java 8 leiningen on Debian bullseye-slim: `clojure:temurin-8-lein-bullseye-slim`  
+Java 11 leiningen on Debian bullseye: `clojure:temurin-11-lein-bullseye`  
+Java 17 tools-deps on Ubuntu focal: `clojure:tools-deps` or `clojure:temurin-17` or `clojure:temurin-17-tools-deps` or `clojure:temurin-17-tools-deps-focal`  
+Java 17 tools-deps on Debian bullseye-slim: `clojure:bullseye-slim` or `clojure:tools-deps-bullseye-slim` or `clojure:temurin-17-bullseye-slim` or `clojure:temurin-17-tools-deps-bullseye-slim`  
+Java 21 tools-deps on Debian bookworm: `clojure:tools-deps` or `clojure:temurin-21-tools-deps` or `clojure:temurin-21-bookworm`  
+Java 22 leiningen on Debian bookworm: `clojure:temurin-21-lein-bookworm`
 
 ### Alpine Linux
 
@@ -96,8 +98,8 @@ As of 2022-9-29 these are available for the linux/amd64 architecture only.
 
 Some example tags:
 
-Java 17 leiningen on Alpine: `clojure:temurin-17-alpine` `clojure:temurin-17-lein-alpine`
-Java 20 tools-deps on Alpine: `clojure:temurin-20-tools-deps-alpine` or `clojure:temurin-20-alpine`
+Java 17 leiningen on Alpine: `clojure:temurin-17-alpine` `clojure:temurin-17-lein-alpine`  
+Java 21 tools-deps on Alpine: `clojure:temurin-21-tools-deps-alpine` or `clojure:temurin-21-alpine`
 
 ## Examples
 
@@ -144,4 +146,4 @@ linux/arm64).
 ## Tests
 
 The `docker-clojure` build tool has a test suite that can be run via the
-`bb run test` script. 
+`bb run test` script.
