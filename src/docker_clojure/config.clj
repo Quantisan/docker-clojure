@@ -28,9 +28,6 @@
   (s/nilable (s/and ::non-blank-string #(re-matches #"[\d\.]+" %))))
 (s/def ::build-tools (s/map-of ::build-tool ::build-tool-version))
 
-(s/def ::exclusions
-  (s/keys :opt-un [::jdk-version ::distro ::build-tool ::build-tool-version]))
-
 (s/def ::maintainers
   (s/coll-of ::non-blank-string :distinct true :into #{}))
 
@@ -39,7 +36,7 @@
 
 (def git-repo "https://github.com/Quantisan/docker-clojure.git")
 
-(def jdk-versions #{8 11 17 21})
+(def jdk-versions #{8 11 17 21 22})
 
 (def base-images
   "Map of JDK version to base image name(s) with :default as a fallback"
@@ -95,14 +92,13 @@
     ; issue like this.
 
     ; no more focal builds for JDK 20+
-    ; TODO: Add ability to specify version >= 20 for these
-    {:jdk-version 21
+    {:jdk-version #(>= % 20)
      :distro      :ubuntu/focal}
+    ; boot is breaking on Alpine
     {:build-tool "boot"
-     :distro     :alpine/alpine} ; boot is breaking on Alpine
+     :distro     :alpine/alpine}
     ; we're no longer building boot variants for JDK 20+
-    ; TODO: Add ability to specify version >= 20 for these
-    {:jdk-version 21
+    {:jdk-version #(>= % 20)
      :build-tool  "boot"}
     ;; commented out example
     #_{:jdk-version 8
