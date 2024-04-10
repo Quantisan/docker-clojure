@@ -14,15 +14,19 @@
    [docker-clojure.log :refer [log] :as logger]
    [clojure.edn :as edn]))
 
-(defn contains-every-key-value?
-  "Returns true if the map `haystack` contains every key-value pair in the map
-  `needles`. `haystack` may contain additional keys that are not in `needles`.
-  Returns false if any of the keys in `needles` are missing from `haystack` or
-  have different values."
-  [haystack needles]
+(defn exclude-variant?
+  "Returns true if the map `variant` contains every key-value pair in the map
+  `exclusion`. `variant` may contain additional keys that are not in
+  `exclusion`. Some values of `exclusion` can also be a predicate of one
+  argument which is then tested against the respective value from `variant`.
+  Returns false if any of the keys in `exclusions` are missing from `variant` or
+  have different values, or the predicate value returned false."
+  [variant exclusion]
   (every? (fn [[k v]]
-            (= v (get haystack k)))
-          needles))
+            (if (fn? v)
+              (v (get variant k))
+              (= v (get variant k))))
+          exclusion))
 
 (defn base-image-tag
   [base-image jdk-version distro]
@@ -37,7 +41,7 @@
   "Returns true if `variant` matches one of `exclusions` elements (meaning
   `(contains-every-key-value? variant exclusion)` returns true)."
   [exclusions variant]
-  (some (partial contains-every-key-value? variant) exclusions))
+  (some (partial exclude-variant? variant) exclusions))
 
 (s/def ::variant
   (s/keys :req-un [::cfg/jdk-version ::cfg/base-image ::cfg/base-image-tag
