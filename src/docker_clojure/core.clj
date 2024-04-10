@@ -231,7 +231,7 @@
     (filter variant-filter (valid-variants))))
 
 (defn run
-  "Entrypoint for exec-fn. TODO: Make -main use this."
+  "Entrypoint for exec-fn."
   [{:keys [cmd args parallelization]}]
   (logger/start)
   (let [variants (generate-variants args)]

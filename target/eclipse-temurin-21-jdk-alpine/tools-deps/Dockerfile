@@ -6,7 +6,7 @@ WORKDIR /tmp
 
 RUN \
 apk add --no-cache curl bash make git && \
-wget https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh && \
+curl -sLO https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh && \
 sha256sum linux-install-$CLOJURE_VERSION.sh && \
 echo "7edee5b12197a2dbe6338e672b109b18164cde84bea1f049ceceed41fc4dd10a *linux-install-$CLOJURE_VERSION.sh" | sha256sum -c - && \
 chmod +x linux-install-$CLOJURE_VERSION.sh && \

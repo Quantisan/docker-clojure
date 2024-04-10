@@ -8,12 +8,14 @@
                        #(.setExecutable % true false)))
 
 (def distro-deps
-  {:debian-slim {:build   #{"wget" "curl"}
+  {:debian-slim {:build   #{"curl"}
                  :runtime #{"rlwrap" "make" "git"}}
-   :debian      {:build   #{"wget" "curl"}
+   :debian      {:build   #{"curl"}
                  :runtime #{"rlwrap" "make" "git"}}
-   :ubuntu      {:build   #{"wget"}
-                 :runtime #{"rlwrap" "make" "git"}}
+   :ubuntu      {:build   #{}
+                 ;; install curl as a runtime dep b/c we need it at build time
+                 ;; but upstream includes it so we don't want to uninstall it
+                 :runtime #{"rlwrap" "make" "git" "curl"}}
    :alpine      {:build   #{"curl"}
                  :runtime #{"bash" "make" "git"}}})
 
@@ -36,7 +38,7 @@
          "RUN \\"]
         (concat-commands install-dep-cmds)
         (concat-commands
-          ["wget https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh"
+          ["curl -sLO https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh"
            "sha256sum linux-install-$CLOJURE_VERSION.sh"
            (str "echo \"" (get-in installer-hashes ["tools-deps" build-tool-version]) " *linux-install-$CLOJURE_VERSION.sh\" | sha256sum -c -")
            "chmod +x linux-install-$CLOJURE_VERSION.sh"
