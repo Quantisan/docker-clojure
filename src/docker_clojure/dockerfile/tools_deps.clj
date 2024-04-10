@@ -12,8 +12,8 @@
                  :runtime #{"rlwrap" "make" "git"}}
    :debian      {:build   #{"wget" "curl"}
                  :runtime #{"rlwrap" "make" "git"}}
-   :ubuntu      {:build   #{"wget"}
-                 :runtime #{"rlwrap" "make" "git"}}
+   :ubuntu      {:build   #{}
+                 :runtime #{"rlwrap" "make" "git" "curl"}}
    :alpine      {:build   #{"curl"}
                  :runtime #{"bash" "make" "git"}}})
 
