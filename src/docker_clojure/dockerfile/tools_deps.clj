@@ -8,11 +8,11 @@
                        #(.setExecutable % true false)))
 
 (def distro-deps
-  {:debian-slim {:build   #{"wget" "curl"}
+  {:debian-slim {:build   #{"curl"}
                  :runtime #{"rlwrap" "make" "git"}}
-   :debian      {:build   #{"wget" "curl"}
+   :debian      {:build   #{"curl"}
                  :runtime #{"rlwrap" "make" "git"}}
-   :ubuntu      {:build   #{"wget"}
+   :ubuntu      {:build   #{"curl"}
                  :runtime #{"rlwrap" "make" "git"}}
    :alpine      {:build   #{"curl"}
                  :runtime #{"bash" "make" "git"}}})
@@ -36,7 +36,7 @@
          "RUN \\"]
         (concat-commands install-dep-cmds)
         (concat-commands
-          ["wget https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh"
+          ["curl -sLO https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh"
            "sha256sum linux-install-$CLOJURE_VERSION.sh"
            (str "echo \"" (get-in installer-hashes ["tools-deps" build-tool-version]) " *linux-install-$CLOJURE_VERSION.sh\" | sha256sum -c -")
            "chmod +x linux-install-$CLOJURE_VERSION.sh"
