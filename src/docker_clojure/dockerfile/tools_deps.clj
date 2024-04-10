@@ -12,8 +12,10 @@
                  :runtime #{"rlwrap" "make" "git"}}
    :debian      {:build   #{"curl"}
                  :runtime #{"rlwrap" "make" "git"}}
-   :ubuntu      {:build   #{"curl"}
-                 :runtime #{"rlwrap" "make" "git"}}
+   :ubuntu      {:build   #{}
+                 ;; install curl as a runtime dep b/c we need it at build time
+                 ;; but upstream includes it so we don't want to uninstall it
+                 :runtime #{"rlwrap" "make" "git" "curl"}}
    :alpine      {:build   #{"curl"}
                  :runtime #{"bash" "make" "git"}}})
 
