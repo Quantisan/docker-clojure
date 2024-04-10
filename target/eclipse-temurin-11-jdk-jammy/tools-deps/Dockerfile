@@ -14,8 +14,7 @@ echo "7edee5b12197a2dbe6338e672b109b18164cde84bea1f049ceceed41fc4dd10a *linux-in
 chmod +x linux-install-$CLOJURE_VERSION.sh && \
 ./linux-install-$CLOJURE_VERSION.sh && \
 rm linux-install-$CLOJURE_VERSION.sh && \
-clojure -e "(clojure-version)" && \
-apt-get purge -y --auto-remove curl
+clojure -e "(clojure-version)"
 
 # Docker bug makes rlwrap crash w/o short sleep first
 # Bug: https://github.com/moby/moby/issues/28009
