@@ -38,7 +38,7 @@
          "RUN \\"]
         (concat-commands install-dep-cmds)
         (concat-commands
-          ["curl -sLO https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh"
+          ["curl -fsSLO https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh"
            "sha256sum linux-install-$CLOJURE_VERSION.sh"
            (str "echo \"" (get-in installer-hashes ["tools-deps" build-tool-version]) " *linux-install-$CLOJURE_VERSION.sh\" | sha256sum -c -")
            "chmod +x linux-install-$CLOJURE_VERSION.sh"
