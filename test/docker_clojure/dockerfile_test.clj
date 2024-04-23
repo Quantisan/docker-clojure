@@ -17,14 +17,14 @@
     (is (str/includes? (contents cfg/installer-hashes
                                  {:base-image-tag "base:foo"
                                   :distro         :distro/distro
-                                  :build-tool     "lein"
+                                  :build-tool     "tools-deps"
                                   :jdk-version    11})
                        "FROM base:foo")))
   (testing "has no labels (Docker recommends against for base images)"
     (is (not (str/includes? (contents cfg/installer-hashes
                                       {:base-image-tag "base:foo"
                                        :distro         :distro/distro
-                                       :build-tool     "lein"
+                                       :build-tool     "tools-deps"
                                        :maintainer     "Me Myself"
                                        :jdk-version    11})
                             "LABEL "))))
