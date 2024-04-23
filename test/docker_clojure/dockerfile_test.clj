@@ -4,7 +4,6 @@
             [docker-clojure.dockerfile :refer [build-dir contents]]
             [docker-clojure.config :as cfg]
             [docker-clojure.dockerfile.lein :as lein]
-            [docker-clojure.dockerfile.boot :as boot]
             [docker-clojure.dockerfile.tools-deps :as tools-deps]))
 
 (deftest build-dir-test
@@ -18,14 +17,14 @@
     (is (str/includes? (contents cfg/installer-hashes
                                  {:base-image-tag "base:foo"
                                   :distro         :distro/distro
-                                  :build-tool     "boot"
+                                  :build-tool     "lein"
                                   :jdk-version    11})
                        "FROM base:foo")))
   (testing "has no labels (Docker recommends against for base images)"
     (is (not (str/includes? (contents cfg/installer-hashes
                                       {:base-image-tag "base:foo"
                                        :distro         :distro/distro
-                                       :build-tool     "boot"
+                                       :build-tool     "lein"
                                        :maintainer     "Me Myself"
                                        :jdk-version    11})
                             "LABEL "))))
@@ -37,14 +36,6 @@
                                     :build-tool     "lein"
                                     :maintainer     "Me Myself"})
                          "leiningen vs. the ants"))))
-  (testing "boot variant includes boot-specific contents"
-    (with-redefs [boot/contents (constantly ["Booty McBootface"])]
-      (is (str/includes? (contents cfg/installer-hashes
-                                   {:base-image-tag "base:foo"
-                                    :distro         :distro/distro
-                                    :build-tool     "boot"
-                                    :maintainer     "Me Myself"})
-                         "Booty McBootface"))))
   (testing "tools-deps variant includes tools-deps-specific contents"
     (with-redefs [tools-deps/contents (constantly
                                         ["Tools Deps is not a build tool"])]
