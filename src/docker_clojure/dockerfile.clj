@@ -2,7 +2,6 @@
   (:require
    [clojure.java.shell :refer [sh]]
    [clojure.string :as str]
-   [docker-clojure.dockerfile.boot :as boot]
    [docker-clojure.dockerfile.lein :as lein]
    [docker-clojure.dockerfile.tools-deps :as tools-deps]
    [docker-clojure.dockerfile.shared :refer [copy-resource-file! entrypoint]]))
@@ -51,7 +50,6 @@
                       [])
                     (case build-tool
                       :docker-clojure.core/all (all-contents installer-hashes variant)
-                      "boot" (boot/contents installer-hashes variant)
                       "lein" (lein/contents installer-hashes variant)
                       "tools-deps" (tools-deps/contents installer-hashes variant)))))
 
@@ -68,7 +66,6 @@
   (shared-prereqs dir variant)
   (case build-tool
     :docker-clojure.core/all (all-prereqs dir variant)
-    "boot" (boot/prereqs dir variant)
     "lein" (lein/prereqs dir variant)
     "tools-deps" (tools-deps/prereqs dir variant)))
 

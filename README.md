@@ -18,13 +18,8 @@ installed. If you want to use tools-deps, specify either `clojure:tools-deps`,
 
 ### boot
 
-Prior to JDK 20 we provided [boot](https://boot-clj.github.io) variants as well. 
-Boot hasn't had a release since 2019, and it is breaking in more and more image
-variants. Boot variants are now deprecated and no new boot images will be
-provided for JDK 20+, it will no longer be installed in the `latest` image, and
-no alpine-based images will be provided for any JDK version (due to breakage).
-As long as the image builds don't break, we will continue providing boot images
-for non-alpine distros for JDK 17 and lower until those versions are EOL'd.
+As of 5/2024, new [boot](https://boot-clj.github.io) images are no longer
+provided. The existing boot images will remain in the registry.
 
 ### Note about the latest tag
 
@@ -47,7 +42,7 @@ specify which version of Java you'd like via Docker tags:
 
 JDK 1.8 tools-deps image: `clojure:temurin-8-tools-deps`  
 JDK 11 variant of the tools-deps image: `clojure:temurin-11-tools-deps` or `clojure:temurin-11`  
-JDK 17 with boot 2.8.3: `clojure:temurin-17-boot-2.8.3`  
+JDK 17 with lein 2.11.2: `clojure:temurin-17-lein-2.11.2`  
 JDK 20 with the latest version of lein: `clojure:temurin-20-lein`  
 JDK 21 variant of the tools-deps image: `clojure:tools-deps` or `clojure:temurin-21` or `clojure:temurin-21-tools-deps`  
 JDK 22 variant of the tools-deps image: `clojure:temurin-22` or `clojure:temurin-22-tools-deps`
