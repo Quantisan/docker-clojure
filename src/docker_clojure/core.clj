@@ -175,6 +175,7 @@
     (while (<!! builds-ch))))
 
 (defn generate-dockerfiles! [installer-hashes variants]
+  (log "Generated" (count variants) "variants")
   (doseq [variant variants]
     (generate-dockerfile! installer-hashes variant)))
 
@@ -235,7 +236,6 @@
   [{:keys [cmd args parallelization]}]
   (logger/start)
   (let [variants (generate-variants args)]
-    (log "Generated" (count variants) "variants")
     (case cmd
       :clean (df/clean-all)
       :dockerfiles (generate-dockerfiles! cfg/installer-hashes variants)
