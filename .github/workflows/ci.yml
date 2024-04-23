@@ -6,12 +6,12 @@ jobs:
   test:
 
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Install babashka
       uses: DeLaGuardo/setup-clojure@10.1
       with:
-        bb: 1.0.168
+        bb: 1.3.190
     - uses: actions/checkout@v3
     - name: Check for stale Dockerfiles
       run: |
