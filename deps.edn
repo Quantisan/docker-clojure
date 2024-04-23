@@ -1,7 +1,7 @@
 {:deps
- {org.clojure/clojure            {:mvn/version "1.11.1"}
-  org.clojure/math.combinatorics {:mvn/version "0.1.6"}
-  org.clojure/core.async         {:mvn/version "1.5.648"}}
+ {org.clojure/clojure            {:mvn/version "1.11.2"}
+  org.clojure/math.combinatorics {:mvn/version "0.3.0"}
+  org.clojure/core.async         {:mvn/version "1.6.681"}}
 
  :paths ["src" "resources"]
 
@@ -12,5 +12,5 @@
 
   :test {:extra-paths ["test"]
          :extra-deps  {com.cognitect/test-runner {:git/url "https://github.com/cognitect-labs/test-runner.git"
-                                                  :sha     "4e7e1c0dfd5291fa2134df052443dc29695d8cbe"}}
+                                                  :sha     "7284cda41fb9edc0f3bc6b6185cfb7138fc8a023"}}
          :main-opts   ["-m" "cognitect.test-runner"]}}}
