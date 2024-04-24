@@ -1,84 +1,43 @@
 (ns docker-clojure.dockerfile.lein
-  (:require [clojure.string :as str]
-            [docker-clojure.dockerfile.shared
-             :refer [concat-commands entrypoint install-distro-deps
-                     uninstall-distro-build-deps]]))
+  (:require
+   [clojure.string :as str]
+   [docker-clojure.config :as cfg]))
 
-(defn prereqs [_ _] nil)
+(def ^:const gpg-key "9D13D9426A0814B3373CF5E3D8A8243577A7859F")
 
-(def distro-deps
-  {:debian-slim {:build   #{"wget" "gnupg"}
-                 :runtime #{}}
-   :debian      {:build   #{"wget" "gnupg"}
-                 :runtime #{"make"}}
-   :ubuntu      {:build   #{"wget" "gnupg"}
-                 :runtime #{"make"}}
-   :alpine      {:build   #{"tar" "gnupg" "openssl" "ca-certificates"}
-                 :runtime #{"bash"}}})
+(defn env-preamble []
+  [(format "ENV LEIN_VERSION=%s" (-> cfg/*build-tools* :lein :version))
+   "ENV LEIN_INSTALL=/usr/local/bin/"
+   "ENV LEIN_ROOT=1"
+   "ENV PATH=$PATH:$LEIN_INSTALL"])
 
-(def install-deps (partial install-distro-deps distro-deps))
+(defn installation-commands []
+  ["echo Installing Leiningen"
+   "mkdir -p $LEIN_INSTALL"
+   "curl -fsSLO https://codeberg.org/leiningen/leiningen/raw/tag/$LEIN_VERSION/bin/lein-pkg"
+   "echo \"Comparing lein-pkg checksum ...\""
+   "sha256sum lein-pkg"
+   (format "echo \"%s *lein-pkg\" | sha256sum -c -"
+           (-> cfg/*build-tools* :lein :installer-hash))
+   "mv lein-pkg $LEIN_INSTALL/lein"
+   "chmod 0755 $LEIN_INSTALL/lein"
+   "export GNUPGHOME=\"$(mktemp -d)\""
+   (format "gpg --batch --keyserver hkps://keyserver.ubuntu.com --recv-keys %s"
+           gpg-key)
+   "curl -fsSLO https://codeberg.org/leiningen/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.jar"
+   "curl -fsSLO https://codeberg.org/leiningen/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.jar.asc"
+   "echo \"Verifying Leiningen file PGP signature...\""
+   "gpg --batch --verify leiningen-$LEIN_VERSION-standalone.jar.asc leiningen-$LEIN_VERSION-standalone.jar"
+   "gpgconf --kill all"
+   "rm -rf \"$GNUPGHOME\" leiningen-$LEIN_VERSION-standalone.jar.asc"
+   "mkdir -p /usr/share/java"
+   "mv leiningen-$LEIN_VERSION-standalone.jar /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar"
+   "mkdir -p ~/.lein/"])
 
-(def uninstall-build-deps (partial uninstall-distro-build-deps distro-deps))
-
-(def ^:const old-key "6A2D483DB59437EBB97D09B1040193357D0606ED")
-(def ^:const new-key "9D13D9426A0814B3373CF5E3D8A8243577A7859F")
-
-(defn gpg-key
-  [version]
-  (let [[major minor] (map #(Integer/parseInt %) (str/split version #"\."))]
-    (cond
-      (< 2 major) new-key
-      (and (= 2 major) (< 10 minor)) new-key
-      :else old-key)))
-
-(defn install [installer-hashes {:keys [build-tool-version] :as variant}]
-  (let [install-dep-cmds   (install-deps variant)
-        uninstall-dep-cmds (uninstall-build-deps variant)]
-    (-> [(format "ENV LEIN_VERSION=%s" build-tool-version)
-         "ENV LEIN_INSTALL=/usr/local/bin/"
-         ""
-         "WORKDIR /tmp"
-         ""
-         "# Download the whole repo as an archive"
-         "RUN set -eux; \\"]
-        (concat-commands install-dep-cmds)
-        (concat-commands
-          ["mkdir -p $LEIN_INSTALL"
-           "wget -q https://codeberg.org/leiningen/leiningen/raw/tag/$LEIN_VERSION/bin/lein-pkg"
-           "echo \"Comparing lein-pkg checksum ...\""
-           "sha256sum lein-pkg"
-           (str "echo \"" (get-in installer-hashes ["lein" build-tool-version]) " *lein-pkg\" | sha256sum -c -")
-           "mv lein-pkg $LEIN_INSTALL/lein"
-           "chmod 0755 $LEIN_INSTALL/lein"
-           "export GNUPGHOME=\"$(mktemp -d)\""
-           "export FILENAME_EXT=jar" ; used to be zip but hopefully it's always jar now?
-           (str "gpg --batch --keyserver hkps://keyserver.ubuntu.com --recv-keys "
-                (gpg-key build-tool-version))
-           "wget -q https://codeberg.org/leiningen/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT"
-           "wget -q https://codeberg.org/leiningen/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT.asc"
-           "echo \"Verifying file PGP signature...\""
-           "gpg --batch --verify leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT.asc leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT"
-           "gpgconf --kill all"
-           "rm -rf \"$GNUPGHOME\" leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT.asc"
-           "mkdir -p /usr/share/java"
-           "mv leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar"]
-          (empty? uninstall-dep-cmds))
-        (concat-commands uninstall-dep-cmds :end)
-        (concat
-          [""
-           "ENV PATH=$PATH:$LEIN_INSTALL"
-           "ENV LEIN_ROOT 1"
-           ""
-           "# Install clojure 1.11.1 so users don't have to download it every time"
-           "RUN echo '(defproject dummy \"\" :dependencies [[org.clojure/clojure \"1.11.1\"]])' > project.clj \\"
-           "  && lein deps && rm project.clj"])
-
-        (->> (remove nil?)))))
+(defn installation-postamble []
+  [])
 
 (defn command [{:keys [jdk-version]}]
   (if (>= jdk-version 16)
     ["CMD [\"repl\"]"]
     ["CMD [\"lein\", \"repl\"]"]))
-
-(defn contents [installer-hashes variant]
-  (concat (install installer-hashes variant) [""] (entrypoint variant) (command variant)))

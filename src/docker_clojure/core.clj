@@ -56,7 +56,7 @@
     m))
 
 (defn variant-map [[base-image jdk-version distro
-                    [build-tool build-tool-version]]]
+                    [build-tool build-tool-info]]]
   (let [variant-arch (get cfg/distro-architectures
                           (-> distro namespace keyword))
         base         {:jdk-version        jdk-version
@@ -65,34 +65,31 @@
                                                           jdk-version distro)
                       :distro             distro
                       :build-tool         build-tool
-                      :build-tool-version build-tool-version
+                      :build-tool-version (:version build-tool-info)
                       :maintainer         (str/join " & " cfg/maintainers)}]
-    (-> base
-        (assoc :docker-tag (default-docker-tag base))
-        (assoc-if #(nil? (:build-tool-version base)) :build-tool-versions
-                  cfg/build-tools)
-        (assoc-if #(seq variant-arch) :architectures variant-arch))))
+    (cond-> base
+      true         (assoc :docker-tag (default-docker-tag base))
+      variant-arch (assoc :architectures variant-arch))))
 
 (defn pull-image [image]
   (sh "docker" "pull" image))
 
-(defn generate-dockerfile! [installer-hashes variant]
+(defn generate-dockerfile! [variant]
   (let [build-dir (df/build-dir variant)
         filename  "Dockerfile"]
     (log "Generating" (str build-dir "/" filename))
-    (df/write-file build-dir filename installer-hashes variant)
+    (df/write-file build-dir filename variant)
     (assoc variant
-      :build-dir build-dir
-      :dockerfile filename)))
+           :build-dir build-dir
+           :dockerfile filename)))
 
-(defn build-image
-  [installer-hashes {:keys [docker-tag base-image architectures] :as variant}]
+(defn build-image [{:keys [docker-tag base-image architectures] :as variant}]
   (let [image-tag     (str "clojure:" docker-tag)
         _             (log "Pulling base image" base-image)
         _             (pull-image base-image)
 
         {:keys [dockerfile build-dir]}
-        (generate-dockerfile! installer-hashes variant)
+        (generate-dockerfile! variant)
 
         host-arch     (let [jvm-arch (System/getProperty "os.arch")]
                         (if (= "aarch64" jvm-arch)
@@ -126,33 +123,24 @@
 
 (defn image-variant-combinations
   [base-images jdk-versions distros build-tools]
-  (reduce
-   (fn [variants jdk-version]
-     (concat
-      variants
-      (let [jdk-base-images (get-or-default base-images jdk-version)]
-        (loop [[bi & r] jdk-base-images
-               acc #{}]
-          (let [vs   (combo/cartesian-product #{bi}
-                                              #{jdk-version}
-                                              (get-or-default distros bi)
-                                              build-tools)
-                acc' (concat acc vs)]
-            (if (seq r)
-              (recur r acc')
-              acc'))))))
-   #{} jdk-versions))
+  (mapcat
+   (fn [jdk-version]
+     (let [jdk-base-images (get-or-default base-images jdk-version)]
+       (mapcat #(combo/cartesian-product #{%}
+                                         #{jdk-version}
+                                         (get-or-default distros %)
+                                         build-tools)
+               jdk-base-images)))
+   jdk-versions))
 
 (defn image-variants
   [base-images jdk-versions distros build-tools]
-  (into #{}
+  (into []
         (comp
          (map variant-map)
          (remove #(= ::s/invalid (s/conform ::variant %))))
-        (conj
-         (image-variant-combinations base-images jdk-versions distros
-                                     build-tools)
-         latest-variant)))
+        (image-variant-combinations base-images jdk-versions distros
+                                    build-tools)))
 
 (defn rand-delay
   "Runs argument f w/ any supplied args after a random delay of 100-1000 ms"
@@ -162,27 +150,26 @@
     (apply f args)))
 
 (defn build-images
-  [parallelization installer-hashes variants]
+  [parallelization variants]
   (log "Building images" parallelization "at a time")
   (let [variants-ch   (to-chan! variants)
         builds-ch     (chan parallelization)]
     ;; Kick off builds with a random delay so we don't have Docker race
     ;; conditions (e.g. build container name collisions)
     (async/thread (pipeline-blocking parallelization builds-ch
-                                     (map (partial rand-delay build-image
-                                                   installer-hashes))
+                                     (map (partial rand-delay build-image))
                                      variants-ch))
     (while (<!! builds-ch))))
 
-(defn generate-dockerfiles! [installer-hashes variants]
+(defn generate-dockerfiles! [variants]
   (log "Generated" (count variants) "variants")
   (doseq [variant variants]
-    (generate-dockerfile! installer-hashes variant)))
+    (generate-dockerfile! variant)))
 
 (defn valid-variants []
   (remove (partial exclude? cfg/exclusions)
           (image-variants cfg/base-images cfg/jdk-versions cfg/distros
-                          cfg/build-tools)))
+                          cfg/*build-tools*)))
 
 (defn generate-manifest! [variants args]
   (let [git-head    (->> ["git" "rev-parse" "HEAD"] (apply sh) :out)
@@ -238,9 +225,9 @@
   (let [variants (generate-variants args)]
     (case cmd
       :clean (df/clean-all)
-      :dockerfiles (generate-dockerfiles! cfg/installer-hashes variants)
+      :dockerfiles (generate-dockerfiles! variants)
       :manifest (-> variants sort-variants (generate-manifest! args))
-      :build-images (build-images parallelization cfg/installer-hashes variants)))
+      :build-images (build-images parallelization variants)))
   (logger/stop))
 
 (defn -main

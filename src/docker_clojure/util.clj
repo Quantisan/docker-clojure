@@ -14,40 +14,35 @@
            (= (first (get-or-default cfg/base-images jdk-version))
               base-image))
     nil
-    (str
-      (case base-image
-        ("eclipse-temurin" "debian") "temurin"
-        base-image)
-      "-" jdk-version)))
+    (str "temurin-" jdk-version)))
 
 (defn docker-tag
   "Returns the Docker tag for the given variant with truthy keys from first arg
   left out when possible."
-  [{:keys [omit-all? omit-jdk? omit-build-tool? omit-build-tool-version?
-           omit-distro?]}
+  [{:keys [omit-jdk? omit-build-tool? omit-build-tool-version? omit-distro?]}
    {:keys [base-image jdk-version distro build-tool
            build-tool-version] :as _variant}]
-  (if (= ::core/all build-tool)
-    "latest"
-    (let [jdk                      (jdk-label (or omit-all? omit-jdk?)
-                                              jdk-version base-image)
-          dd                       (get-or-default cfg/default-distros jdk-version)
-          distro-label             (if (and (or omit-all? omit-distro?) (= dd distro))
-                                     nil
-                                     (when distro (name distro)))
-          tag-elements             (remove nil? [jdk distro-label])
-          build-tool-label         (if (and (seq tag-elements) ; ensure tag is non-empty
-                                            (or omit-all? omit-build-tool?)
-                                            (= build-tool cfg/default-build-tool))
-                                     nil
-                                     build-tool)
-          build-tool-version-label (if (or omit-all? omit-build-tool?
-                                           omit-build-tool-version?)
-                                     nil
-                                     build-tool-version)]
-      (str/join "-" (remove nil? [jdk build-tool-label
-                                  build-tool-version-label
-                                  distro-label])))))
+  (let [default-distro (get-or-default cfg/default-distros jdk-version)
+        distro-label (if (and omit-distro? (= default-distro distro))
+                       nil
+                       (name distro))
+        build-tool-label (if (and omit-build-tool?
+                                  (= build-tool cfg/default-build-tool))
+                           nil
+                           (name build-tool))
+        build-tool-version-label (if (or omit-build-tool? omit-build-tool-version?)
+                                   nil
+                                   build-tool-version)
+        jdk (jdk-label (and omit-jdk?
+                            ;; Can't let distro be the only tag.
+                            (or (nil? distro-label) build-tool-label))
+                       jdk-version base-image)
+        tags (remove nil? [jdk build-tool-label build-tool-version-label
+                           distro-label])]
+    (if (seq tags)
+      (str/join "-" tags)
+      ;; No tags means we are tagging "latest".
+      "latest")))
 
 (def full-docker-tag
   (partial docker-tag {}))

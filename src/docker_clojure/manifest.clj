@@ -6,21 +6,20 @@
 (defn variant-tags
   "Generates all the Docker Hub tag variations for the given variant"
   [variant]
-  (let [short-tag (:docker-tag variant)
-        full-tag  (full-docker-tag variant)
-        base      (into #{} [short-tag full-tag])]
-    (-> base
-        (conj
-          (docker-tag {:omit-jdk? true} variant)
-          (docker-tag {:omit-build-tool? true} variant)
-          (docker-tag {:omit-build-tool-version? true} variant)
-          (docker-tag {:omit-distro? true} variant)
-          (docker-tag {:omit-distro? true, :omit-build-tool-version? true} variant)
-          (docker-tag {:omit-jdk? true, :omit-build-tool-version? true} variant)
-          (docker-tag {:omit-jdk? true, :omit-distro? true
-                       :omit-build-tool-version? true} variant))
-        vec
-        sort)))
+  (->> [[]                                           ; temurin-21-lein-2.11-bookworm
+        [:omit-jdk?]                                 ; lein-2.11-bookworm
+        [:omit-distro?]                              ; temurin-21-lein-2.11
+        [:omit-build-tool?]                          ; temurin-21-bookworm
+        [:omit-build-tool-version?]                  ; temurin-21-lein-bookworm
+        [:omit-jdk? :omit-distro?]                   ; lein-2.11
+        [:omit-jdk? :omit-build-tool-version?]       ; lein-bookworm
+        [:omit-distro? :omit-build-tool]             ; temurin-21
+        [:omit-distro? :omit-build-tool-version?]    ; temurin-21-lein
+        [:omit-jdk? :omit-distro? :omit-build-tool?] ; latest
+        ]
+       (map #(docker-tag (zipmap % (repeat true)) variant))
+       distinct
+       sort))
 
 (defn variant->manifest
   [variant]
@@ -52,4 +51,3 @@
                 (map variant->manifest variants)
 
                 [nil]))))
-

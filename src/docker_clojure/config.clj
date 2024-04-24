@@ -22,11 +22,15 @@
 (s/def ::distro qualified-keyword?)
 (s/def ::distros (s/coll-of ::distro :distinct true :into #{}))
 
-(s/def ::build-tool (s/or ::specific-tool ::non-blank-string
-                          ::all-tools #(= ::core/all %)))
+(s/def ::build-tool keyword?)
 (s/def ::build-tool-version
   (s/nilable (s/and ::non-blank-string #(re-matches #"[\d\.]+" %))))
-(s/def ::build-tools (s/map-of ::build-tool ::build-tool-version))
+(s/def ::installer-hash ::non-blank-string)
+(s/def ::version ::build-tool-version)
+(s/def ::build-tools (s/map-of ::build-tool
+                               (s/keys :req-un [::version ::installer-hash])))
+
+
 
 (s/def ::maintainers
   (s/coll-of ::non-blank-string :distinct true :into #{}))
@@ -71,17 +75,13 @@
    17       :ubuntu/jammy
    :default :debian/bookworm})
 
-(def build-tools
-  {"lein"       "2.11.2"
-   "tools-deps" "1.11.1.1435"})
+(def ^:dynamic *build-tools*
+  {:lein       {:version "2.11.2"
+                :installer-hash "28a1a62668c5f427b413a8677e376affaa995f023b1fcd06e2d4c98ac1df5f3e"}
+   :tools-deps {:version "1.11.1.1435"
+                :installer-hash "7edee5b12197a2dbe6338e672b109b18164cde84bea1f049ceceed41fc4dd10a"}})
 
-(def default-build-tool "tools-deps")
-
-(def installer-hashes
-  {"lein"       {"2.11.1" "03b3fbf7e6fac262f88f843a87b712a2b37f39cffc4f4f384436a30d8b01d6e4"
-                 "2.11.2" "28a1a62668c5f427b413a8677e376affaa995f023b1fcd06e2d4c98ac1df5f3e"}
-   "tools-deps" {"1.11.1.1429" "bf08cfeb007118b7277aa7423734f5d507604b868f7fc44c0f9929ca9cd94ed4"
-                 "1.11.1.1435" "7edee5b12197a2dbe6338e672b109b18164cde84bea1f049ceceed41fc4dd10a"}})
+(def default-build-tool :tools-deps)
 
 (def exclusions ; don't build these for whatever reason(s)
   #{; no more focal builds for JDK 20+
