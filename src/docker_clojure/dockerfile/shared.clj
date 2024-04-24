@@ -2,14 +2,10 @@
   (:require [clojure.string :as str]
             [clojure.java.io :as io]))
 
-(defn concat-commands [base cmds & [end?]]
-  (let [commands (if end?
-                   (butlast cmds)
-                   cmds)]
-    (concat base
-           (map #(str % " && \\")
-                commands)
-           (when end? [(last cmds)]))))
+(defn multiline-RUN [commands]
+  (concat ["RUN set -eux; \\"]
+          (map #(str % " && \\") (butlast commands))
+          [(last commands)]))
 
 (defn get-deps [type distro-deps distro]
   (some->> distro namespace keyword (get distro-deps) type))
@@ -22,31 +18,28 @@
   (set (concat (build-deps distro-deps distro)
                (runtime-deps distro-deps distro))))
 
+(defn- cmd [& args]
+  (str/join " " (flatten args)))
+
 (defn install-distro-deps [distro-deps {:keys [distro]}]
-  (let [deps (all-deps distro-deps distro)]
-    (when (seq deps)
-      (case (-> distro namespace keyword)
-        (:debian :debian-slim :ubuntu)
-        ["apt-get update"
-         (str/join " " (concat ["apt-get install -y"] deps))
-         "rm -rf /var/lib/apt/lists/*"]
+  (when-let [deps (seq (all-deps distro-deps distro))]
+    (case (-> distro namespace keyword)
+      (:debian :debian-slim :ubuntu)
+      ["apt-get update"
+       (cmd "apt-get install -y" deps)
+       "rm -rf /var/lib/apt/lists/*"]
 
-        :alpine
-        [(str/join " " (concat ["apk add --no-cache"] deps))]
-
-        nil))))
+      :alpine
+      [(cmd "apk add --no-cache" deps)])))
 
 (defn uninstall-distro-build-deps [distro-deps {:keys [distro]}]
-  (let [deps (build-deps distro-deps distro)]
-    (when (seq deps)
-      (case (-> distro namespace keyword)
-        (:debian :debian-slim :ubuntu)
-        [(str/join " " (concat ["apt-get purge -y --auto-remove"] deps))]
+  (when-let [deps (seq (build-deps distro-deps distro))]
+    (case (-> distro namespace keyword)
+      (:debian :debian-slim :ubuntu)
+      [(cmd "apt-get purge -y --auto-remove" deps)]
 
-        :alpine
-        [(str/join " " (concat ["apk del"] deps))]
-
-        nil))))
+      :alpine
+      [(cmd "apk del" deps)])))
 
 (defn copy-resource-file!
   "Copy a file named `filename` from resources to a specified `build-dir`.
@@ -66,9 +59,7 @@
   "This is the same for every build-tool so far, so it's in here. If that
   changes move it into the build-tool-specific namespaces (or future protocol)."
   [{:keys [jdk-version]}]
-  (if (>= jdk-version 16)
-    (concat
-      ["COPY entrypoint /usr/local/bin/entrypoint"]
-      [""]
-      ["ENTRYPOINT [\"entrypoint\"]"])
-    nil))
+  (when (>= jdk-version 16)
+    ["COPY entrypoint /usr/local/bin/entrypoint"
+     ""
+     "ENTRYPOINT [\"entrypoint\"]"]))
