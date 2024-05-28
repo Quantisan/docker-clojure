@@ -15,9 +15,7 @@ rm linux-install-$CLOJURE_VERSION.sh && \
 clojure -e "(clojure-version)" && \
 apk del curl
 
-# Docker bug makes rlwrap crash w/o short sleep first
-# Bug: https://github.com/moby/moby/issues/28009
-# As of 2021-09-10 this bug still exists, despite that issue being closed
-COPY rlwrap.retry /usr/local/bin/rlwrap
+# Custom "clj" script that uses rlfe instead of rlwrap
+COPY clj.sh /usr/local/bin/clj
 
 CMD ["clj"]

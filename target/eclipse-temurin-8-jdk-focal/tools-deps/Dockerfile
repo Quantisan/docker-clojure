@@ -6,7 +6,7 @@ WORKDIR /tmp
 
 RUN \
 apt-get update && \
-apt-get install -y curl make git rlwrap && \
+apt-get install -y curl make git rlfe && \
 rm -rf /var/lib/apt/lists/* && \
 curl -fsSLO https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh && \
 sha256sum linux-install-$CLOJURE_VERSION.sh && \
@@ -16,9 +16,7 @@ chmod +x linux-install-$CLOJURE_VERSION.sh && \
 rm linux-install-$CLOJURE_VERSION.sh && \
 clojure -e "(clojure-version)"
 
-# Docker bug makes rlwrap crash w/o short sleep first
-# Bug: https://github.com/moby/moby/issues/28009
-# As of 2021-09-10 this bug still exists, despite that issue being closed
-COPY rlwrap.retry /usr/local/bin/rlwrap
+# Custom "clj" script that uses rlfe instead of rlwrap
+COPY clj.sh /usr/local/bin/clj
 
 CMD ["clj"]
