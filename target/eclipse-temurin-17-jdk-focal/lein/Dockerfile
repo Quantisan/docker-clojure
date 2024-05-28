@@ -27,6 +27,7 @@ gpg --batch --verify leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT.asc leinin
 gpgconf --kill all && \
 rm -rf "$GNUPGHOME" leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT.asc && \
 mkdir -p /usr/share/java && \
+mkdir -p /root/.lein && \
 mv leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar && \
 apt-get purge -y --auto-remove gnupg wget
 
