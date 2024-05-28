@@ -61,6 +61,7 @@
            "gpgconf --kill all"
            "rm -rf \"$GNUPGHOME\" leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT.asc"
            "mkdir -p /usr/share/java"
+           "mkdir -p /root/.lein"
            "mv leiningen-$LEIN_VERSION-standalone.$FILENAME_EXT /usr/share/java/leiningen-$LEIN_VERSION-standalone.jar"]
           (empty? uninstall-dep-cmds))
         (concat-commands uninstall-dep-cmds :end)
