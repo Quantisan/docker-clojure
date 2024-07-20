@@ -12,7 +12,7 @@ WORKDIR /tmp
 # Download the whole repo as an archive
 RUN set -eux; \
 apt-get update && \
-apt-get install -y make gnupg wget && \
+apt-get install -y make git gnupg wget && \
 rm -rf /var/lib/apt/lists/* && \
 mkdir -p $LEIN_INSTALL && \
 wget -q https://codeberg.org/leiningen/leiningen/raw/tag/$LEIN_VERSION/bin/lein-pkg && \

@@ -7,7 +7,7 @@ WORKDIR /tmp
 
 # Download the whole repo as an archive
 RUN set -eux; \
-apk add --no-cache ca-certificates bash tar openssl gnupg && \
+apk add --no-cache ca-certificates bash tar openssl git gnupg && \
 mkdir -p $LEIN_INSTALL && \
 wget -q https://codeberg.org/leiningen/leiningen/raw/tag/$LEIN_VERSION/bin/lein-pkg && \
 echo "Comparing lein-pkg checksum ..." && \
