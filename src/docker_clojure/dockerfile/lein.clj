@@ -8,13 +8,13 @@
 
 (def distro-deps
   {:debian-slim {:build   #{"wget" "gnupg"}
-                 :runtime #{}}
+                 :runtime #{"git"}}
    :debian      {:build   #{"wget" "gnupg"}
-                 :runtime #{"make"}}
+                 :runtime #{"make" "git"}}
    :ubuntu      {:build   #{"wget" "gnupg"}
-                 :runtime #{"make"}}
+                 :runtime #{"make" "git"}}
    :alpine      {:build   #{"tar" "gnupg" "openssl" "ca-certificates"}
-                 :runtime #{"bash"}}})
+                 :runtime #{"bash" "git"}}})
 
 (def install-deps (partial install-distro-deps distro-deps))
 
