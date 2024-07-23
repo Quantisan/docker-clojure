@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jdk-focal
+FROM eclipse-temurin:21-jdk-noble
 
 ENV LEIN_VERSION=2.11.2
 ENV LEIN_INSTALL=/usr/local/bin/
