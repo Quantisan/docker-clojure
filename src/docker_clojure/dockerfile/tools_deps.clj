@@ -4,18 +4,18 @@
                      install-distro-deps uninstall-distro-build-deps]]))
 
 (defn prereqs [dir _variant]
-  (copy-resource-file! dir "rlwrap.retry" identity
+  (copy-resource-file! dir "clj.sh" identity
                        #(.setExecutable % true false)))
 
 (def distro-deps
   {:debian-slim {:build   #{"curl"}
-                 :runtime #{"rlwrap" "make" "git"}}
+                 :runtime #{"rlfe" "make" "git"}}
    :debian      {:build   #{"curl"}
-                 :runtime #{"rlwrap" "make" "git"}}
+                 :runtime #{"rlfe" "make" "git"}}
    :ubuntu      {:build   #{}
                  ;; install curl as a runtime dep b/c we need it at build time
                  ;; but upstream includes it so we don't want to uninstall it
-                 :runtime #{"rlwrap" "make" "git" "curl"}}
+                 :runtime #{"rlfe" "make" "git" "curl"}}
    :alpine      {:build   #{"curl"}
                  :runtime #{"bash" "make" "git"}}})
 
@@ -24,9 +24,7 @@
 (def uninstall-build-deps (partial uninstall-distro-build-deps distro-deps))
 
 (def docker-bug-notice
-  ["# Docker bug makes rlwrap crash w/o short sleep first"
-   "# Bug: https://github.com/moby/moby/issues/28009"
-   "# As of 2021-09-10 this bug still exists, despite that issue being closed"])
+  ["# Custom \"clj\" script that uses rlfe instead of rlwrap"])
 
 (defn install [installer-hashes {:keys [build-tool-version] :as variant}]
   (let [install-dep-cmds   (install-deps variant)
@@ -47,7 +45,7 @@
            "clojure -e \"(clojure-version)\""] (empty? uninstall-dep-cmds))
         (concat-commands uninstall-dep-cmds :end)
         (concat [""] docker-bug-notice
-                ["COPY rlwrap.retry /usr/local/bin/rlwrap"])
+                ["COPY clj.sh /usr/local/bin/clj"])
         (->> (remove nil?)))))
 
 (defn command [{:keys [jdk-version]}]
