@@ -80,7 +80,7 @@ combination is provided upstream and thus likewise for us):
 
 Java 8 leiningen on Debian bullseye-slim: `clojure:temurin-8-lein-bullseye-slim`  
 Java 11 leiningen on Debian bullseye: `clojure:temurin-11-lein-bullseye`  
-Java 17 tools-deps on Ubuntu focal: `clojure:tools-deps` or `clojure:temurin-17` or `clojure:temurin-17-tools-deps` or `clojure:temurin-17-tools-deps-focal`  
+Java 17 tools-deps on Ubuntu noble: `clojure:tools-deps` or `clojure:temurin-17` or `clojure:temurin-17-tools-deps` or `clojure:temurin-17-tools-deps-noble`  
 Java 17 tools-deps on Debian bullseye-slim: `clojure:bullseye-slim` or `clojure:tools-deps-bullseye-slim` or `clojure:temurin-17-bullseye-slim` or `clojure:temurin-17-tools-deps-bullseye-slim`  
 Java 21 tools-deps on Debian bookworm: `clojure:tools-deps` or `clojure:temurin-21-tools-deps` or `clojure:temurin-21-bookworm`  
 Java 22 leiningen on Debian bookworm: `clojure:temurin-21-lein-bookworm`

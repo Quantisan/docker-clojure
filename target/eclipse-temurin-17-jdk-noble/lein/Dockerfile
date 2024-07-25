@@ -1,4 +1,4 @@
-FROM eclipse-temurin:8-jdk-focal
+FROM eclipse-temurin:17-jdk-noble
 
 ENV LEIN_VERSION=2.11.2
 ENV LEIN_INSTALL=/usr/local/bin/
@@ -38,4 +38,7 @@ ENV LEIN_ROOT 1
 RUN echo '(defproject dummy "" :dependencies [[org.clojure/clojure "1.11.3"]])' > project.clj \
   && lein deps && rm project.clj
 
-CMD ["lein", "repl"]
+COPY entrypoint /usr/local/bin/entrypoint
+
+ENTRYPOINT ["entrypoint"]
+CMD ["repl"]

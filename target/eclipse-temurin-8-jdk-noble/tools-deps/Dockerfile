@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jdk-focal
+FROM eclipse-temurin:8-jdk-noble
 
 ENV CLOJURE_VERSION=1.11.3.1456
 
@@ -21,7 +21,4 @@ clojure -e "(clojure-version)"
 # As of 2021-09-10 this bug still exists, despite that issue being closed
 COPY rlwrap.retry /usr/local/bin/rlwrap
 
-COPY entrypoint /usr/local/bin/entrypoint
-
-ENTRYPOINT ["entrypoint"]
-CMD ["-M", "--repl"]
+CMD ["clj"]

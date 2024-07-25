@@ -51,7 +51,7 @@
 (def distros
   "Map of base image name to set of distro tags to use, namespaced by Linux
   distro type. :default key is a fallback for base images not o/w specified."
-  {:default #{:alpine/alpine :ubuntu/focal :ubuntu/jammy}
+  {:default #{:alpine/alpine :ubuntu/jammy :ubuntu/noble}
    "debian" #{:debian-slim/bookworm-slim :debian/bookworm
               :debian-slim/bullseye-slim :debian/bullseye}})
 
@@ -84,10 +84,7 @@
                  "1.11.3.1456" "2f5edc801133c72a49e990816b0e245beb8b4e35a85524b4dd0b3fa03a4a5365"}})
 
 (def exclusions ; don't build these for whatever reason(s)
-  #{; no more focal builds for JDK 20+
-    {:jdk-version #(>= % 20)
-     :distro      :ubuntu/focal}
-    ;; commented out example
+  #{;; commented out example
     #_{:jdk-version 8
        :distro      :alpine/alpine}})
 

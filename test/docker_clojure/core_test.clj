@@ -9,7 +9,7 @@
   (testing "generates the expected set of variants"
     (with-redefs [cfg/default-distros     {8        :debian-slim/buster-slim
                                            11       :debian-slim/buster-slim
-                                           :default :ubuntu/focal}
+                                           :default :ubuntu/noble}
                   cfg/default-jdk-version 11
                   cfg/maintainers         ["Paul Lam <paul@quantisan.com>"
                                            "Wes Morgan <wesmorgan@icloud.com>"]]
@@ -19,7 +19,7 @@
                                      #{8 11 17 18}
                                      {"debian" #{:debian/buster
                                                  :debian-slim/buster-slim}
-                                      :default  #{:alpine/alpine :ubuntu/focal}}
+                                      :default  #{:alpine/alpine :ubuntu/noble}}
                                      {"lein"       "2.9.1"
                                       "tools-deps" "1.10.1.478"})]
         ;; filter is to make failure output a little more humane
@@ -34,9 +34,9 @@
                   :base-image  "debian" :base-image-tag "debian:buster-slim"
                   :maintainer  "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
                   :docker-tag  "temurin-11-lein-2.9.1", :build-tool-version "2.9.1"}
-                 {:jdk-version        18, :distro :ubuntu/focal
+                 {:jdk-version        18, :distro :ubuntu/noble
                   :base-image         "eclipse-temurin"
-                  :base-image-tag     "eclipse-temurin:18-jdk-focal"
+                  :base-image-tag     "eclipse-temurin:18-jdk-noble"
                   :build-tool         "tools-deps"
                   :maintainer         "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
                   :docker-tag         "temurin-18-tools-deps-1.10.1.478"
@@ -64,9 +64,9 @@
                   :maintainer         "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
                   :docker-tag         "temurin-8-tools-deps-1.10.1.478"
                   :build-tool-version "1.10.1.478"}
-                 {:jdk-version        17, :distro :ubuntu/focal, :build-tool "lein"
+                 {:jdk-version        17, :distro :ubuntu/noble, :build-tool "lein"
                   :base-image         "eclipse-temurin"
-                  :base-image-tag     "eclipse-temurin:17-jdk-focal"
+                  :base-image-tag     "eclipse-temurin:17-jdk-noble"
                   :maintainer         "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
                   :docker-tag         "temurin-17-lein-2.9.1"
                   :build-tool-version "2.9.1"}
@@ -76,9 +76,9 @@
                   :maintainer         "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
                   :docker-tag         "temurin-17-lein-2.9.1-alpine"
                   :build-tool-version "2.9.1"}
-                 {:jdk-version        17, :distro :ubuntu/focal
+                 {:jdk-version        17, :distro :ubuntu/noble
                   :base-image         "eclipse-temurin"
-                  :base-image-tag     "eclipse-temurin:17-jdk-focal"
+                  :base-image-tag     "eclipse-temurin:17-jdk-noble"
                   :build-tool         "tools-deps"
                   :maintainer         "Paul Lam <paul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com>"
                   :docker-tag         "temurin-17-tools-deps-1.10.1.478"
