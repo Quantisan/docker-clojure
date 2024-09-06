@@ -73,15 +73,15 @@
 
 (def build-tools
   {"lein"       "2.11.2"
-   "tools-deps" "1.11.4.1474"})
+   "tools-deps" "1.12.0.1479"})
 
 (def default-build-tool "tools-deps")
 
 (def installer-hashes
   {"lein"       {"2.11.1" "03b3fbf7e6fac262f88f843a87b712a2b37f39cffc4f4f384436a30d8b01d6e4"
                  "2.11.2" "28a1a62668c5f427b413a8677e376affaa995f023b1fcd06e2d4c98ac1df5f3e"}
-   "tools-deps" {"1.11.3.1463" "0c41063a2fefb53a31bc1bc236899955f759c5103dc0495489cdd74bf8f114bb"
-                 "1.11.4.1474" "b23a784c048e4a5b1fc4bcddaea07abcf476621a97d98bbf4f4726c3375d6e98"}})
+   "tools-deps" {"1.11.4.1474" "b23a784c048e4a5b1fc4bcddaea07abcf476621a97d98bbf4f4726c3375d6e98"
+                 "1.12.0.1479" "94f29b9b66183bd58307c46fb561fd9e9148666bac13a4518a9931b6f989d830"}})
 
 (def exclusions ; don't build these for whatever reason(s)
   #{;; commented out example
