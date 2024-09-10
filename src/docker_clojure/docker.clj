@@ -96,7 +96,7 @@
   (partial tag {:omit-jdk? true, :omit-distro? true}))
 
 (defn all-tags
-  "Returns all Docker tags for the give variant"
+  "Returns all Docker tags for the given variant"
   [variant]
   (let [short-tag (:docker-tag variant)
         full-tag  (full-tag variant)
