@@ -55,13 +55,8 @@
    "debian" #{:debian-slim/bookworm-slim :debian/bookworm
               :debian-slim/bullseye-slim :debian/bullseye}})
 
-(def default-architectures
+(def architectures
   #{"amd64" "arm64v8"})
-
-(def distro-architectures
-  "Map of distro types to architectures it supports if different from
-  default-architectures."
-  {:alpine #{"amd64"}})
 
 (def default-distros
   "The default distro to use for tags that don't specify one, keyed by jdk-version.
@@ -84,9 +79,10 @@
                  "1.12.0.1479" "94f29b9b66183bd58307c46fb561fd9e9148666bac13a4518a9931b6f989d830"}})
 
 (def exclusions ; don't build these for whatever reason(s)
-  #{;; commented out example
-    #_{:jdk-version 8
-       :distro      :alpine/alpine}})
+  #{;; No upstream ARM alpine images available before JDK 21
+    {:jdk-version   #(< % 21)
+     :architecture  "arm64v8"
+     :distro        :alpine/alpine}})
 
 (def maintainers
   ["Paul Lam <paul@quantisan.com> (@Quantisan)"
