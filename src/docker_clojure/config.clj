@@ -55,13 +55,8 @@
    "debian" #{:debian-slim/bookworm-slim :debian/bookworm
               :debian-slim/bullseye-slim :debian/bullseye}})
 
-(def default-architectures
+(def architectures
   #{"amd64" "arm64v8"})
-
-(def distro-architectures
-  "Map of distro types to architectures it supports if different from
-  default-architectures."
-  {:alpine #{"amd64"}})
 
 (def default-distros
   "The default distro to use for tags that don't specify one, keyed by jdk-version.
@@ -84,12 +79,13 @@
                  "1.12.0.1530" "2a113e3a4f1005e05f4d6a6dee24ca317b0115cdd7e6ca6155a76f5ffa5ba35b"}})
 
 (def exclusions ; don't build these for whatever reason(s)
-  #{; no more jammy builds for JDK 23+
+  #{;; No more jammy builds for JDK 23+
     {:jdk-version #(>= % 23)
      :distro      :ubuntu/jammy}
-    ;; commented out example
-    #_{:jdk-version 8
-       :distro      :alpine/alpine}})
+    ;; No upstream ARM alpine images available before JDK 21
+    {:jdk-version   #(< % 21)
+     :architecture  "arm64v8"
+     :distro        :alpine/alpine}})
 
 (def maintainers
   ["Paul Lam <paul@quantisan.com> (@Quantisan)"
