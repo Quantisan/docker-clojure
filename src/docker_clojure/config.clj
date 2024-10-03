@@ -84,7 +84,10 @@
                  "1.12.0.1479" "94f29b9b66183bd58307c46fb561fd9e9148666bac13a4518a9931b6f989d830"}})
 
 (def exclusions ; don't build these for whatever reason(s)
-  #{;; commented out example
+  #{; no more jammy builds for JDK 23+
+    {:jdk-version #(>= % 23)
+     :distro      :ubuntu/jammy}
+    ;; commented out example
     #_{:jdk-version 8
        :distro      :alpine/alpine}})
 
