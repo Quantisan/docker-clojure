@@ -11,7 +11,8 @@
                              :parallelization 2}}
 
   :test         {:extra-paths ["test"]
-                 :extra-deps  {com.cognitect/test-runner
-                               {:git/url "https://github.com/cognitect-labs/test-runner.git"
-                                :sha     "9d36f36ff541dac680a05010e4348c744333f191"}}
-                 :main-opts   ["-m" "cognitect.test-runner"]}}}
+                 :extra-deps  {lambdaisland/kaocha {:mvn/version "1.91.1392"}
+                               orchestra/orchestra {:mvn/version "2021.01.01-1"}
+                               org.clojure/test.check {:mvn/version "1.1.1"}}
+                 :exec-fn     docker-clojure.fix-kaocha/run-tests
+                 :exec-args   {}}}}

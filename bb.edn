@@ -3,17 +3,11 @@
          org.babashka/spec.alpha {:git/url "https://github.com/babashka/spec.alpha"
                                   :git/sha "951b49b8c173244e66443b8188e3ff928a0a71e7"}}
  :tasks
- {:requires    ([docker-clojure.core :as dc])
+ {:requires    ([babashka.deps :as deps]
+                [docker-clojure.core :as dc])
   clean        (dc/-main "clean")
   dockerfiles  {:depends [clean]
                 :task    (apply dc/-main "dockerfiles" *command-line-args*)}
   manifest     (apply dc/-main "manifest" *command-line-args*)
   build-images {:task    (apply dc/-main "build-images" *command-line-args*)}
-  test         {:extra-paths ["test"]
-                :requires    ([docker-clojure.test-runner :as tr])
-                :task        (tr/-main
-                               'docker-clojure.core-test
-                               'docker-clojure.docker-test
-                               'docker-clojure.dockerfile-test
-                               'docker-clojure.manifest-test
-                               'docker-clojure.variant-test)}}}
+  test         (deref (deps/clojure '-X:test))}}
