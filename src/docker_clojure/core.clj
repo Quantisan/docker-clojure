@@ -229,6 +229,11 @@
                          (every? (fn [[k v]]
                                    (= (get % k) v))
                                  key-vals))]
+    (when (seq key-vals)
+      (println "Filtering variants with:")
+      (doseq [[k v] key-vals]
+        (println (str "(= " (pr-str v) " (get variant " (pr-str k) "))")))
+      (println))
     (filter variant-filter (valid-variants))))
 
 (defn run
