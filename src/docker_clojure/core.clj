@@ -219,10 +219,13 @@
 
 (defn generate-variants
   [args]
+  ; TODO: Maybe replace this with bb/cli
   (let [key-vals       (->> args
                             (map #(if (str/starts-with? % ":")
                                     (edn/read-string %)
-                                    %)) ; TODO: Maybe replace this with bb/cli
+                                    %))
+                            (map #(try (Integer/parseInt %)
+                                       (catch Exception _ %)))
                             (partition 2))
         variant-filter #(or
                          (empty? key-vals)
