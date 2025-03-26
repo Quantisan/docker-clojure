@@ -1,8 +1,4 @@
-FROM debian:bullseye
-
-ENV JAVA_HOME=/opt/java/openjdk
-COPY --from=eclipse-temurin:23 $JAVA_HOME $JAVA_HOME
-ENV PATH="${JAVA_HOME}/bin:${PATH}"
+FROM eclipse-temurin:24-jdk-noble
 
 ENV LEIN_VERSION=2.11.2
 ENV LEIN_INSTALL=/usr/local/bin/

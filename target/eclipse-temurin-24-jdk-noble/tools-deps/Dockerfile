@@ -1,8 +1,4 @@
-FROM debian:bullseye-slim
-
-ENV JAVA_HOME=/opt/java/openjdk
-COPY --from=eclipse-temurin:23 $JAVA_HOME $JAVA_HOME
-ENV PATH="${JAVA_HOME}/bin:${PATH}"
+FROM eclipse-temurin:24-jdk-noble
 
 ENV CLOJURE_VERSION=1.12.0.1530
 
@@ -18,8 +14,7 @@ echo "2a113e3a4f1005e05f4d6a6dee24ca317b0115cdd7e6ca6155a76f5ffa5ba35b *linux-in
 chmod +x linux-install-$CLOJURE_VERSION.sh && \
 ./linux-install-$CLOJURE_VERSION.sh && \
 rm linux-install-$CLOJURE_VERSION.sh && \
-clojure -e "(clojure-version)" && \
-apt-get purge -y --auto-remove curl
+clojure -e "(clojure-version)"
 
 # Docker bug makes rlwrap crash w/o short sleep first
 # Bug: https://github.com/moby/moby/issues/28009

@@ -1,7 +1,7 @@
-FROM debian:bookworm
+FROM debian:bullseye-slim
 
 ENV JAVA_HOME=/opt/java/openjdk
-COPY --from=eclipse-temurin:23 $JAVA_HOME $JAVA_HOME
+COPY --from=eclipse-temurin:24 $JAVA_HOME $JAVA_HOME
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
 ENV LEIN_VERSION=2.11.2
@@ -12,7 +12,7 @@ WORKDIR /tmp
 # Download the whole repo as an archive
 RUN set -eux; \
 apt-get update && \
-apt-get install -y make git gnupg wget && \
+apt-get install -y git gnupg wget && \
 rm -rf /var/lib/apt/lists/* && \
 mkdir -p $LEIN_INSTALL && \
 wget -q https://codeberg.org/leiningen/leiningen/raw/tag/$LEIN_VERSION/bin/lein-pkg && \

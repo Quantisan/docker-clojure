@@ -1,4 +1,4 @@
-FROM eclipse-temurin:23-jdk-alpine
+FROM eclipse-temurin:24-jdk-alpine
 
 ENV LEIN_VERSION=2.11.2
 ENV LEIN_INSTALL=/usr/local/bin/
