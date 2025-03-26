@@ -1,4 +1,8 @@
-FROM eclipse-temurin:23-jdk-noble
+FROM debian:bookworm
+
+ENV JAVA_HOME=/opt/java/openjdk
+COPY --from=eclipse-temurin:24 $JAVA_HOME $JAVA_HOME
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
 ENV LEIN_VERSION=2.11.2
 ENV LEIN_INSTALL=/usr/local/bin/

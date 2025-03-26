@@ -48,7 +48,7 @@ JDK 11 variant of the tools-deps image: `clojure:temurin-11-tools-deps` or `cloj
 JDK 17 with lein 2.11.2: `clojure:temurin-17-lein-2.11.2`  
 JDK 20 with the latest version of lein: `clojure:temurin-20-lein`  
 JDK 21 variant of the tools-deps image: `clojure:tools-deps` or `clojure:temurin-21` or `clojure:temurin-21-tools-deps`  
-JDK 23 variant of the tools-deps image: `clojure:temurin-23` or `clojure:temurin-23-tools-deps`
+JDK 24 variant of the tools-deps image: `clojure:temurin-24` or `clojure:temurin-24-tools-deps`
 
 ## Linux distro
 
@@ -86,7 +86,7 @@ Java 11 leiningen on Debian bullseye: `clojure:temurin-11-lein-bullseye`
 Java 17 tools-deps on Ubuntu noble: `clojure:tools-deps` or `clojure:temurin-17` or `clojure:temurin-17-tools-deps` or `clojure:temurin-17-tools-deps-noble`  
 Java 17 tools-deps on Debian bullseye-slim: `clojure:bullseye-slim` or `clojure:tools-deps-bullseye-slim` or `clojure:temurin-17-bullseye-slim` or `clojure:temurin-17-tools-deps-bullseye-slim`  
 Java 21 tools-deps on Debian bookworm: `clojure:tools-deps` or `clojure:temurin-21-tools-deps` or `clojure:temurin-21-bookworm`  
-Java 23 leiningen on Debian bookworm: `clojure:temurin-23-lein-bookworm`
+Java 24 leiningen on Debian bookworm: `clojure:temurin-24-lein-bookworm`
 
 ### Alpine Linux
 
