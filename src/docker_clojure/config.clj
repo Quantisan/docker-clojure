@@ -1,6 +1,8 @@
 (ns docker-clojure.config
   (:require [clojure.spec.alpha :as s]
+            [clojure.spec.gen.alpha :as gen]
             [clojure.string :as str]
+            [com.gfredericks.test.chuck.generators :as gen']
             [docker-clojure.core :as-alias core]))
 
 (s/def ::non-blank-string
@@ -13,25 +15,60 @@
 (s/def ::base-image ::non-blank-string)
 (s/def ::base-images (s/coll-of ::base-image :distinct true :into #{}))
 
-(s/def ::docker-image-name (s/and ::non-blank-string
-                                  #(re-matches #"[-\w]+(?::[-\w.]+)?" %)))
-(s/def ::docker-tag (s/and ::non-blank-string
-                           #(re-matches #"[-\w.]+" %)))
+(def docker-image-name-re (re-pattern "[-\\w]+(?::[-\\w.]+)?"))
+
+(s/def ::docker-image-name
+  (s/with-gen
+   (s/and ::non-blank-string
+          #(re-matches docker-image-name-re %))
+   #(gen'/string-from-regex docker-image-name-re)))
+
+(def docker-tag-re (re-pattern "[-\\w.]+"))
+
+(s/def ::docker-tag
+  (s/with-gen
+   (s/and ::non-blank-string
+          #(re-matches docker-tag-re %))
+   #(gen'/string-from-regex docker-tag-re)))
+
 (s/def ::base-image-tag ::docker-image-name)
 
-(s/def ::distro qualified-keyword?)
+(def distro-component-re (re-pattern "[-_A-Za-z][-\\w.]+"))
+
+(s/def ::distro
+  (s/with-gen
+   (s/and qualified-keyword?
+          #(->> %
+                ((juxt namespace name))
+                ((fn [elements]
+                   (every? (fn [e] (re-matches distro-component-re e))
+                           elements)))))
+   #(gen/fmap (fn [[namespace local]] (keyword namespace local))
+              (gen/vector (gen'/string-from-regex distro-component-re) 2))))
+
 (s/def ::distros (s/coll-of ::distro :distinct true :into #{}))
 
-(s/def ::build-tool (s/or ::specific-tool ::non-blank-string
-                          ::all-tools #(= ::core/all %)))
+(s/def ::specific-build-tool #{"lein" "tools-deps"})
+(s/def ::build-tool (s/or ::specific-tool ::specific-build-tool
+                          ::all-tools #{::core/all}))
+(s/def ::specific-build-tool-version
+  (s/with-gen
+   (s/and ::non-blank-string
+          #(re-matches #"(?:\d+\.)+\d+" %))
+   #(gen/fmap (fn [nums] (str/join "." nums))
+              (gen/vector (gen/int) 2 4))))
+
 (s/def ::build-tool-version
-  (s/nilable (s/and ::non-blank-string #(re-matches #"[\d\.]+" %))))
-(s/def ::build-tools (s/map-of ::build-tool ::build-tool-version))
+  (s/nilable ::specific-build-tool-version))
+
+(s/def ::build-tool-versions
+  (s/map-of ::specific-build-tool ::specific-build-tool-version))
 
 (s/def ::maintainers
   (s/coll-of ::non-blank-string :distinct true :into #{}))
+(s/def ::maintainer ::non-blank-string)
 
-(s/def ::architecture ::non-blank-string)
+(s/def ::architecture #{"amd64" "arm64v8"})
 (s/def ::architectures (s/coll-of ::architecture :distinct true :into #{}))
 
 (def git-repo "https://github.com/Quantisan/docker-clojure.git")
@@ -83,9 +120,9 @@
     {:jdk-version #(>= % 23)
      :distro      :ubuntu/jammy}
     ;; No upstream ARM alpine images available before JDK 21
-    {:jdk-version   #(< % 21)
-     :architecture  "arm64v8"
-     :distro        :alpine/alpine}})
+    {:jdk-version  #(< % 21)
+     :architecture "arm64v8"
+     :distro       :alpine/alpine}})
 
 (def maintainers
   ["Paul Lam <paul@quantisan.com> (@Quantisan)"

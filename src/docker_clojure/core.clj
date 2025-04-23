@@ -20,12 +20,6 @@
   [exclusions variant]
   (some (partial variant/exclude? variant) exclusions))
 
-(s/def ::variant
-  (s/keys :req-un [::cfg/jdk-version ::cfg/base-image ::cfg/base-image-tag
-                   ::cfg/distro ::cfg/build-tool ::cfg/build-tool-version
-                   ::cfg/maintainer ::cfg/docker-tag]
-          :opt-un [::cfg/build-tool-versions ::cfg/architecture]))
-
 (def latest-variants
   "The latest variant is special because we include all 3 build tools via the
   [::all] value on the end."
@@ -36,12 +30,20 @@
           [::all]
           arch)))
 
+(defn- invalid-variant?
+  [variant]
+  (let [status   (s/conform ::variant/variant variant)
+        invalid? (= ::s/invalid status)]
+    (when invalid?
+      (println "invalid variant:" (pr-str variant))
+      true)))
+
 (defn image-variants
   [base-images jdk-versions distros build-tools architectures]
   (into #{}
         (comp
          (map variant/->map)
-         (remove #(= ::s/invalid (s/conform ::variant %))))
+         (remove invalid-variant?))
         (concat
          (variant/combinations base-images jdk-versions distros build-tools
                                architectures)

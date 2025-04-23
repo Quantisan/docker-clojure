@@ -1,7 +1,9 @@
 {:deps
  {org.clojure/clojure            {:mvn/version "1.12.0"}
   org.clojure/math.combinatorics {:mvn/version "0.3.0"}
-  org.clojure/core.async         {:mvn/version "1.6.681"}}
+  org.clojure/core.async         {:mvn/version "1.8.741"}
+  com.gfredericks/test.chuck     {:git/url "https://github.com/gfredericks/test.chuck"
+                                  :git/sha "3e129a11ce9cc1a57584fa022b9b05ab7546a609"}}
 
  :paths ["src" "resources"]
 
@@ -11,8 +13,8 @@
                              :parallelization 2}}
 
   :test         {:extra-paths ["test"]
-                 :extra-deps  {lambdaisland/kaocha {:mvn/version "1.91.1392"}
-                               orchestra/orchestra {:mvn/version "2021.01.01-1"}
+                 :extra-deps  {lambdaisland/kaocha    {:mvn/version "1.91.1392"}
+                               orchestra/orchestra    {:mvn/version "2021.01.01-1"}
                                org.clojure/test.check {:mvn/version "1.1.1"}}
                  :exec-fn     docker-clojure.fix-kaocha/run-tests
                  :exec-args   {}}}}

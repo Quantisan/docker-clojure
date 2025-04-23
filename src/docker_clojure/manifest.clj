@@ -23,8 +23,7 @@
   "Generates Docker manifest file for a given git commit and returns it as a
   string."
   [{:keys [maintainers architectures git-repo]} git-commit variants]
-  (let [merged-arch-variants (variant/merge-architectures variants
-                                                          architectures)
+  (let [merged-arch-variants (variant/merge-architectures architectures variants)
         maintainers-label "Maintainers:"
         maintainers-sep (apply str ",\n" (repeat (inc (count maintainers-label))
                                                  " "))]
