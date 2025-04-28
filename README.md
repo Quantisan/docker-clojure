@@ -12,7 +12,7 @@ This image runs on OpenJDK 8, 11, 17, and more recent releases and includes
 ## Leiningen vs. tools-deps
 
 The version tags on these images look like `(temurin-major-version-)lein-N.N.N(-distro)`,
-or `(temurin-major-version-)tools-deps(-distro)`. These refer to which version
+or `(temurin-major-version-)tools-deps-N.N.N.N(-distro)`. These refer to which version
 of leiningen or tools-deps is packaged in the image (because they can then install
 and use any version of Clojure at runtime). The `lein` (or `lein-bullseye-slim`,
 `temurin-17-lein`, etc.) images will always have a recent version of leiningen
