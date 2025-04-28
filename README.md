@@ -90,9 +90,13 @@ Java 24 leiningen on Debian bookworm: `clojure:temurin-24-lein-bookworm`
 
 ### Alpine Linux
 
-Sometimes there are upstream eclipse-temurin images based on Alpine Linux.
+Alpine Linux is another light-weight option that is a popular base image in the
+Docker community. When an upstream eclipse-temurin image is available for a
+given Java release and architecture, we will provide a clojure image based on it
+if we can.
 
-As of 2022-9-29 these are available for the linux/amd64 architecture only.
+As of 2025-04-28 these are available for both amd64 and arm64 architectures, but
+only for Java 21+. For Java versions below 21, only amd64 is available.
 
 Some example tags:
 
