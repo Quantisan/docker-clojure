@@ -1,39 +1,15 @@
 (ns docker-clojure.manifest-test
   (:require [clojure.test :refer [deftest is are testing]]
-            [docker-clojure.manifest :refer [variant-tags]]))
+            [docker-clojure.manifest :refer [variant->manifest]]))
 
-(deftest variant-tags-test
-  (testing "Generates all-defaults tag for a build tool"
-    (let [tags (variant-tags {:base-image         "debian"
-                              :jdk-version        21
-                              :distro             :debian/bookworm
-                              :build-tool         "tools-deps"
-                              :build-tool-version "1.11.1.1155"})]
-      (is ((set tags) "tools-deps"))))
-  (testing "Generates jdk-version-build-tool tag for every jdk version"
-    (are [jdk-version tag]
-      (let [tags (variant-tags {:base-image         (if (< jdk-version 21)
-                                                      "eclipse-temurin"
-                                                      "debian")
-                                :jdk-version        jdk-version
-                                :distro             (if (< jdk-version 21)
-                                                      :ubuntu/jammy
-                                                      :debian/bookworm)
-                                :build-tool         "tools-deps"
-                                :build-tool-version "1.11.1.1155"})]
-        ((set tags) tag))
-      11 "temurin-11-tools-deps"
-      17 "temurin-17-tools-deps"
-      21 "temurin-21-tools-deps"))
-  (testing "Generates build-tool-distro tag for every distro"
-    (are [distro tag]
-      (let [tags (variant-tags {:base-image         "debian"
-                                :jdk-version        21
-                                :distro             distro
-                                :build-tool         "tools-deps"
-                                :build-tool-version "1.11.1.1155"})]
-        ((set tags) tag))
-      :debian/bullseye "tools-deps-bullseye"
-      :debian-slim/bullseye-slim "tools-deps-bullseye-slim"
-      :debian/bookworm "tools-deps-bookworm"
-      :debian-slim/bookworm-slim "tools-deps-bookworm-slim")))
+(deftest variant->manifest-test
+  (testing "generates the correct manifest text for a variant"
+    (is (= "\nTags: temurin-17-noble, temurin-17-tools-deps-1.10.1.478, temurin-17-tools-deps-1.10.1.478-noble, temurin-17-tools-deps-noble\nDirectory: target/eclipse-temurin-17-jdk-noble/tools-deps"
+           (variant->manifest
+            {:jdk-version 17, :distro :ubuntu/noble
+             :base-image "eclipse-temurin"
+             :base-image-tag "eclipse-temurin:17-jdk-noble"
+             :build-tool "tools-deps"
+             :maintainer "Paul Lam <p aul@quantisan.com> & Wes Morgan <wesmorgan@icloud.com}>"
+             :docker-tag "temurin-17-tools-deps-1.10.1.478"
+             :build-tool-version "1.10.1.478"})))))

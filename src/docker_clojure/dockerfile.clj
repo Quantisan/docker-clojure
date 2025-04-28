@@ -4,7 +4,8 @@
    [clojure.string :as str]
    [docker-clojure.dockerfile.lein :as lein]
    [docker-clojure.dockerfile.tools-deps :as tools-deps]
-   [docker-clojure.dockerfile.shared :refer [copy-resource-file! entrypoint]]))
+   [docker-clojure.dockerfile.shared :refer [copy-resource-file! entrypoint]]
+   [docker-clojure.log :refer [log]]))
 
 (defn build-dir [{:keys [base-image-tag jdk-version build-tool]}]
   (str/join "/" ["target"
@@ -78,6 +79,15 @@
               (str (contents installer-hashes variant) "\n")))
       (throw (ex-info (str "Error creating directory " dir)
                       {:error err})))))
+
+(defn generate! [installer-hashes variant]
+  (let [build-dir (build-dir variant)
+        filename  "Dockerfile"]
+    (log "Generating" (str build-dir "/" filename))
+    (write-file build-dir filename installer-hashes variant)
+    (assoc variant
+      :build-dir build-dir
+      :dockerfile filename)))
 
 (defn clean-all []
   (sh "sh" "-c" "rm -rf target/*"))
