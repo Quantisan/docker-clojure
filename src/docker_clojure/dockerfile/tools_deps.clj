@@ -17,7 +17,7 @@
                  ;; but upstream includes it so we don't want to uninstall it
                  :runtime #{"rlwrap" "make" "git" "curl"}}
    :alpine      {:build   #{"curl"}
-                 :runtime #{"bash" "make" "git"}}})
+                 :runtime #{"bash" "make" "git" "rlwrap"}}})
 
 (def install-deps (partial install-distro-deps distro-deps))
 
