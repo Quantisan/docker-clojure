@@ -12,7 +12,7 @@ This image runs on OpenJDK 8, 11, 17, and more recent releases and includes
 ## Leiningen vs. tools-deps
 
 The version tags on these images look like `(temurin-major-version-)lein-N.N.N(-distro)`,
-or `(temurin-major-version-)tools-deps(-distro)`. These refer to which version
+or `(temurin-major-version-)tools-deps-N.N.N.N(-distro)`. These refer to which version
 of leiningen or tools-deps is packaged in the image (because they can then install
 and use any version of Clojure at runtime). The `lein` (or `lein-bullseye-slim`,
 `temurin-17-lein`, etc.) images will always have a recent version of leiningen
@@ -90,9 +90,13 @@ Java 24 leiningen on Debian bookworm: `clojure:temurin-24-lein-bookworm`
 
 ### Alpine Linux
 
-Sometimes there are upstream eclipse-temurin images based on Alpine Linux.
+Alpine Linux is another light-weight option that is a popular base image in the
+Docker community. When an upstream eclipse-temurin image is available for a
+given Java release and architecture, we will provide a clojure image based on it
+if we can.
 
-As of 2022-9-29 these are available for the linux/amd64 architecture only.
+As of 2025-04-28 these are available for both amd64 and arm64 architectures, but
+only for Java 21+. For Java versions below 21, only amd64 is available.
 
 Some example tags:
 
