@@ -90,7 +90,8 @@
   distro type. :default key is a fallback for base images not o/w specified."
   {:default #{:alpine/alpine :ubuntu/jammy :ubuntu/noble}
    "debian" #{:debian-slim/bookworm-slim :debian/bookworm
-              :debian-slim/bullseye-slim :debian/bullseye}})
+              :debian-slim/bullseye-slim :debian/bullseye
+              :debian-slim/trixie-slim :debian/trixie}})
 
 (def architectures
   #{"amd64" "arm64v8"})
