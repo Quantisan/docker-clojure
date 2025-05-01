@@ -47,7 +47,7 @@
                                                   "debian")
                             :jdk-version        jdk-version
                             :distro             (if (< jdk-version 21)
-                                                  :ubuntu/jammy
+                                                  :ubuntu/noble
                                                   :debian/bookworm)
                             :build-tool         "tools-deps"
                             :build-tool-version "1.11.1.1155"})]

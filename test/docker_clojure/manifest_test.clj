@@ -4,7 +4,7 @@
 
 (deftest variant->manifest-test
   (testing "generates the correct manifest text for a variant"
-    (is (= "\nTags: temurin-17-noble, temurin-17-tools-deps-1.10.1.478, temurin-17-tools-deps-1.10.1.478-noble, temurin-17-tools-deps-noble\nDirectory: target/eclipse-temurin-17-jdk-noble/tools-deps"
+    (is (= "\nTags: temurin-17-noble, temurin-17-tools-deps, temurin-17-tools-deps-1.10.1.478, temurin-17-tools-deps-1.10.1.478-noble, temurin-17-tools-deps-noble\nDirectory: target/eclipse-temurin-17-jdk-noble/tools-deps"
            (variant->manifest
             {:jdk-version 17, :distro :ubuntu/noble
              :base-image "eclipse-temurin"
