@@ -183,15 +183,13 @@
   :ret  (s/coll-of ::manifest-variant)
   :fn   #(let [ret-count        (-> % :ret count)
                arg-variants     (-> % :args :variants)
-               should-merge?    (fn [v]
-                                  (some (partial equal-except-architecture? v)
-                                        arg-variants))
-               one-per-arch     (fn [c] (if (> c 0)
-                                          (/ c (count cfg/architectures))
-                                          c))
-               num-should-merge (->> arg-variants
-                                     (filter should-merge?)
-                                     count
-                                     one-per-arch)
-               arg-count        (- (count arg-variants) num-should-merge)]
-           (= ret-count arg-count)))
+               ;; Examine the return value to see how many unique variants we have
+               ;; after merging all architectures
+               variant-keys     (-> arg-variants first keys set
+                                    (disj :architecture))
+               unique-variants  (->> arg-variants
+                                     (map (fn [v] (select-keys v variant-keys)))
+                                     set count)]
+           ;; We expect to have one merged variant for each unique combination of keys
+           ;; other than architecture
+           (= ret-count unique-variants)))
