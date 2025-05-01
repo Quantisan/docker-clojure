@@ -68,7 +68,7 @@
   (s/coll-of ::non-blank-string :distinct true :into #{}))
 (s/def ::maintainer ::non-blank-string)
 
-(s/def ::architecture #{"amd64" "arm64v8"})
+(s/def ::architecture ::non-blank-string)
 (s/def ::architectures (s/coll-of ::architecture :distinct true :into #{}))
 
 (def git-repo "https://github.com/Quantisan/docker-clojure.git")
@@ -94,7 +94,7 @@
               :debian-slim/trixie-slim :debian/trixie}})
 
 (def architectures
-  #{"amd64" "arm64v8"})
+  #{"amd64" "arm64v8" "ppc64le" "riscv64" "s390x"})
 
 (def default-distros
   "The default distro to use for tags that don't specify one, keyed by jdk-version.
@@ -123,7 +123,33 @@
     ;; No upstream ARM alpine images available before JDK 21
     {:jdk-version  #(< % 21)
      :architecture "arm64v8"
-     :distro       :alpine/alpine}})
+     :distro       :alpine/alpine}
+    ;; Only build amd64 & arm64 architectures for alpine
+    {:architecture #(not (#{"amd64" "arm64v8"} %))
+     :distro       :alpine/alpine}
+    ;; ppc64le needs Debian Bookworm or newer
+    {:architecture "ppc64le"
+     :distro       #(and (-> % namespace (str/starts-with? "debian"))
+                         (-> % name (str/starts-with? "bullseye")))}
+    ;; riscv64 is only supported for Java 17+
+    {:architecture "riscv64"
+     :jdk-version  #(< % 17)}
+    ;; riscv64 isn't supported on Ubuntu Jammy
+    {:architecture "riscv64"
+     :distro       :ubuntu/jammy}
+    ;; riscv64 needs Debian Trixie or newer
+    {:architecture "riscv64"
+     :distro       #(and (-> % namespace (str/starts-with? "debian"))
+                         (let [n (name %)]
+                           (or (str/starts-with? n "bullseye")
+                               (str/starts-with? n "bookworm"))))}
+    ;; s390x is only supported for Java 11+
+    {:architecture "s390x"
+     :jdk-version  #(< % 11)}
+    ;; s390x needs Debian Bookworm or newer
+    {:architecture "s390x"
+     :distro       #(and (-> % namespace (str/starts-with? "debian"))
+                         (-> % name (str/starts-with? "bullseye")))}})
 
 (def maintainers
   ["Paul Lam <paul@quantisan.com> (@Quantisan)"
