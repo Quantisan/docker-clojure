@@ -99,9 +99,9 @@
 (def default-distros
   "The default distro to use for tags that don't specify one, keyed by jdk-version.
   :default is a fallback for jdk versions not o/w specified."
-  {8        :ubuntu/jammy
-   11       :ubuntu/jammy
-   17       :ubuntu/jammy
+  {8        :ubuntu/noble
+   11       :ubuntu/noble
+   17       :ubuntu/noble
    :default :debian/bookworm})
 
 (def build-tools
