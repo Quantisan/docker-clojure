@@ -9,9 +9,9 @@ jobs:
 
     steps:
     - name: Install babashka
-      uses: DeLaGuardo/setup-clojure@12.5
+      uses: DeLaGuardo/setup-clojure@13.4
       with:
-        bb: 1.12.199
+        bb: 1.12.200
     - uses: actions/checkout@v4
     - name: Check for stale Dockerfiles
       run: |
