@@ -1,9 +1,9 @@
 {:deps
- {org.clojure/clojure            {:mvn/version "1.12.0"}
+ {org.clojure/clojure            {:mvn/version "1.12.1"}
   org.clojure/math.combinatorics {:mvn/version "0.3.0"}
   org.clojure/core.async         {:mvn/version "1.8.741"}
   com.gfredericks/test.chuck     {:git/url "https://github.com/gfredericks/test.chuck"
-                                  :git/sha "3e129a11ce9cc1a57584fa022b9b05ab7546a609"}}
+                                  :git/sha "0487a45a073f09ba071b28323a8be8ad57c9bbfd"}}
 
  :paths ["src" "resources"]
 
