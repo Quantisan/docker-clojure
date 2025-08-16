@@ -19,17 +19,17 @@
 
 (s/def ::docker-image-name
   (s/with-gen
-   (s/and ::non-blank-string
-          #(re-matches docker-image-name-re %))
-   #(gen'/string-from-regex docker-image-name-re)))
+    (s/and ::non-blank-string
+           #(re-matches docker-image-name-re %))
+    #(gen'/string-from-regex docker-image-name-re)))
 
 (def docker-tag-re (re-pattern "[-\\w.]+"))
 
 (s/def ::docker-tag
   (s/with-gen
-   (s/and ::non-blank-string
-          #(re-matches docker-tag-re %))
-   #(gen'/string-from-regex docker-tag-re)))
+    (s/and ::non-blank-string
+           #(re-matches docker-tag-re %))
+    #(gen'/string-from-regex docker-tag-re)))
 
 (s/def ::base-image-tag ::docker-image-name)
 
@@ -37,14 +37,14 @@
 
 (s/def ::distro
   (s/with-gen
-   (s/and qualified-keyword?
-          #(->> %
-                ((juxt namespace name))
-                ((fn [elements]
-                   (every? (fn [e] (re-matches distro-component-re e))
-                           elements)))))
-   #(gen/fmap (fn [[namespace local]] (keyword namespace local))
-              (gen/vector (gen'/string-from-regex distro-component-re) 2))))
+    (s/and qualified-keyword?
+           #(->> %
+                 ((juxt namespace name))
+                 ((fn [elements]
+                    (every? (fn [e] (re-matches distro-component-re e))
+                            elements)))))
+    #(gen/fmap (fn [[namespace local]] (keyword namespace local))
+               (gen/vector (gen'/string-from-regex distro-component-re) 2))))
 
 (s/def ::distros (s/coll-of ::distro :distinct true :into #{}))
 
@@ -53,10 +53,10 @@
                           ::all-tools #{::core/all}))
 (s/def ::specific-build-tool-version
   (s/with-gen
-   (s/and ::non-blank-string
-          #(re-matches #"(?:\d+\.)+\d+" %))
-   #(gen/fmap (fn [nums] (str/join "." nums))
-              (gen/vector (gen/int) 2 4))))
+    (s/and ::non-blank-string
+           #(re-matches #"(?:\d+\.)+\d+" %))
+    #(gen/fmap (fn [nums] (str/join "." nums))
+               (gen/vector (gen/int) 2 4))))
 
 (s/def ::build-tool-version
   (s/nilable ::specific-build-tool-version))
@@ -106,15 +106,15 @@
 
 (def build-tools
   {"lein"       "2.11.2"
-   "tools-deps" "1.12.1.1550"})
+   "tools-deps" "1.12.1.1561"})
 
 (def default-build-tool "tools-deps")
 
 (def installer-hashes
   {"lein"       {"2.11.1" "03b3fbf7e6fac262f88f843a87b712a2b37f39cffc4f4f384436a30d8b01d6e4"
                  "2.11.2" "28a1a62668c5f427b413a8677e376affaa995f023b1fcd06e2d4c98ac1df5f3e"}
-   "tools-deps" {"1.12.1.1543" "09b7b8185b8a35b1ddcc9c2a5155d094fe1237805c24489312f3e324a83b0d4c"
-                 "1.12.1.1550" "aea202cd0573d79fd8b7db1b608762645a8f93006a86bc817ec130bed1d9707d"}})
+   "tools-deps" {"1.12.1.1550" "aea202cd0573d79fd8b7db1b608762645a8f93006a86bc817ec130bed1d9707d"
+                 "1.12.1.1561" "b0328626c508af54c3eaf00cfb67e85d5215c6447b15c8ecc70fbe29ca95d64e"}})
 
 (def exclusions ; don't build these for whatever reason(s)
   #{;; No more jammy builds for JDK 23+
