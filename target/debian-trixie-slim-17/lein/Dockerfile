@@ -12,7 +12,7 @@ WORKDIR /tmp
 # Download the whole repo as an archive
 RUN set -eux; \
 apt-get update && \
-apt-get install -y git gnupg wget && \
+apt-get install -y gnupg wget && \
 rm -rf /var/lib/apt/lists/* && \
 mkdir -p $LEIN_INSTALL && \
 wget -q https://codeberg.org/leiningen/leiningen/raw/tag/$LEIN_VERSION/bin/lein-pkg && \
@@ -38,8 +38,8 @@ apt-get purge -y --auto-remove gnupg wget
 ENV PATH=$PATH:$LEIN_INSTALL
 ENV LEIN_ROOT 1
 
-# Install clojure 1.12.0 so users don't have to download it every time
-RUN echo '(defproject dummy "" :dependencies [[org.clojure/clojure "1.12.0"]])' > project.clj \
+# Install clojure 1.12.1 so users don't have to download it every time
+RUN echo '(defproject dummy "" :dependencies [[org.clojure/clojure "1.12.1"]])' > project.clj \
   && lein deps && rm project.clj
 
 COPY entrypoint /usr/local/bin/entrypoint
