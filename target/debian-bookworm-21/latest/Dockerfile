@@ -6,7 +6,7 @@ ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
 
 ### INSTALL LEIN ###
-ENV LEIN_VERSION=2.11.2
+ENV LEIN_VERSION=2.12.0
 ENV LEIN_INSTALL=/usr/local/bin/
 
 WORKDIR /tmp
@@ -20,7 +20,7 @@ mkdir -p $LEIN_INSTALL && \
 wget -q https://codeberg.org/leiningen/leiningen/raw/tag/$LEIN_VERSION/bin/lein-pkg && \
 echo "Comparing lein-pkg checksum ..." && \
 sha256sum lein-pkg && \
-echo "28a1a62668c5f427b413a8677e376affaa995f023b1fcd06e2d4c98ac1df5f3e *lein-pkg" | sha256sum -c - && \
+echo "12a9c5e3a2471619ca3d64a7462f920fdf713ae8959eb4fcd6257c23332b5aa4 *lein-pkg" | sha256sum -c - && \
 mv lein-pkg $LEIN_INSTALL/lein && \
 chmod 0755 $LEIN_INSTALL/lein && \
 export GNUPGHOME="$(mktemp -d)" && \
