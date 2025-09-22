@@ -73,7 +73,7 @@
 
 (def git-repo "https://github.com/Quantisan/docker-clojure.git")
 
-(def jdk-versions #{8 11 17 21 24})
+(def jdk-versions #{8 11 17 21 24 25})
 
 (def base-images
   "Map of JDK version to base image name(s) with :default as a fallback"
