@@ -86,7 +86,6 @@
                                         :architectures cfg/architectures
                                         :git-repo      cfg/git-repo}
                                        git-head variants)]
-    (log "Writing manifest of" (count variants) "variants to" target-file "...")
     (let [output-writer (if (= :stdout target-file)
                           *out*
                           (io/writer target-file))]
