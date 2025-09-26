@@ -83,7 +83,7 @@
    :default ["debian" "eclipse-temurin"]})
 
 ;; The default JDK version to use for tags that don't specify one; usually the latest LTS release
-(def default-jdk-version 21)
+(def default-jdk-version 25)
 
 (def distros
   "Map of base image name to set of distro tags to use, namespaced by Linux
