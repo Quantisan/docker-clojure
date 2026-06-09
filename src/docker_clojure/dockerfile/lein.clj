@@ -1,19 +1,22 @@
 (ns docker-clojure.dockerfile.lein
-  (:require [clojure.string :as str]
-            [docker-clojure.dockerfile.shared
+  (:require [docker-clojure.dockerfile.shared
              :refer [install-distro-deps render-template
                      uninstall-distro-build-deps]]))
 
 (defn prereqs [_ _] nil)
 
+;; Leiningen no longer publishes a standalone uberjar, so we build it from
+;; source: clone the GPG-signed release tag, bootstrap leiningen-core's deps
+;; with Maven, and run `lein uberjar`. That needs git, gnupg & Maven at build
+;; time.
 (def distro-deps
-  {:debian-slim {:build   #{"wget" "gnupg"}
+  {:debian-slim {:build   #{"git" "gnupg" "maven"}
                  :runtime #{}}
-   :debian      {:build   #{"wget" "gnupg"}
+   :debian      {:build   #{"git" "gnupg" "maven"}
                  :runtime #{"make"}}
-   :ubuntu      {:build   #{"wget" "gnupg"}
+   :ubuntu      {:build   #{"git" "gnupg" "maven"}
                  :runtime #{"make"}}
-   :alpine      {:build   #{"tar" "gnupg" "openssl" "ca-certificates"}
+   :alpine      {:build   #{"git" "gnupg" "maven" "ca-certificates"}
                  :runtime #{"bash"}}})
 
 (def install-deps (partial install-distro-deps distro-deps))
@@ -22,26 +25,17 @@
 
 ;; Clojure version pre-installed into lein images so users don't download it on
 ;; first use.
-(def ^:const bundled-clojure-version "1.12.1")
+(def ^:const bundled-clojure-version "1.12.5")
 
-(def ^:const old-key "6A2D483DB59437EBB97D09B1040193357D0606ED")
-(def ^:const new-key "9D13D9426A0814B3373CF5E3D8A8243577A7859F")
+;; Leiningen release tags are signed with this key (Phil Hagelberg).
+(def ^:const signing-key "9D13D9426A0814B3373CF5E3D8A8243577A7859F")
 
-(defn gpg-key
-  [version]
-  (let [[major minor] (map #(Integer/parseInt %) (str/split version #"\."))]
-    (cond
-      (< 2 major) new-key
-      (and (= 2 major) (< 10 minor)) new-key
-      :else old-key)))
-
-(defn install [installer-hashes {:keys [build-tool-version] :as variant}]
+(defn install [_installer-hashes {:keys [build-tool-version] :as variant}]
   (render-template
    "templates/lein.tmpl"
    {:lein-version    build-tool-version
     :clojure-version bundled-clojure-version
-    :lein-pkg-hash   (get-in installer-hashes ["lein" build-tool-version])
-    :gpg-key         (gpg-key build-tool-version)
+    :gpg-key         signing-key
     :install-deps    (install-deps variant)
     :uninstall-deps  (uninstall-build-deps variant)}))
 
