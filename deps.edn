@@ -2,6 +2,7 @@
  {org.clojure/clojure            {:mvn/version "1.12.4"}
   org.clojure/math.combinatorics {:mvn/version "0.3.2"}
   org.clojure/core.async         {:mvn/version "1.9.865"}
+  org.babashka/cli               {:mvn/version "0.12.75"}
   selmer/selmer                  {:mvn/version "1.12.61"}
   com.gfredericks/test.chuck     {:git/url "https://github.com/gfredericks/test.chuck"
                                   :git/sha "ab5c11b013d3526e587dd53a860fa651b3e8a5a7"}}

@@ -1,18 +1,17 @@
 (ns docker-clojure.core
-  (:require
-   [clojure.core.async :refer [<!! chan pipeline-blocking to-chan!] :as async]
-   [clojure.edn :as edn]
-   [clojure.java.io :as io]
-   [clojure.java.shell :refer [sh]]
-   [clojure.spec.alpha :as s]
-   [clojure.string :as str]
-   [docker-clojure.config :as cfg]
-   [docker-clojure.docker :as docker]
-   [docker-clojure.dockerfile :as df]
-   [docker-clojure.log :refer [log] :as logger]
-   [docker-clojure.manifest :as manifest]
-   [docker-clojure.util :refer [get-or-default]]
-   [docker-clojure.variant :as variant]))
+  (:require [babashka.cli :as cli]
+            [clojure.core.async :refer [<!! chan pipeline-blocking to-chan!] :as async]
+            [clojure.java.io :as io]
+            [clojure.java.shell :refer [sh]]
+            [clojure.spec.alpha :as s]
+            [clojure.string :as str]
+            [docker-clojure.config :as cfg]
+            [docker-clojure.docker :as docker]
+            [docker-clojure.dockerfile :as df]
+            [docker-clojure.log :refer [log] :as logger]
+            [docker-clojure.manifest :as manifest]
+            [docker-clojure.util :refer [get-or-default]]
+            [docker-clojure.variant :as variant]))
 
 (defn exclude?
   "Returns true if `variant` matches one of `exclusions` elements (meaning
@@ -61,8 +60,6 @@
   (log "Building images" parallelization "at a time")
   (let [variants-ch (to-chan! variants)
         builds-ch   (chan parallelization)]
-    ;; Kick off builds with a random delay so we don't have Docker race
-    ;; conditions (e.g. build container name collisions)
     (async/thread (pipeline-blocking parallelization builds-ch
                                      (map (partial rand-delay docker/build-image
                                                    installer-hashes))
@@ -79,9 +76,8 @@
           (image-variants cfg/base-images cfg/jdk-versions cfg/distros
                           cfg/build-tools cfg/architectures)))
 
-(defn generate-manifest! [variants args]
+(defn generate-manifest! [variants target-file]
   (let [git-head    (->> ["git" "rev-parse" "HEAD"] (apply sh) :out)
-        target-file (or (first args) :stdout)
         manifest    (manifest/generate {:maintainers   cfg/maintainers
                                         :architectures cfg/architectures
                                         :git-repo      cfg/git-repo}
@@ -95,42 +91,75 @@
         (.close output-writer)))))
 
 (defn generate-variants
-  [args]
-  ; TODO: Maybe replace this with bb/cli
-  (let [key-vals       (->> args
-                            (map #(if (str/starts-with? % ":")
-                                    (edn/read-string %)
-                                    %))
-                            (map #(try (Integer/parseInt %)
-                                       (catch Exception _ %)))
-                            (partition 2))
-        variant-filter #(or
-                         (empty? key-vals)
+  [opts]
+  (let [variant-filter #(or
+                         (empty? opts)
                          (every? (fn [[k v]]
                                    (= (get % k) v))
-                                 key-vals))]
-    (when (seq key-vals)
+                                 opts))]
+    (when (seq opts)
       (println "Filtering variants with:")
-      (doseq [[k v] key-vals]
+      (doseq [[k v] opts]
         (println (str "(= " (pr-str v) " (get variant " (pr-str k) "))")))
       (println))
     (filter variant-filter (valid-variants))))
 
-(defn run
-  "Entrypoint for exec-fn."
-  [{:keys [cmd args parallelization]}]
-  (logger/start)
-  (let [variants (generate-variants args)]
-    (case cmd
-      :clean (df/clean-all)
-      :dockerfiles (generate-dockerfiles! cfg/installer-hashes variants)
-      :manifest (generate-manifest! variants args)
-      :build-images (build-images parallelization cfg/installer-hashes variants)))
-  (logger/stop))
+(defn cmd-clean [{:keys [_opts]}]
+  (df/clean-all))
+
+(defn cmd-dockerfiles [{:keys [opts]}]
+  (generate-dockerfiles! cfg/installer-hashes (generate-variants opts)))
+
+(defn cmd-manifest [{:keys [opts]}]
+  (let [target-file (or (:output-file opts) :stdout)
+        filter-opts (dissoc opts :output-file)]
+    (generate-manifest! (generate-variants filter-opts) target-file)))
+
+(defn cmd-build-images [{:keys [opts]}]
+  (let [parallelism (:parallelism opts)
+        filter-opts (dissoc opts :parallelism)]
+    (build-images (or parallelism 4) cfg/installer-hashes (generate-variants filter-opts))))
+
+(def cmd-table
+  [{:cmds ["clean"]
+    :fn   cmd-clean
+    :doc  "Clean all generated Dockerfiles"}
+   {:cmds ["dockerfiles"]
+    :fn   cmd-dockerfiles
+    :doc  "Generate Dockerfiles for matching variants"}
+   {:cmds ["manifest"]
+    :fn   cmd-manifest
+    :doc  "Generate manifest for matching variants"
+    :args->opts [:output-file]
+    :spec   {:output-file {:desc "Output file (default: stdout)"}}}
+   {:cmds ["build-images"]
+    :fn   cmd-build-images
+    :doc  "Build Docker images for matching variants"
+    :spec {:parallelism {:alias     :p
+                         :coerce    :long
+                         :desc      "Number of parallel builds"
+                         :default   4
+                         :validate  pos?}}}])
 
 (defn -main
-  [& cmd-args]
-  (let [[cmd & args] cmd-args]
-    (run {:cmd             (if cmd (keyword cmd) :build-images)
-          :args            args
-          :parallelization 4})))
+  "Entrypoint for CLI."
+  [& args]
+  (logger/start)
+  (cli/dispatch cmd-table args {:prog "docker-clojure" :help true})
+  (logger/stop))
+
+(defn run
+  "Entrypoint for exec-fn (preserves compat with deps.edn :exec-fn)."
+  [m]
+  (let [cmd             (:cmd m)
+        _parallelization (:parallelization m)
+        variant-keys    (into [] (disj (set (keys m)) :cmd :parallelization))
+        opts            (select-keys m variant-keys)]
+    (logger/start)
+    ((case cmd
+       :clean        cmd-clean
+       :dockerfiles  cmd-dockerfiles
+       :manifest     cmd-manifest
+       :build-images cmd-build-images)
+     {:opts opts :args nil})
+    (logger/stop)))
