@@ -25,10 +25,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Install cljfmt
+    - name: Install babashka
       uses: DeLaGuardo/setup-clojure@13.4
       with:
-        cljfmt: latest
+        bb: 1.12.217
     - uses: actions/checkout@v4
     - name: Check formatting
-      run: cljfmt check src test bb.edn deps.edn tests.edn
+      run: bb fmt-check

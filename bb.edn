@@ -1,12 +1,18 @@
 {:paths ["src"]
  :deps  {local/deps              {:local/root "."}
+         dev.weavejester/cljfmt  {:mvn/version "0.16.4"}
          org.babashka/spec.alpha {:git/url "https://github.com/babashka/spec.alpha"
                                   :git/sha "b6eb0f2208ab036c0a5d0e7235cb0b09d2feabb7"}}
  :tasks
- {:requires    ([docker-clojure.core :as dc])
+ {:requires    ([cljfmt.tool :as fmt]
+                [docker-clojure.core :as dc])
   clean        (dc/-main "clean")
   dockerfiles  {:depends [clean]
                 :task    (apply dc/-main "dockerfiles" *command-line-args*)}
   manifest     (apply dc/-main "manifest" *command-line-args*)
   build-images {:task    (apply dc/-main "build-images" *command-line-args*)}
-  test         (clojure '-X:test)}}
+  test         (clojure '-X:test)
+  fmt-check    {:doc "Check formatting with cljfmt"
+                :task (fmt/check {:paths ["src" "test" "bb.edn" "deps.edn" "tests.edn"]})}
+  fmt-fix      {:doc "Fix formatting with cljfmt"
+                :task (fmt/fix {:paths ["src" "test" "bb.edn" "deps.edn" "tests.edn"]})}}}
