@@ -4,7 +4,7 @@ ENV JAVA_HOME=/opt/java/openjdk
 COPY --from=eclipse-temurin:17 $JAVA_HOME $JAVA_HOME
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
-ENV CLOJURE_VERSION=1.12.5.1654
+ENV CLOJURE_VERSION=1.12.5.1664
 
 WORKDIR /tmp
 
@@ -14,7 +14,7 @@ apt-get install -y curl make git rlwrap && \
 rm -rf /var/lib/apt/lists/* && \
 curl -fsSLO https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh && \
 sha256sum linux-install-$CLOJURE_VERSION.sh && \
-echo "28f81b0833c0a072f4370ae0eb1e4c5a4f9f4a34035cd7607ea9f253a8b06da1 *linux-install-$CLOJURE_VERSION.sh" | sha256sum -c - && \
+echo "fb2f0ce23373d64bb4f13fce2ce2924c54ee0c033755357900808a1250621d82 *linux-install-$CLOJURE_VERSION.sh" | sha256sum -c - && \
 chmod +x linux-install-$CLOJURE_VERSION.sh && \
 ./linux-install-$CLOJURE_VERSION.sh && \
 rm linux-install-$CLOJURE_VERSION.sh && \
