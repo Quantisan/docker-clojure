@@ -147,19 +147,3 @@
   (logger/start)
   (cli/dispatch cmd-table args {:prog "docker-clojure" :help true})
   (logger/stop))
-
-(defn run
-  "Entrypoint for exec-fn (preserves compat with deps.edn :exec-fn)."
-  [m]
-  (let [cmd             (:cmd m)
-        _parallelization (:parallelization m)
-        variant-keys    (into [] (disj (set (keys m)) :cmd :parallelization))
-        opts            (select-keys m variant-keys)]
-    (logger/start)
-    ((case cmd
-       :clean        cmd-clean
-       :dockerfiles  cmd-dockerfiles
-       :manifest     cmd-manifest
-       :build-images cmd-build-images)
-     {:opts opts :args nil})
-    (logger/stop)))
