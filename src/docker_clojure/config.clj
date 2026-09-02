@@ -124,13 +124,13 @@
 
 (def build-tools
   {"lein"       "2.13.0"
-   "tools-deps" "1.12.5.1664"})
+   "tools-deps" "1.12.6.1673"})
 
 (def default-build-tool "tools-deps")
 
 (def installer-hashes
-  {"tools-deps" {"1.12.5.1654" "28f81b0833c0a072f4370ae0eb1e4c5a4f9f4a34035cd7607ea9f253a8b06da1"
-                 "1.12.5.1664" "fb2f0ce23373d64bb4f13fce2ce2924c54ee0c033755357900808a1250621d82"}})
+  {"tools-deps" {"1.12.5.1664" "fb2f0ce23373d64bb4f13fce2ce2924c54ee0c033755357900808a1250621d82"
+                 "1.12.6.1673" "5ae63b082ed33bf4c29bf1a8317c5c15249d1bc753676b2f5177fb3804ad6f77"}})
 
 (def exclusions ; don't build these for whatever reason(s)
   #{;; Leiningen 2.13.0+ requires Java 11+
