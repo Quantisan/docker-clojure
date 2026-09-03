@@ -112,7 +112,7 @@
               :debian-slim/trixie-slim :debian/trixie}})
 
 (def architectures
-  #{"amd64" "arm64v8" "ppc64le" "s390x"})
+  #{"amd64" "arm64v8" "ppc64le"})
 
 (def default-distros
   "The default distro to use for tags that don't specify one, keyed by jdk-version.
@@ -151,25 +151,6 @@
      :distro      :alpine/alpine}
     ;; ppc64le needs Debian Bookworm or newer
     {:architecture "ppc64le"
-     :distro       #(and (-> % namespace (str/starts-with? "debian"))
-                         (-> % name (str/starts-with? "bullseye")))}
-    ;; riscv64 is only supported for Java 17+
-    {:architecture "riscv64"
-     :jdk-version  #(< % 17)}
-    ;; riscv64 isn't supported on Ubuntu Jammy
-    {:architecture "riscv64"
-     :distro       :ubuntu/jammy}
-    ;; riscv64 needs Debian Trixie or newer
-    {:architecture "riscv64"
-     :distro       #(and (-> % namespace (str/starts-with? "debian"))
-                         (let [n (name %)]
-                           (or (str/starts-with? n "bullseye")
-                               (str/starts-with? n "bookworm"))))}
-    ;; s390x is only supported for Java 11+
-    {:architecture "s390x"
-     :jdk-version  #(< % 11)}
-    ;; s390x needs Debian Bookworm or newer
-    {:architecture "s390x"
      :distro       #(and (-> % namespace (str/starts-with? "debian"))
                          (-> % name (str/starts-with? "bullseye")))}})
 
