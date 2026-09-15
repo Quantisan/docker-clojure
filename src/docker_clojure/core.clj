@@ -4,7 +4,6 @@
             [clojure.java.io :as io]
             [clojure.java.shell :refer [sh]]
             [clojure.spec.alpha :as s]
-            [clojure.string :as str]
             [docker-clojure.config :as cfg]
             [docker-clojure.docker :as docker]
             [docker-clojure.dockerfile :as df]
