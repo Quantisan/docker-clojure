@@ -102,7 +102,6 @@
   distro type. :default key is a fallback for base images not o/w specified."
   {:default #{:alpine/alpine :ubuntu/jammy :ubuntu/noble}
    "debian" #{:debian-slim/bookworm-slim :debian/bookworm
-              :debian-slim/bullseye-slim :debian/bullseye
               :debian-slim/trixie-slim :debian/trixie}})
 
 (def architectures
@@ -114,7 +113,7 @@
   {8        :ubuntu/noble
    11       :ubuntu/noble
    17       :ubuntu/noble
-   :default :debian/bookworm})
+   :default :debian/trixie})
 
 (def build-tools
   {"lein"       "2.13.0"
@@ -142,11 +141,7 @@
      :distro       :alpine/alpine}
     ;; Alpine w/ Java 8 stopped building correctly and not worth the time to fix
     {:jdk-version 8
-     :distro      :alpine/alpine}
-    ;; ppc64le needs Debian Bookworm or newer
-    {:architecture "ppc64le"
-     :distro       #(and (-> % namespace (str/starts-with? "debian"))
-                         (-> % name (str/starts-with? "bullseye")))}})
+     :distro      :alpine/alpine}})
 
 (def maintainers
   ["Paul Lam <paul@quantisan.com> (@Quantisan)"
