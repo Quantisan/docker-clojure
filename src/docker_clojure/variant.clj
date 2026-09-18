@@ -152,7 +152,7 @@
           (if-let [matching
                    (some #(when
                            (equal-except-architecture? v %)
-                            %)
+                           %)
                          mav)]
             (-> mav
                 (->> (remove #(= % matching)))
