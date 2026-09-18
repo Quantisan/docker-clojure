@@ -113,7 +113,7 @@
   {8        :ubuntu/noble
    11       :ubuntu/noble
    17       :ubuntu/noble
-   :default :debian/trixie})
+   :default :debian/bookworm})
 
 (def build-tools
   {"lein"       "2.13.0"
