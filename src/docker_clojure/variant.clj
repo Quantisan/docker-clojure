@@ -150,8 +150,7 @@
        (reduce
         (fn [mav v]
           (if-let [matching
-                   (some #(when
-                           (equal-except-architecture? v %)
+                   (some #(when (equal-except-architecture? v %)
                             %)
                          mav)]
             (-> mav

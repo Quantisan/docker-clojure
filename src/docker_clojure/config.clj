@@ -20,10 +20,8 @@
     ;; Generate in-range by construction; the default pos-int generator yields
     ;; values < 8 the >= 8 such-that can't satisfy at small sizes (flaky gen).
     #(gen/choose 8 30)))
-(s/def ::jdk-versions (s/coll-of ::jdk-version :distinct true :into #{}))
 
 (s/def ::base-image ::non-blank-string)
-(s/def ::base-images (s/coll-of ::base-image :distinct true :into #{}))
 
 (def docker-image-name-re (re-pattern "[-\\w]+(?::[-\\w.]+)?"))
 
@@ -56,8 +54,6 @@
     #(gen/fmap (fn [[namespace local]] (keyword namespace local))
                (gen/vector (gen'/string-from-regex distro-component-re) 2))))
 
-(s/def ::distros (s/coll-of ::distro :distinct true :into #{}))
-
 (def specific-build-tools #{"lein" "tools-deps"})
 (s/def ::specific-build-tool specific-build-tools)
 (s/def ::build-tool (s/or ::specific-tool ::specific-build-tool
@@ -82,8 +78,6 @@
                (gen/vector (s/gen ::specific-build-tool-version)
                            (count specific-build-tools)))))
 
-(s/def ::maintainers
-  (s/coll-of ::non-blank-string :distinct true :into #{}))
 (s/def ::maintainer ::non-blank-string)
 
 (s/def ::architecture ::non-blank-string)
@@ -108,7 +102,6 @@
   distro type. :default key is a fallback for base images not o/w specified."
   {:default #{:alpine/alpine :ubuntu/jammy :ubuntu/noble}
    "debian" #{:debian-slim/bookworm-slim :debian/bookworm
-              :debian-slim/bullseye-slim :debian/bullseye
               :debian-slim/trixie-slim :debian/trixie}})
 
 (def architectures
@@ -148,11 +141,7 @@
      :distro       :alpine/alpine}
     ;; Alpine w/ Java 8 stopped building correctly and not worth the time to fix
     {:jdk-version 8
-     :distro      :alpine/alpine}
-    ;; ppc64le needs Debian Bookworm or newer
-    {:architecture "ppc64le"
-     :distro       #(and (-> % namespace (str/starts-with? "debian"))
-                         (-> % name (str/starts-with? "bullseye")))}})
+     :distro      :alpine/alpine}})
 
 (def maintainers
   ["Paul Lam <paul@quantisan.com> (@Quantisan)"
