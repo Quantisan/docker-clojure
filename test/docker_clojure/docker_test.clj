@@ -64,7 +64,7 @@
                                :build-tool         "tools-deps"
                                :build-tool-version "1.11.1.1155"})]
            ((set tags) tag))
-      :debian/bullseye "tools-deps-bullseye"
-      :debian-slim/bullseye-slim "tools-deps-bullseye-slim"
+      :debian/trixie "tools-deps-trixie"
+      :debian-slim/trixie-slim "tools-deps-trixie-slim"
       :debian/bookworm "tools-deps-bookworm"
       :debian-slim/bookworm-slim "tools-deps-bookworm-slim")))
