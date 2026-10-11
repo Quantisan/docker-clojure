@@ -4,6 +4,7 @@
             [clojure.java.io :as io]
             [clojure.java.shell :refer [sh]]
             [clojure.spec.alpha :as s]
+            [docker-clojure.changes :as changes]
             [docker-clojure.config :as cfg]
             [docker-clojure.docker :as docker]
             [docker-clojure.dockerfile :as df]
@@ -55,6 +56,7 @@
     (apply f args)))
 
 (defn build-images
+  "Builds the images for `variants` and returns the variants that failed."
   [parallelization installer-hashes variants]
   (log "Building images" parallelization "at a time")
   (let [variants-ch (to-chan! variants)
@@ -63,7 +65,11 @@
                                      (map (partial rand-delay docker/build-image
                                                    installer-hashes))
                                      variants-ch))
-    (while (<!! builds-ch))))
+    (loop [failed []]
+      (if-let [[status variant] (<!! builds-ch)]
+        (recur (cond-> failed
+                 (= ::docker/failed status) (conj variant)))
+        failed))))
 
 (defn generate-dockerfiles! [installer-hashes variants]
   (log "Generated" (count variants) "variants")
@@ -116,8 +122,27 @@
 
 (defn cmd-build-images [{:keys [opts]}]
   (let [parallelism (:parallelism opts)
-        filter-opts (dissoc opts :parallelism)]
-    (build-images (or parallelism 4) cfg/installer-hashes (generate-variants filter-opts))))
+        build-dirs  (set (:build-dir opts))
+        filter-opts (dissoc opts :parallelism :build-dir)
+        variants    (cond->> (generate-variants filter-opts)
+                      (seq build-dirs) (filter #(build-dirs (df/build-dir %))))
+        failed      (build-images (or parallelism 4) cfg/installer-hashes
+                                  variants)]
+    (when (seq failed)
+      (log "Failed to build" (count failed) "of" (count variants) "images:")
+      (doseq [{:keys [docker-tag architecture]} (variant/sort failed)]
+        (log (str "  clojure:" docker-tag " (" architecture ")")))
+      ::failed)))
+
+(defn cmd-changed-build-dirs [{:keys [opts]}]
+  (let [base (or (:base opts) "HEAD")
+        {:keys [exit out err]}
+        (sh "git" "diff" "--cached" "--no-renames" "-U0" base "--" "target")]
+    (if (zero? exit)
+      (run! println (changes/select-build-dirs (valid-variants)
+                                               (changes/parse-diff out)))
+      (do (log "ERROR diffing target against" (str base ":") err)
+          ::failed))))
 
 (def cmd-table
   [{:cmds ["clean"]
@@ -133,16 +158,25 @@
     :spec   {:output-file {:desc "Output file (default: stdout)"}}}
    {:cmds ["build-images"]
     :fn   cmd-build-images
-    :doc  "Build Docker images for matching variants"
+    :doc  "Build and smoke test Docker images for matching variants"
     :spec {:parallelism {:alias     :p
                          :coerce    :long
                          :desc      "Number of parallel builds"
                          :default   4
-                         :validate  pos?}}}])
+                         :validate  pos?}
+           :build-dir   {:coerce [:string]
+                         :desc   "Only build variants in these build dirs"}}}
+   {:cmds ["changed-build-dirs"]
+    :fn   cmd-changed-build-dirs
+    :doc  "List the build dirs worth building to verify staged target changes"
+    :args->opts [:base]
+    :spec {:base {:desc "Git ref to compare staged target against (default: HEAD)"}}}])
 
 (defn -main
   "Entrypoint for CLI."
   [& args]
   (logger/start)
-  (cli/dispatch cmd-table args {:prog "docker-clojure" :help true})
-  (logger/stop))
+  (let [result (cli/dispatch cmd-table args {:prog "docker-clojure" :help true})]
+    (logger/stop)
+    (when (= ::failed result)
+      (System/exit 1))))
