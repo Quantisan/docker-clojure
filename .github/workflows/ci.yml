@@ -1,6 +1,16 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   test:
@@ -13,10 +23,6 @@ jobs:
       with:
         bb: 1.12.217
     - uses: actions/checkout@v4
-    - name: Check for stale Dockerfiles
-      run: |
-        bb run dockerfiles
-        git diff --exit-code
     - name: Run tests
       run: bb run test
 
@@ -32,3 +38,150 @@ jobs:
     - uses: actions/checkout@v4
     - name: Check formatting
       run: bb fmt-check
+
+  dockerfiles:
+
+    runs-on: ubuntu-latest
+
+    outputs:
+      # whether the committed Dockerfiles are out of date
+      stale: ${{ steps.changes.outputs.stale }}
+      # JSON array of {id, dirs} chunks of build dirs to build
+      builds: ${{ steps.changes.outputs.builds }}
+
+    steps:
+    - name: Install babashka
+      uses: DeLaGuardo/setup-clojure@13.4
+      with:
+        bb: 1.12.217
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Generate Dockerfiles
+      run: |
+        bb run dockerfiles
+        git add --all target
+    - name: Find changed Dockerfiles
+      id: changes
+      env:
+        # Compare against what the change started from so that Dockerfiles
+        # committed by hand get built too.
+        BASE: ${{ github.event_name == 'pull_request' && 'HEAD^1' || github.event.before }}
+        BUILDS_PER_JOB: 8
+      run: |
+        git cat-file -e "${BASE}^{commit}" 2>/dev/null || BASE=HEAD
+
+        if git diff --cached --quiet HEAD -- target; then
+          stale=false
+        else
+          stale=true
+        fi
+        echo "stale=$stale" >> "$GITHUB_OUTPUT"
+
+        build_dirs=$(bb run changed-build-dirs "$BASE")
+        builds=$(jq --raw-input --null-input --compact-output \
+          --argjson n "$BUILDS_PER_JOB" \
+          '[inputs | select(length > 0)]
+           | [range(0; length; $n) as $i
+              | {id: ($i / $n + 1), dirs: (.[$i:$i + $n] | join(" "))}]' \
+          <<< "$build_dirs")
+        echo "builds=$builds" >> "$GITHUB_OUTPUT"
+
+        {
+          echo "## Dockerfiles"
+          echo
+          if [ "$stale" = true ]; then
+            echo "The committed Dockerfiles are out of date. They are" \
+                 "regenerated and committed automatically on \`master\`."
+            echo
+            echo "<details><summary>Changes to be committed</summary>"
+            echo
+            echo '```diff'
+            git diff --cached --stat HEAD -- target
+            echo
+            git diff --cached HEAD -- target | head -c 500000
+            echo '```'
+            echo
+            echo "</details>"
+          else
+            echo "The committed Dockerfiles are up to date."
+          fi
+          echo
+          echo "### Images to build"
+          echo
+          if [ -n "$build_dirs" ]; then
+            echo '```'
+            echo "$build_dirs"
+            echo '```'
+          else
+            echo "None."
+          fi
+        } >> "$GITHUB_STEP_SUMMARY"
+
+  build:
+
+    needs: dockerfiles
+    if: needs.dockerfiles.outputs.builds != '[]'
+
+    strategy:
+      fail-fast: false
+      matrix:
+        chunk: ${{ fromJSON(needs.dockerfiles.outputs.builds) }}
+        platform:
+        - arch: amd64
+          runner: ubuntu-latest
+        - arch: arm64v8
+          runner: ubuntu-24.04-arm
+
+    name: build (${{ matrix.platform.arch }}, ${{ matrix.chunk.id }})
+    runs-on: ${{ matrix.platform.runner }}
+
+    steps:
+    - name: Install babashka
+      uses: DeLaGuardo/setup-clojure@13.4
+      with:
+        bb: 1.12.217
+    - uses: actions/checkout@v4
+    - name: Build and smoke test images
+      env:
+        ARCH: ${{ matrix.platform.arch }}
+        BUILD_DIRS: ${{ matrix.chunk.dirs }}
+      # BUILD_DIRS is deliberately unquoted: it's a space-separated list
+      run: bb run build-images --architecture "$ARCH" --build-dir $BUILD_DIRS
+
+  commit-dockerfiles:
+
+    needs: [test, format, dockerfiles, build]
+    # build is skipped when there's nothing to build, so don't require it to
+    # have succeeded, only that nothing failed
+    if: >-
+      ${{ !failure() && !cancelled() && github.event_name == 'push'
+          && needs.dockerfiles.outputs.stale == 'true' }}
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+    - name: Install babashka
+      uses: DeLaGuardo/setup-clojure@13.4
+      with:
+        bb: 1.12.217
+    - uses: actions/checkout@v4
+    - name: Regenerate and commit Dockerfiles
+      run: |
+        if [ "$(git ls-remote origin "$GITHUB_REF" | cut -f1)" != "$GITHUB_SHA" ]; then
+          echo "::notice::$GITHUB_REF_NAME has moved on; leaving the Dockerfiles to the run for its latest commit."
+          exit 0
+        fi
+
+        bb run dockerfiles
+        git add --all target
+        git -c user.name="github-actions[bot]" \
+            -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -m "Regenerate Dockerfiles"
+        # Pushes made with GITHUB_TOKEN don't trigger workflows, so this
+        # doesn't start another CI run. The official-images PR workflow runs
+        # when this run completes and picks the commit up from there.
+        git push origin "HEAD:$GITHUB_REF"
