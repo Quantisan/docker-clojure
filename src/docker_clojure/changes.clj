@@ -55,13 +55,14 @@
    build-dir])
 
 (defn- traits
-  "The JDK version, distro and build tool of a build dir's variant."
-  [[_build-dir variant]]
-  (set (map (juxt identity variant) [:jdk-version :distro :build-tool])))
+  "What building a build dir's variant exercises: its JDK version on its
+  distro (i.e. its base image) and its build tool."
+  [[_build-dir {:keys [jdk-version distro build-tool]}]]
+  #{[:base jdk-version distro] [:build-tool build-tool]})
 
 (defn- covering
-  "Greedily picks from `dir-variants` until every JDK version, distro and
-  build tool among them has been picked at least once."
+  "Greedily picks from `dir-variants` until every JDK version & distro pair
+  and every build tool among them has been picked at least once."
   [dir-variants]
   (loop [candidates (sort-by preference dir-variants)
          uncovered  (into #{} (mapcat traits) dir-variants)
@@ -77,7 +78,7 @@
 (defn select-build-dirs
   "Returns the sorted build dirs worth building to verify `changes` (see
   `parse-diff`). Of the new build dirs, just enough are built to exercise each
-  of their JDK versions, distros and build tools once. Modified build dirs
+  of their JDK version & distro pairs and build tools once. Modified build dirs
   that received exactly the same change are represented by one of them. Both
   prefer the default JDK version on its default distro."
   [variants changes]

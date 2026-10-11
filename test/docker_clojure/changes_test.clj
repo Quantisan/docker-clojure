@@ -115,6 +115,21 @@
                  {:added? false :signature #{:one}}
                  "target/debian-bookworm-25/tools-deps"
                  {:added? false :signature #{:other}}}))))
+      (testing "a new distro is built for each JDK that gets it"
+        (let [added    {:added? true :signature #{:a}}
+              resolute (for [jdk-version [26 27]
+                             build-tool  ["lein" "tools-deps"]]
+                         (variant (str "temurin:" jdk-version "-jdk-resolute")
+                                  jdk-version :ubuntu/resolute build-tool))]
+          (is (= ["target/temurin-26-jdk-resolute/tools-deps"
+                  "target/temurin-27-jdk-resolute/lein"]
+                 (select-build-dirs
+                  resolute
+                  (zipmap ["target/temurin-26-jdk-resolute/lein"
+                           "target/temurin-26-jdk-resolute/tools-deps"
+                           "target/temurin-27-jdk-resolute/lein"
+                           "target/temurin-27-jdk-resolute/tools-deps"]
+                          (repeat added)))))))
       (testing "new build dirs cover each JDK, distro & build tool once"
         (let [added   {:added? true :signature #{:a}}
               jdk-27  (for [[tag distro] {"debian:bookworm" :debian/bookworm
