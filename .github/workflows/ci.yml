@@ -19,10 +19,10 @@ jobs:
 
     steps:
     - name: Install babashka
-      uses: DeLaGuardo/setup-clojure@13.4
+      uses: DeLaGuardo/setup-clojure@13.6.0
       with:
         bb: 1.12.217
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Run tests
       run: bb run test
 
@@ -32,10 +32,10 @@ jobs:
 
     steps:
     - name: Install babashka
-      uses: DeLaGuardo/setup-clojure@13.4
+      uses: DeLaGuardo/setup-clojure@13.6.0
       with:
         bb: 1.12.217
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Check formatting
       run: bb fmt-check
 
@@ -51,10 +51,10 @@ jobs:
 
     steps:
     - name: Install babashka
-      uses: DeLaGuardo/setup-clojure@13.4
+      uses: DeLaGuardo/setup-clojure@13.6.0
       with:
         bb: 1.12.217
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
     - name: Generate Dockerfiles
@@ -138,10 +138,10 @@ jobs:
 
     steps:
     - name: Install babashka
-      uses: DeLaGuardo/setup-clojure@13.4
+      uses: DeLaGuardo/setup-clojure@13.6.0
       with:
         bb: 1.12.217
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Build and smoke test images
       env:
         ARCH: ${{ matrix.platform.arch }}
@@ -165,10 +165,10 @@ jobs:
 
     steps:
     - name: Install babashka
-      uses: DeLaGuardo/setup-clojure@13.4
+      uses: DeLaGuardo/setup-clojure@13.6.0
       with:
         bb: 1.12.217
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Regenerate and commit Dockerfiles
       run: |
         if [ "$(git ls-remote origin "$GITHUB_REF" | cut -f1)" != "$GITHUB_SHA" ]; then
