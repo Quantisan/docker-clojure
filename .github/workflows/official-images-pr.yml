@@ -9,17 +9,38 @@ on:
 jobs:
   generate-docker-manifest:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    # Only for CI runs of pushes to master, not PRs from a fork's master branch
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' }}
+    outputs:
+      fresh: ${{ steps.dockerfiles.outputs.fresh }}
     steps:
       - name: Install babashka
         uses: DeLaGuardo/setup-clojure@13.6.0
         with:
           bb: 1.12.217
+      # This checks out the tip of master, which includes the Dockerfiles the
+      # CI run that triggered us committed (if any).
       - name: Checkout code
         uses: actions/checkout@v6
+      # The manifest points official-images at one commit, so that commit's
+      # Dockerfiles have to match its config. They won't if master has moved
+      # on since the CI run; in that case the CI run for the newer commit
+      # regenerates them and triggers this workflow again.
+      - name: Check that the Dockerfiles are up to date
+        id: dockerfiles
+        run: |
+          bb run dockerfiles
+          if [ -z "$(git status --porcelain -- target)" ]; then
+            echo "fresh=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "fresh=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Dockerfiles at $(git rev-parse --short HEAD) are out of date; skipping the official-images PR until CI regenerates them."
+          fi
       - name: Generate manifest
+        if: steps.dockerfiles.outputs.fresh == 'true'
         run: bb run manifest target/docker.manifest
       - name: Upload manifest artifact
+        if: steps.dockerfiles.outputs.fresh == 'true'
         uses: actions/upload-artifact@v7
         with:
           name: manifest
@@ -28,6 +49,7 @@ jobs:
   compare-manifests:
     runs-on: ubuntu-latest
     needs: [generate-docker-manifest]
+    if: needs.generate-docker-manifest.outputs.fresh == 'true'
     outputs:
       diff: ${{ steps.manifest-diff.outputs.diff }}
     steps:

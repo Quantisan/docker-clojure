@@ -1,7 +1,10 @@
 (ns docker-clojure.core-test
   (:require [clojure.test :refer [deftest is are testing]]
-            [docker-clojure.core :refer [exclude? image-variants]]
-            [docker-clojure.config :as cfg]))
+            [docker-clojure.core :as core
+             :refer [build-images cmd-build-images exclude? image-variants]]
+            [docker-clojure.config :as cfg]
+            [docker-clojure.docker :as docker]
+            [docker-clojure.dockerfile :as df]))
 
 (deftest image-variants-test
   (testing "generates the expected set of variants"
@@ -164,3 +167,34 @@
   (testing "does not exclude partial matches"
     (is (not (exclude? #{{:base-image "bad", :build-tool "woof"}}
                        {:base-image "bad", :build-tool "lein"})))))
+
+(deftest build-images-test
+  (let [variant-a {:docker-tag "a" :architecture "amd64"}
+        variant-b {:docker-tag "b" :architecture "amd64"}]
+    (testing "returns the variants that failed to build"
+      (with-redefs [docker/build-image (fn [_ variant]
+                                         [(if (= variant-b variant)
+                                            ::docker/failed
+                                            ::docker/done)
+                                          variant])]
+        (is (= [variant-b] (build-images 2 {} [variant-a variant-b])))))
+    (testing "returns nothing when every build succeeds"
+      (with-redefs [docker/build-image (fn [_ variant]
+                                         [::docker/done variant])]
+        (is (empty? (build-images 2 {} [variant-a variant-b])))))))
+
+(deftest cmd-build-images-test
+  (let [built     (atom [])
+        build-dir "target/debian-bookworm-25/tools-deps"]
+    (with-redefs [core/build-images (fn [_ _ variants]
+                                      (reset! built (vec variants))
+                                      (take 1 variants))]
+      (testing "fails when any image fails to build"
+        (is (= ::core/failed
+               (cmd-build-images {:opts {:build-dir [build-dir]}}))))
+      (testing "only builds variants in the given build dirs"
+        (is (seq @built))
+        (is (every? #(= build-dir (df/build-dir %)) @built))))
+    (with-redefs [core/build-images (constantly [])]
+      (testing "succeeds when every image builds"
+        (is (nil? (cmd-build-images {:opts {}})))))))

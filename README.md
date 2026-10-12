@@ -133,6 +133,11 @@ Each of these can be invoked via `bb run [task]` at the command line.
 
 For example, to build all images locally, run `bb run build-images`.
 
+You don't need to regenerate the Dockerfiles in `target` yourself when you
+change the config or templates. CI builds and smoke tests a representative set
+of the images your change affects, and once it's merged to `master` it
+regenerates the Dockerfiles and commits them for you.
+
 ### buildx
 
 Note that you'll need to enable the new `buildx` feature and set as the default

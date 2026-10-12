@@ -12,7 +12,34 @@
 (defn pull-image [image]
   (sh "docker" "pull" image))
 
+(defn smoke-test-cmds
+  "Commands to run in a freshly built image to check its build tool(s) work."
+  [{:keys [build-tool]}]
+  (let [cmds {"lein"       ["lein" "version"]
+              "tools-deps" ["clojure" "-M" "-e" "(clojure-version)"]}]
+    (if (= ::core/all build-tool)
+      (vals cmds)
+      [(get cmds build-tool)])))
+
+(defn smoke-test
+  "Runs the variant's smoke test commands in `image-tag`. Returns true if they
+  all succeed."
+  [image-tag platform-flag variant]
+  (every? (fn [cmd]
+            (let [run-cmd (remove nil? (concat ["docker" "run" "--rm"
+                                                platform-flag image-tag]
+                                               cmd))
+                  _       (apply log "Running" run-cmd)
+                  {:keys [out err exit]} (apply sh run-cmd)]
+              (if (zero? exit)
+                true
+                (do (log "ERROR smoke testing" (str image-tag ":") err out)
+                    false))))
+          (smoke-test-cmds variant)))
+
 (defn build-image
+  "Builds and smoke tests the image for `variant`. Returns [::done variant] on
+  success or [::failed variant] otherwise."
   [installer-hashes {:keys [docker-tag base-image architecture] :as variant}]
   (let [image-tag     (str "clojure:" docker-tag)
         _             (log "Pulling base image" base-image)
@@ -31,15 +58,17 @@
 
         build-cmd     (remove nil? ["docker" "buildx" "build" "--no-cache"
                                     "-t" image-tag platform-flag "--load"
-                                    "-f" dockerfile "."])]
-    (apply log "Running" build-cmd)
-    (let [{:keys [out err exit]}
-          (with-sh-dir build-dir (apply sh build-cmd))]
-      (if (zero? exit)
-        (log "Succeeded building" (str "clojure:" docker-tag))
-        (log "ERROR building" (str "clojure:" docker-tag ":") err out))))
-  (log)
-  [::done variant])
+                                    "-f" dockerfile "."])
+        _             (apply log "Running" build-cmd)
+        {:keys [out err exit]}
+        (with-sh-dir build-dir (apply sh build-cmd))
+        built?        (zero? exit)
+        _             (if built?
+                        (log "Succeeded building" image-tag)
+                        (log "ERROR building" (str image-tag ":") err out))
+        ok?           (and built? (smoke-test image-tag platform-flag variant))]
+    (log)
+    [(if ok? ::done ::failed) variant]))
 
 (defn base-image-tag
   [base-image jdk-version distro]

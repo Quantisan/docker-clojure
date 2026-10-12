@@ -85,7 +85,7 @@
 
 (def git-repo "https://github.com/Quantisan/docker-clojure.git")
 
-(def jdk-versions #{8 11 17 21 25 26})
+(def jdk-versions #{8 11 17 21 25 26 27})
 
 (def base-images
   "Map of JDK version to base image name(s) with :default as a fallback"
@@ -100,7 +100,7 @@
 (def distros
   "Map of base image name to set of distro tags to use, namespaced by Linux
   distro type. :default key is a fallback for base images not o/w specified."
-  {:default #{:alpine/alpine :ubuntu/jammy :ubuntu/noble}
+  {:default #{:alpine/alpine :ubuntu/jammy :ubuntu/noble :ubuntu/resolute}
    "debian" #{:debian-slim/bookworm-slim :debian/bookworm
               :debian-slim/trixie-slim :debian/trixie}})
 
@@ -132,6 +132,12 @@
     ;; No more jammy builds for JDK 23+
     {:jdk-version #(>= % 23)
      :distro      :ubuntu/jammy}
+    ;; No noble builds for JDK 27+
+    {:jdk-version #(>= % 27)
+     :distro      :ubuntu/noble}
+    ;; Only build resolute for JDK 26+
+    {:jdk-version #(< % 26)
+     :distro      :ubuntu/resolute}
     ;; No upstream ARM alpine images available before JDK 21
     {:jdk-version  #(< % 21)
      :architecture "arm64v8"
