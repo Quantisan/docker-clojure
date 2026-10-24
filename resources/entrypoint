@@ -4,18 +4,26 @@ set -eou pipefail
 
 entrypoint=@@entrypoint@@
 
-cmd=${1:-}
-
-# check if the first arg starts with a hyphen
+# No arguments or a leading flag belong to the image's build tool.
 if [ "$#" -eq 0 ] || [ "${1#-}" != "$1" ]; then
   exec "${entrypoint}" "$@"
 fi
 
-if [[ -n "${cmd}" ]]; then
-  # see if help for the subcommand is successful
-  if "${entrypoint}" "${cmd}" --help >/dev/null 2>&1; then
-    exec "${entrypoint}" "$@"
-  fi
+# Built-in Leiningen tasks and aliases take precedence over executables such as
+# test and cp. Keep this Leiningen 2.13.0 list in sync when upgrading; never probe a
+# command with --help, which can evaluate code from the current project.
+if [ "${entrypoint}" = lein ]; then
+  case "$1" in
+    change|check|classpath|clean|compile|cp|deploy|deps|do|halp|help|install|jar|javac|\
+    new|plugin|pom|readme|release|repl|retest|run|sample|search|show-profiles|test|\
+    trampoline|tutorial|uberjar|update-in|upgrade|vcs|version|with-profile|with-profiles|überjar)
+      exec "${entrypoint}" "$@"
+      ;;
+  esac
+elif [ -f "$1" ] && ! type -P "$1" >/dev/null; then
+  # Non-executable Clojure scripts run once, through clj.
+  exec "${entrypoint}" "$@"
 fi
 
+# Other commands run directly. Use explicit lein for custom tasks and aliases.
 exec "$@"
