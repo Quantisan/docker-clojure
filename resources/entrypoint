@@ -15,8 +15,9 @@ fi
 if [ "${entrypoint}" = lein ]; then
   case "$1" in
     change|check|classpath|clean|compile|cp|deploy|deps|do|halp|help|install|jar|javac|\
-    new|plugin|pom|readme|release|repl|retest|run|sample|search|show-profiles|test|\
-    trampoline|tutorial|uberjar|update-in|upgrade|vcs|version|with-profile|with-profiles|überjar)
+    new|plugin|pom|readme|release|repl|retest|run|sample|search|show-profiles|\
+    static-classpath|test|trampoline|tutorial|uberjar|update-in|upgrade|vcs|version|\
+    with-profile|with-profiles|überjar)
       exec "${entrypoint}" "$@"
       ;;
   esac

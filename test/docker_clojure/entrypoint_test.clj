@@ -56,7 +56,8 @@
 
 (deftest lein-shorthand-and-explicit-invocation-test
   (testing "built-in tasks and aliases keep precedence over executables"
-    (doseq [task ["repl" "test" "cp" "install" "help" "uberjar" "überjar"]]
+    (doseq [task ["repl" "test" "cp" "install" "help" "static-classpath"
+                  "uberjar" "überjar"]]
       (is (= ["lein" task] (:calls (run-entrypoint "lein" task))))))
   (testing "explicit commands and paths bypass shorthand routing"
     (is (= ["lein" "my-alias"] (:calls (run-entrypoint "lein" "lein" "my-alias"))))
