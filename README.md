@@ -114,12 +114,15 @@ For JDK 17+ images:
 docker run --rm clojure:lein test
 docker run --rm clojure:lein cp
 
-# Custom tasks and aliases: always include lein
+# Custom Leiningen tasks and aliases: always include lein
 docker run --rm -v "$PWD":/app -w /app clojure:lein lein my-alias
 
 # Clojure flags and scripts
 docker run --rm clojure:tools-deps -M -e '(println (+ 1 2))'
 docker run --rm -v "$PWD":/app -w /app clojure:tools-deps example.clj
+
+# deps.edn aliases
+docker run --rm -v "$PWD":/app -w /app clojure:tools-deps clj -M:my-alias
 ```
 
 Programs such as `bash` and `git` run directly. Use `/bin/cp` to select the
