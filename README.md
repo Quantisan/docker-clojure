@@ -105,6 +105,41 @@ Java 21 tools-deps on Alpine: `clojure:temurin-21-tools-deps-alpine` or `clojure
 
 ## Examples
 
+### Running commands
+
+With JDK 17+ images, you can pass built-in Leiningen tasks and aliases directly:
+
+```sh
+docker run --rm clojure:lein test
+docker run --rm clojure:lein cp
+```
+
+For custom tasks and aliases defined by your project or plugins, always use
+explicit `lein <task-or-alias>` invocation. The entrypoint only recognises
+built-in names for shorthand invocation:
+
+```sh
+docker run --rm -v "$PWD":/app -w /app clojure:lein lein my-alias
+```
+
+Executables such as `bash` and `git` run directly, without first loading your
+Clojure project. If a custom task or alias shares an executable's name, the
+executable takes precedence; use explicit `lein` to select the task or alias.
+Earlier images probed Leiningen to discover these aliases, which could execute
+project code before running an unrelated command.
+
+JDK 17+ tools-deps images accept Clojure flags and script files directly:
+
+```sh
+docker run --rm clojure:tools-deps -M -e '(println (+ 1 2))'
+docker run --rm -v "$PWD":/app -w /app clojure:tools-deps example.clj
+```
+
+With older JDK images, invoke `lein` or `clj` explicitly.
+
+To run an executable whose name is also a built-in Leiningen task or alias,
+use its path (for example, `/bin/cp`) or Docker's `--entrypoint` option.
+
 ### Interactive Shell
 
 Run an interactive shell from this image.
