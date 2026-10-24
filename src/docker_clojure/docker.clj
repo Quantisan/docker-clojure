@@ -55,7 +55,9 @@ EOF
 exit $status")
 
 (defn smoke-test-cmds
-  "Commands to run in a freshly built image to check its build tool(s) work."
+  "Commands to run in a freshly built image; each must exit 0. They check the
+  build tool(s) start and, in lein images with the entrypoint, that the
+  entrypoint passes every built-in lein command to lein."
   [{:keys [build-tool] :as variant}]
   (let [cmds {"lein"       ["lein" "version"]
               "tools-deps" ["clojure" "-M" "-e" "(clojure-version)"]}]
