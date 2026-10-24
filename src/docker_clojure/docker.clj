@@ -12,14 +12,58 @@
 (defn pull-image [image]
   (sh "docker" "pull" image))
 
+(def ^:private print-lein-commands
+  "Clojure form that prints every built-in Leiningen task and alias, one per
+  line. Tasks come from the namespaces in the Leiningen jar because `lein help`
+  omits tasks missing from its own stock list."
+  '(do
+     (require 'leiningen.core.main)
+     (let [jar   (java.util.jar.JarFile. (System/getProperty "java.class.path"))
+           tasks (for [entry (enumeration-seq (.entries jar))
+                       :let  [[_ file] (re-find #"^leiningen/([^/]+)\.clj$"
+                                                (.getName entry))]
+                       :when file
+                       :let  [task    (.replace file \_ \-)
+                              task-ns (symbol (str "leiningen." task))]
+                       :when (try (require task-ns)
+                                  (ns-resolve task-ns (symbol task))
+                                  (catch java.io.FileNotFoundException _ nil))]
+                   task)
+           out   (java.io.PrintWriter. (java.io.OutputStreamWriter. System/out "UTF-8"))]
+       (doseq [command (concat tasks (keys leiningen.core.main/aliases))]
+         (.println out command))
+       (.flush out))))
+
+(def ^:private lein-routing-check
+  "Shell script that fails unless the entrypoint passes every built-in
+  Leiningen command to lein. Takes the `print-lein-commands` form as $1."
+  "set -e
+commands=$(java -cp /usr/share/java/leiningen-*-standalone.jar clojure.main -e \"$1\")
+stub=$(mktemp -d)
+printf '%s\\n' '#!/bin/sh' 'echo \"lein $1\"' > \"$stub/lein\"
+chmod +x \"$stub/lein\"
+status=0
+while IFS= read -r command; do
+  routed=$(PATH=\"$stub:/usr/bin:/bin\" /usr/local/bin/entrypoint \"$command\" 2>/dev/null) || true
+  if [ \"$routed\" != \"lein $command\" ]; then
+    echo \"entrypoint does not pass $command to lein\" >&2
+    status=1
+  fi
+done <<EOF
+$commands
+EOF
+exit $status")
+
 (defn smoke-test-cmds
   "Commands to run in a freshly built image to check its build tool(s) work."
-  [{:keys [build-tool]}]
+  [{:keys [build-tool] :as variant}]
   (let [cmds {"lein"       ["lein" "version"]
               "tools-deps" ["clojure" "-M" "-e" "(clojure-version)"]}]
-    (if (= ::core/all build-tool)
-      (vals cmds)
-      [(get cmds build-tool)])))
+    (cond-> (if (= ::core/all build-tool)
+              (vals cmds)
+              [(get cmds build-tool)])
+      (and (= "lein" build-tool) (df/entrypoint? variant))
+      (conj ["sh" "-c" lein-routing-check "sh" (pr-str print-lein-commands)]))))
 
 (defn smoke-test
   "Runs the variant's smoke test commands in `image-tag`. Returns true if they
