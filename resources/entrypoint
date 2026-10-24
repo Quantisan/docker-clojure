@@ -10,8 +10,9 @@ if [ "$#" -eq 0 ] || [ "${1#-}" != "$1" ]; then
 fi
 
 # Built-in Leiningen tasks and aliases take precedence over executables such as
-# test and cp. Keep this Leiningen 2.13.0 list in sync when upgrading; never probe a
-# command with --help, which can evaluate code from the current project.
+# test and cp. Keep this Leiningen 2.13.0 list in sync when upgrading (the image
+# smoke test checks it); never probe a command with --help, which can evaluate
+# code from the current project.
 if [ "${entrypoint}" = lein ]; then
   case "$1" in
     change|check|classpath|clean|compile|cp|deploy|deps|do|halp|help|install|jar|javac|\
