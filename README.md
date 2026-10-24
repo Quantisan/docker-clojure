@@ -105,7 +105,7 @@ Java 21 tools-deps on Alpine: `clojure:temurin-21-tools-deps-alpine` or `clojure
 
 ## Examples
 
-### Interactive Shell
+### Interactive shell
 
 Run an interactive shell from this image.
 
@@ -120,6 +120,31 @@ lein new hello-world
 cd hello-world
 lein repl
 ```
+
+### Running individual commands
+
+For JDK 17+ images:
+
+```sh
+# Built-in Leiningen tasks and aliases
+docker run --rm clojure:lein test
+docker run --rm clojure:lein cp
+
+# Custom Leiningen tasks and aliases: always include lein
+docker run --rm -v "$PWD":/app -w /app clojure:lein lein my-alias
+
+# Clojure flags and scripts
+docker run --rm clojure:tools-deps -M -e '(println (+ 1 2))'
+docker run --rm -v "$PWD":/app -w /app clojure:tools-deps example.clj
+
+# deps.edn aliases
+docker run --rm -v "$PWD":/app -w /app clojure:tools-deps clj -M:my-alias
+```
+
+Programs such as `bash` and `git` run directly. Use `/bin/cp` to select the
+executable instead of Leiningen's `cp` alias.
+
+With older JDK images, invoke `lein` or `clj` explicitly.
 
 ## Builds
 
