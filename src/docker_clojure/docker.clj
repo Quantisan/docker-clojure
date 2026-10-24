@@ -13,9 +13,8 @@
   (sh "docker" "pull" image))
 
 (def ^:private print-lein-commands
-  "Clojure form that prints every built-in Leiningen task and alias, one per
-  line. Tasks come from the namespaces in the Leiningen jar because `lein help`
-  omits tasks missing from its own stock list."
+  "Prints built-in Leiningen tasks and aliases, one per line.
+  Includes tasks missing from `lein help`, e.g. `static-classpath`."
   '(do
      (require 'leiningen.core.main)
      (let [jar   (java.util.jar.JarFile. (System/getProperty "java.class.path"))
@@ -35,8 +34,8 @@
        (.flush out))))
 
 (def ^:private lein-routing-check
-  "Shell script that fails unless the entrypoint passes every built-in
-  Leiningen command to lein. Takes the `print-lein-commands` form as $1."
+  "Checks every built-in command routes to lein, e.g. `test` -> `lein test`.
+  $1 is the `print-lein-commands` form."
   "set -e
 commands=$(java -cp /usr/share/java/leiningen-*-standalone.jar clojure.main -e \"$1\")
 stub=$(mktemp -d)
@@ -55,9 +54,9 @@ EOF
 exit $status")
 
 (defn smoke-test-cmds
-  "Commands to run in a freshly built image; each must exit 0. They check the
-  build tool(s) start and, in lein images with the entrypoint, that the
-  entrypoint passes every built-in lein command to lein."
+  "Returns commands to check build tools start. Each must exit 0.
+  Lein images with an entrypoint also check every built-in command routes
+  to lein, e.g. `test` -> `lein test`."
   [{:keys [build-tool] :as variant}]
   (let [cmds {"lein"       ["lein" "version"]
               "tools-deps" ["clojure" "-M" "-e" "(clojure-version)"]}]
