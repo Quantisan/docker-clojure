@@ -27,16 +27,19 @@
                               task-ns (symbol (str "leiningen." task))]
                        :when (try (require task-ns)
                                   (ns-resolve task-ns (symbol task))
-                                  (catch java.io.FileNotFoundException _ nil))]
+                                  ;; Skip helper namespaces that aren't tasks
+                                  ;; or need a project to load.
+                                  (catch Exception _ nil))]
                    task)
            out   (java.io.PrintWriter. (java.io.OutputStreamWriter. System/out "UTF-8"))]
        (doseq [command (concat tasks (keys leiningen.core.main/aliases))]
          (.println out command))
        (.flush out))))
 
-(def ^:private lein-routing-check
+(defn- lein-routing-check
   "Checks every built-in command routes to lein, e.g. `test` -> `lein test`.
   $1 is the `print-lein-commands` form."
+  []
   (slurp (io/resource "lein-routing-check.sh")))
 
 (defn smoke-test-cmds
@@ -50,7 +53,7 @@
               (vals cmds)
               [(get cmds build-tool)])
       (and (= "lein" build-tool) (df/entrypoint? variant))
-      (conj ["sh" "-c" lein-routing-check "sh" (pr-str print-lein-commands)]))))
+      (conj ["sh" "-c" (lein-routing-check) "sh" (pr-str print-lein-commands)]))))
 
 (defn smoke-test
   "Runs the variant's smoke test commands in `image-tag`. Returns true if they
