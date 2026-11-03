@@ -25,11 +25,12 @@
       (spit (io/file dir "example.clj") "(println :example)")
       ;; A local script must not take precedence over the executable on PATH.
       (spit (io/file dir "echo") "(throw (Exception. \"unexpected project execution\"))")
-      (spit (io/file dir "launch") "#!/bin/sh\nprintf '%s\\n' external\n")
-      (.setExecutable (io/file dir "launch") true false)
+      (doseq [[script out] [["launch" "external"] ["test" "local"]]]
+        (spit (io/file dir script) (str "#!/bin/sh\nprintf '%s\\n' " out "\n"))
+        (.setExecutable (io/file dir script) true false))
       (let [result (apply sh (str (io/file bin "entrypoint"))
                           (concat args [:dir (str dir)
-                                        :env {"PATH" (str bin ":/usr/bin:/bin")
+                                        :env {"PATH" (str bin ":" (System/getenv "PATH"))
                                               "CALLS_LOG" (str log)}]))]
         (assoc result :calls (if (.exists log) (nul-fields (slurp log)) [])))
       (finally
@@ -58,13 +59,25 @@
   (testing "built-in tasks and aliases keep precedence over executables"
     (doseq [task ["repl" "test" "cp" "install" "help" "static-classpath"
                   "uberjar" "überjar"]]
-      (is (= ["lein" task] (:calls (run-entrypoint "lein" task))))))
+      (is (= {:exit 0 :out "" :err "" :calls ["lein" task]}
+             (run-entrypoint "lein" task)))))
   (testing "explicit commands and paths bypass shorthand routing"
-    (is (= ["lein" "my-alias"] (:calls (run-entrypoint "lein" "lein" "my-alias"))))
-    (is (= {:exit 0 :out "" :err "" :calls []}
-           (run-entrypoint "lein" "/bin/test" "1" "=" "1"))))
-  (testing "custom tasks use explicit Leiningen invocation"
-    (is (= ["lein" "my-task"] (:calls (run-entrypoint "lein" "lein" "my-task"))))))
+    (is (= {:exit 0 :out "" :err "" :calls ["lein" "my-alias"]}
+           (run-entrypoint "lein" "lein" "my-alias")))
+    (is (= {:exit 0 :out "local\n" :err "" :calls []}
+           (run-entrypoint "lein" "./test")))))
+
+(deftest lein-fallback-test
+  (testing "plugin tasks and project aliases still reach lein, with a warning"
+    (doseq [args [["cljsbuild" "once"] ["my-alias"] ["no-such-command"]]]
+      (let [result (apply run-entrypoint "lein" args)]
+        (is (= 0 (:exit result)))
+        (is (= (into ["lein"] args) (:calls result)))
+        (is (str/includes? (:err result) (str "running 'lein " (first args) "'"))))))
+  (testing "missing paths do not fall back to lein"
+    (let [result (run-entrypoint "lein" "./no-such-command")]
+      (is (not= 0 (:exit result)))
+      (is (= [] (:calls result))))))
 
 (deftest clojure-scripts-run-once-test
   (doseq [build-tool ["tools-deps" :docker-clojure.core/all]
@@ -74,11 +87,13 @@
       (is (= ["clj" script "argument"] (:calls result))))))
 
 (deftest unknown-commands-do-not-launch-project-test
-  (doseq [build-tool ["lein" "tools-deps" :docker-clojure.core/all]]
-    (let [result (run-entrypoint build-tool "no-such-command")]
-      (is (= 127 (:exit result)))
-      (is (str/includes? (:err result) "no-such-command"))
-      (is (= [] (:calls result))))))
+  (doseq [build-tool ["tools-deps" :docker-clojure.core/all]
+          command ["no-such-command" "launch"]]
+    (testing (str build-tool " does not pass " command " to clj")
+      (let [result (run-entrypoint build-tool command)]
+        (is (= 127 (:exit result)))
+        (is (str/includes? (:err result) command))
+        (is (= [] (:calls result)))))))
 
 (deftest literal-arguments-test
   (let [args ["" "two words" "*.clj" "line one\nline two" "$(exit 99)" "'quoted'"]]

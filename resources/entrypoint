@@ -22,10 +22,15 @@ if [ "${entrypoint}" = lein ]; then
       exec "${entrypoint}" "$@"
       ;;
   esac
-elif [ -f "$1" ] && ! type -P "$1" >/dev/null; then
+  # Plugin tasks and project aliases aren't executables, so they still reach
+  # lein. Paths and executables on PATH run directly.
+  if [ "${1#*/}" = "$1" ] && ! type -P "$1" >/dev/null; then
+    echo "entrypoint: '$1' is not on PATH, running 'lein $1'. Prefer 'lein $1' for custom tasks and aliases." >&2
+    exec "${entrypoint}" "$@"
+  fi
+elif [ -f "$1" ] && [ ! -x "$1" ] && ! type -P "$1" >/dev/null; then
   # Non-executable Clojure scripts run once, through clj.
   exec "${entrypoint}" "$@"
 fi
 
-# Other commands run directly. Use explicit lein for custom tasks and aliases.
 exec "$@"

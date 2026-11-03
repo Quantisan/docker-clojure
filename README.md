@@ -123,14 +123,14 @@ lein repl
 
 ### Running individual commands
 
-For JDK 17+ images:
+For JDK 16+ images:
 
 ```sh
 # Built-in Leiningen tasks and aliases
-docker run --rm clojure:lein test
-docker run --rm clojure:lein cp
+docker run --rm -v "$PWD":/app -w /app clojure:lein test
+docker run --rm -v "$PWD":/app -w /app clojure:lein cp
 
-# Custom Leiningen tasks and aliases: always include lein
+# Plugin tasks and project aliases: include lein
 docker run --rm -v "$PWD":/app -w /app clojure:lein lein my-alias
 
 # Clojure flags and scripts
@@ -143,6 +143,11 @@ docker run --rm -v "$PWD":/app -w /app clojure:tools-deps clj -M:my-alias
 
 Programs such as `bash` and `git` run directly. Use `/bin/cp` to select the
 executable instead of Leiningen's `cp` alias.
+
+In lein images, a command that isn't a built-in task or an executable on `PATH`
+still runs through Leiningen, so `clojure:lein my-alias` works but prints a
+warning. Include `lein` to skip the warning, and to run a task that shares its
+name with an executable.
 
 With older JDK images, invoke `lein` or `clj` explicitly.
 
