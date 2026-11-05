@@ -105,7 +105,7 @@ Java 21 tools-deps on Alpine: `clojure:temurin-21-tools-deps-alpine` or `clojure
 
 ## Examples
 
-### Interactive Shell
+### Interactive shell
 
 Run an interactive shell from this image.
 
@@ -120,6 +120,39 @@ lein new hello-world
 cd hello-world
 lein repl
 ```
+
+### Running individual commands
+
+For JDK 16+ images:
+
+```sh
+# -v "$PWD":/app makes your current folder available inside the container at /app.
+# -w /app runs the command from that folder.
+
+# Built-in Leiningen tasks and aliases
+docker run --rm -v "$PWD":/app -w /app clojure:lein test
+docker run --rm -v "$PWD":/app -w /app clojure:lein cp
+
+# Plugin tasks and project aliases: include lein
+docker run --rm -v "$PWD":/app -w /app clojure:lein lein my-alias
+
+# Clojure flags and scripts
+docker run --rm clojure:tools-deps -M -e '(println (+ 1 2))'
+docker run --rm -v "$PWD":/app -w /app clojure:tools-deps example.clj
+
+# deps.edn aliases
+docker run --rm -v "$PWD":/app -w /app clojure:tools-deps clj -M:my-alias
+```
+
+Programs such as `bash` and `git` run directly. Use `/bin/cp` to select the
+executable instead of Leiningen's `cp` alias.
+
+In lein images, a command that isn't a built-in task or an executable on `PATH`
+still runs through Leiningen, so `clojure:lein my-alias` works but prints a
+warning. Include `lein` to skip the warning, and to run a task that shares its
+name with an executable.
+
+With older JDK images, invoke `lein` or `clj` explicitly.
 
 ## Builds
 

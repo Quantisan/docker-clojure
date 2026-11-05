@@ -1,5 +1,6 @@
 (ns docker-clojure.docker-test
-  (:require [clojure.string :as str]
+  (:require [clojure.java.shell :refer [sh]]
+            [clojure.string :as str]
             [clojure.test :refer :all]
             [docker-clojure.config :as cfg]
             [docker-clojure.docker :refer :all]))
@@ -68,3 +69,19 @@
       :debian-slim/trixie-slim "tools-deps-trixie-slim"
       :debian/bookworm "tools-deps-bookworm"
       :debian-slim/bookworm-slim "tools-deps-bookworm-slim")))
+
+(deftest smoke-test-cmds-test
+  (testing "every variant checks its build tools start"
+    (are [build-tool jdk-version cmds]
+         (= cmds (smoke-test-cmds {:build-tool build-tool :jdk-version jdk-version}))
+      "lein" 11 [["lein" "version"]]
+      "tools-deps" 21 [["clojure" "-M" "-e" "(clojure-version)"]]
+      :docker-clojure.core/all 21 [["lein" "version"]
+                                   ["clojure" "-M" "-e" "(clojure-version)"]]))
+  (testing "lein images with an entrypoint also check lein routing"
+    (let [[version-cmd [sh-cmd flag script & args]]
+          (smoke-test-cmds {:build-tool "lein" :jdk-version 21})]
+      (is (= ["lein" "version"] version-cmd))
+      (is (= ["sh" "-c"] [sh-cmd flag]))
+      (is (= {:exit 0 :err ""} (select-keys (sh "sh" "-n" "-c" script) [:exit :err])))
+      (is (= 2 (count args))))))
