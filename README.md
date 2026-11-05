@@ -126,6 +126,9 @@ lein repl
 For JDK 16+ images:
 
 ```sh
+# -v "$PWD":/app makes your current folder available inside the container at /app.
+# -w /app runs the command from that folder.
+
 # Built-in Leiningen tasks and aliases
 docker run --rm -v "$PWD":/app -w /app clojure:lein test
 docker run --rm -v "$PWD":/app -w /app clojure:lein cp
