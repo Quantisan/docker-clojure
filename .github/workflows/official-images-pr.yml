@@ -51,25 +51,47 @@ jobs:
     needs: [generate-docker-manifest]
     if: needs.generate-docker-manifest.outputs.fresh == 'true'
     outputs:
-      diff: ${{ steps.manifest-diff.outputs.diff }}
+      changed: ${{ steps.compare.outputs.changed }}
     steps:
       - name: Checkout docker-library/official-images repo
         uses: actions/checkout@v6
         with:
           repository: docker-library/official-images
           path: official-images
+      # Full history, to diff the build dirs against the published commit
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          path: docker-clojure
+          fetch-depth: 0
       - name: Download manifest artifact
         uses: actions/download-artifact@v8
         with:
           name: manifest
-      - name: Compare manifest files
-        id: manifest-diff
-        # -IGitCommit: makes it ignore changes in the GitCommit: line b/c that will always be different
-        run: 'echo "diff=\"$(diff -q -IGitCommit: docker.manifest official-images/library/clojure)\"" >> $GITHUB_OUTPUT'
+      # The GitCommit line always differs, so ignore it and instead check
+      # whether the build dirs changed since the published commit. Otherwise
+      # changes to files like the entrypoint that don't add or remove tags
+      # never get published. A published commit missing from our history also
+      # counts as changed.
+      - name: Compare with the published manifest
+        id: compare
+        run: |
+          published=official-images/library/clojure
+          upstream=$(sed -n 's/^GitCommit: //p' "$published")
+          ours=$(sed -n 's/^GitCommit: //p' docker.manifest)
+          if ! diff -q -IGitCommit: docker.manifest "$published"; then
+            changed=true
+          elif ! git -C docker-clojure diff --quiet "$upstream" "$ours" -- target; then
+            echo "::notice::Build dirs changed between $upstream and $ours."
+            changed=true
+          else
+            changed=false
+          fi
+          echo "changed=$changed" >> "$GITHUB_OUTPUT"
   open-official-images-pr:
     runs-on: ubuntu-latest
     needs: [compare-manifests]
-    if: contains(needs.compare-manifests.outputs.diff, 'differ')
+    if: needs.compare-manifests.outputs.changed == 'true'
     steps:
       - name: Download manifest artifact
         uses: actions/download-artifact@v8
