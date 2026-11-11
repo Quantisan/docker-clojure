@@ -35,7 +35,8 @@
 ;; commit past us (belt-and-suspenders with `git verify-tag`). Requested by the
 ;; docker-library/official-images maintainers.
 (def release-commits
-  {"2.13.0" "d703e4802feb3e5c3fa9ae9f1874fb7a3a3e3030"})
+  {"2.13.0" "d703e4802feb3e5c3fa9ae9f1874fb7a3a3e3030"
+   "2.13.1" "d109a01c2bc295c1ed218ed335c36481938b745b"})
 
 (defn release-commit [version]
   (or (get release-commits version)
