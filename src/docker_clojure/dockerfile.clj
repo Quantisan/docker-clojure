@@ -17,6 +17,7 @@
                    build-tool)]))
 
 (defn all-prereqs [dir variant]
+  (lein/prereqs dir variant)
   (tools-deps/prereqs dir variant))
 
 (defn copy-java?

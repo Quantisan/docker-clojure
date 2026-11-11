@@ -3,15 +3,42 @@ ENV LEIN_INSTALL=/usr/local/bin/
 
 WORKDIR /tmp
 
+COPY {{gpg-key-file}} /tmp/{{gpg-key-file}}
+
 # No standalone uberjar is published for this version, so build it from source.
 # Verify Leiningen's GPG-signed release tag and pin the expected commit, then
 # bootstrap leiningen-core's dependencies with Maven and run `lein uberjar`.
+#
+# The signing key comes from the copy in {{gpg-key-file}}. We also fetch it
+# from keyserver.ubuntu.com: if the keyserver's copy differs (e.g. the key was
+# revoked, extended or gained a subkey) the build fails so the change can be
+# reviewed; if the keyserver can't be reached we carry on with the local copy.
+# Only the fields that describe the key itself are compared, since gpg also
+# records where and when each copy was imported.
 RUN set -eux; \
 {% for dep in install-deps %}{{dep}} && \
 {% endfor %}export GNUPGHOME="$(mktemp -d)" && \
 export LEIN_ROOT=1 && \
 mkdir -p $LEIN_INSTALL /usr/share/java /root/.lein && \
-gpg --batch --keyserver hkps://keyserver.ubuntu.com --recv-keys {{gpg-key}} && \
+key_summary() { gpg --batch --homedir "$1" --with-colons --list-keys {{gpg-key}} | awk -F: '/^(pub|sub|uid|fpr):/ { print $1, $2, $5, $6, $7, $8, $10, $12 }'; } && \
+gpg --batch --import /tmp/{{gpg-key-file}} && \
+[ "$(gpg --batch --with-colons --list-keys | awk -F: '$1 == "fpr" && prev == "pub" { print $10 } { prev = $1 }')" = "{{gpg-key}}" ] && \
+keyserver_home="$(mktemp -d)" && \
+if gpg --batch --homedir "$keyserver_home" --keyserver hkps://keyserver.ubuntu.com --recv-keys {{gpg-key}}; then \
+  if [ "$(key_summary "$GNUPGHOME")" != "$(key_summary "$keyserver_home")" ]; then \
+    printf '%s\n' \
+      "ERROR: Leiningen's signing key {{gpg-key}} on keyserver.ubuntu.com no longer matches {{gpg-key-file}}." \
+      "It may have been revoked, had its expiry changed, or gained a subkey or user ID. Review the change, then" \
+      "refresh the local copy by running 'bb refresh-lein-key' in docker-clojure and regenerate the Dockerfiles." \
+      "Local copy:" "$(key_summary "$GNUPGHOME")" \
+      "Keyserver copy:" "$(key_summary "$keyserver_home")" >&2; \
+    exit 1; \
+  fi; \
+else \
+  echo "WARNING: couldn't fetch {{gpg-key}} from keyserver.ubuntu.com; using the local copy in {{gpg-key-file}}." >&2; \
+fi && \
+gpgconf --homedir "$keyserver_home" --kill all && \
+rm -rf "$keyserver_home" /tmp/{{gpg-key-file}} && \
 git clone --depth 1 --branch $LEIN_VERSION https://codeberg.org/leiningen/leiningen.git && \
 cd leiningen && \
 git verify-tag $LEIN_VERSION && \

@@ -55,6 +55,16 @@
       (and (= "lein" build-tool) (df/entrypoint? variant))
       (conj ["sh" "-c" (lein-routing-check) "sh" (pr-str print-lein-commands)]))))
 
+(defn abbreviate-arg
+  "Shortens a command arg for logging: multi-line scripts become a line count
+  and long args are truncated."
+  [arg]
+  (let [lines (str/split-lines arg)]
+    (cond
+      (< 1 (count lines)) (str "<" (count lines) "-line script>")
+      (< 60 (count arg)) (str (subs arg 0 40) "…")
+      :else arg)))
+
 (defn smoke-test
   "Runs the variant's smoke test commands in `image-tag`. Returns true if they
   all succeed."
@@ -63,7 +73,7 @@
             (let [run-cmd (remove nil? (concat ["docker" "run" "--rm"
                                                 platform-flag image-tag]
                                                cmd))
-                  _       (apply log "Running" run-cmd)
+                  _       (apply log "Running" (map abbreviate-arg run-cmd))
                   {:keys [out err exit]} (apply sh run-cmd)]
               (if (zero? exit)
                 true

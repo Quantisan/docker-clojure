@@ -70,6 +70,15 @@
       :debian/bookworm "tools-deps-bookworm"
       :debian-slim/bookworm-slim "tools-deps-bookworm-slim")))
 
+(deftest abbreviate-arg-test
+  (testing "leaves short args alone"
+    (is (= "version" (abbreviate-arg "version"))))
+  (testing "replaces multi-line scripts with their line count"
+    (is (= "<3-line script>" (abbreviate-arg "set -e\necho hi\nexit 0"))))
+  (testing "truncates long args"
+    (is (= (str (apply str (repeat 40 "x")) "…")
+           (abbreviate-arg (apply str (repeat 61 "x")))))))
+
 (deftest smoke-test-cmds-test
   (testing "every variant checks its build tools start"
     (are [build-tool jdk-version cmds]
