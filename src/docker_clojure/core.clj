@@ -8,6 +8,7 @@
             [docker-clojure.config :as cfg]
             [docker-clojure.docker :as docker]
             [docker-clojure.dockerfile :as df]
+            [docker-clojure.lein-key :as lein-key]
             [docker-clojure.log :refer [log] :as logger]
             [docker-clojure.manifest :as manifest]
             [docker-clojure.util :refer [get-or-default]]
@@ -144,6 +145,10 @@
       (do (log "ERROR diffing target against" (str base ":") err)
           ::failed))))
 
+(defn cmd-refresh-lein-key [_]
+  (when-not (lein-key/refresh!)
+    ::failed))
+
 (def cmd-table
   [{:cmds ["clean"]
     :fn   cmd-clean
@@ -170,7 +175,10 @@
     :fn   cmd-changed-build-dirs
     :doc  "List the build dirs worth building to verify staged target changes"
     :args->opts [:base]
-    :spec {:base {:desc "Git ref to compare staged target against (default: HEAD)"}}}])
+    :spec {:base {:desc "Git ref to compare staged target against (default: HEAD)"}}}
+   {:cmds ["refresh-lein-key"]
+    :fn   cmd-refresh-lein-key
+    :doc  "Refresh the local copy of Leiningen's signing key from the keyserver"}])
 
 (defn -main
   "Entrypoint for CLI."

@@ -12,6 +12,29 @@
            (build-dir {:base-image-tag "openjdk:11-alpine"
                        :build-tool     "lein"})))))
 
+(deftest lein-signing-key-test
+  (testing "lein prereqs put the signing key in the build dir"
+    (let [dir (doto (java.io.File/createTempFile "lein-prereqs" "")
+                (.delete)
+                (.mkdirs))
+          key (java.io.File. dir lein/signing-key-file)]
+      (try
+        (lein/prereqs (str dir) {})
+        (is (str/starts-with? (slurp key)
+                              "-----BEGIN PGP PUBLIC KEY BLOCK-----"))
+        (finally
+          (.delete key)
+          (.delete dir)))))
+  (testing "lein Dockerfile imports the local key and checks the keyserver"
+    (let [install (lein/install cfg/installer-hashes
+                                {:distro             :debian/bookworm
+                                 :build-tool-version "2.13.1"})]
+      (is (str/includes? install (str "COPY " lein/signing-key-file)))
+      (is (str/includes? install (str "gpg --batch --import /tmp/"
+                                      lein/signing-key-file)))
+      (is (str/includes? install (str "--recv-keys " lein/signing-key)))
+      (is (str/includes? install "bb refresh-lein-key")))))
+
 (deftest contents-test
   (testing "includes 'FROM base-image'"
     (is (str/includes? (contents cfg/installer-hashes

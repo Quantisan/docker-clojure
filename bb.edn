@@ -12,6 +12,8 @@
   manifest     (apply dc/-main "manifest" *command-line-args*)
   build-images {:task    (apply dc/-main "build-images" *command-line-args*)}
   changed-build-dirs (apply dc/-main "changed-build-dirs" *command-line-args*)
+  refresh-lein-key {:doc  "Refresh resources/lein-signing-key.asc from the keyserver"
+                    :task (dc/-main "refresh-lein-key")}
   test         (clojure '-X:test)
   fmt-check    {:doc "Check formatting with cljfmt"
                 :task (fmt/check {:paths ["src" "test" "bb.edn" "deps.edn" "tests.edn"]})}
