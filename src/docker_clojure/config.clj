@@ -116,7 +116,7 @@
    :default :debian/bookworm})
 
 (def build-tools
-  {"lein"       "2.13.0"
+  {"lein"       "2.13.1"
    "tools-deps" "1.12.6.1673"})
 
 (def default-build-tool "tools-deps")

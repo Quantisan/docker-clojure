@@ -3,15 +3,23 @@ ENV LEIN_INSTALL=/usr/local/bin/
 
 WORKDIR /tmp
 
+COPY {{gpg-key-file}} /tmp/{{gpg-key-file}}
+
 # No standalone uberjar is published for this version, so build it from source.
 # Verify Leiningen's GPG-signed release tag and pin the expected commit, then
 # bootstrap leiningen-core's dependencies with Maven and run `lein uberjar`.
+#
+# Import Leiningen's signing key from the copy in this repo rather than a
+# keyserver, and check it's the pinned key. CI checks the copy against the
+# keyserver.
 RUN set -eux; \
 {% for dep in install-deps %}{{dep}} && \
 {% endfor %}export GNUPGHOME="$(mktemp -d)" && \
 export LEIN_ROOT=1 && \
 mkdir -p $LEIN_INSTALL /usr/share/java /root/.lein && \
-gpg --batch --keyserver hkps://keyserver.ubuntu.com --recv-keys {{gpg-key}} && \
+gpg --batch --import /tmp/{{gpg-key-file}} && \
+[ "$(gpg --batch --with-colons --list-keys | awk -F: '$1 == "fpr" && prev == "pub" { print $10 } { prev = $1 }')" = "{{gpg-key}}" ] && \
+rm /tmp/{{gpg-key-file}} && \
 git clone --depth 1 --branch $LEIN_VERSION https://codeberg.org/leiningen/leiningen.git && \
 cd leiningen && \
 git verify-tag $LEIN_VERSION && \
