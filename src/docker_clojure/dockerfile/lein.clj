@@ -7,8 +7,8 @@
 (def ^:const signing-key "9D13D9426A0814B3373CF5E3D8A8243577A7859F")
 
 ;; Local copy of `signing-key` (exported with `--export-options export-minimal`)
-;; so builds don't depend on the keyserver being up. Builds still check it
-;; against keyserver.ubuntu.com and fail if the two have diverged.
+;; so builds don't depend on the keyserver being up. CI checks it against the
+;; keyserver (`bb check-lein-key`); `bb refresh-lein-key` updates it.
 (def ^:const signing-key-file "lein-signing-key.asc")
 
 (defn prereqs [dir _variant]

@@ -39,6 +39,19 @@ jobs:
     - name: Check formatting
       run: bb fmt-check
 
+  lein-key:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Install babashka
+      uses: DeLaGuardo/setup-clojure@13.6.0
+      with:
+        bb: 1.12.217
+    - uses: actions/checkout@v6
+    - name: Check Leiningen's signing key against the keyserver
+      run: bb check-lein-key
+
   dockerfiles:
 
     runs-on: ubuntu-latest

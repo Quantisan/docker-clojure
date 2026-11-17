@@ -145,6 +145,10 @@
       (do (log "ERROR diffing target against" (str base ":") err)
           ::failed))))
 
+(defn cmd-check-lein-key [_]
+  (when-not (lein-key/check!)
+    ::failed))
+
 (defn cmd-refresh-lein-key [_]
   (when-not (lein-key/refresh!)
     ::failed))
@@ -176,6 +180,9 @@
     :doc  "List the build dirs worth building to verify staged target changes"
     :args->opts [:base]
     :spec {:base {:desc "Git ref to compare staged target against (default: HEAD)"}}}
+   {:cmds ["check-lein-key"]
+    :fn   cmd-check-lein-key
+    :doc  "Check the local copy of Leiningen's signing key against the keyserver"}
    {:cmds ["refresh-lein-key"]
     :fn   cmd-refresh-lein-key
     :doc  "Refresh the local copy of Leiningen's signing key from the keyserver"}])

@@ -25,15 +25,15 @@
         (finally
           (.delete key)
           (.delete dir)))))
-  (testing "lein Dockerfile imports the local key and checks the keyserver"
+  (testing "lein Dockerfile imports the local key instead of using a keyserver"
     (let [install (lein/install cfg/installer-hashes
                                 {:distro             :debian/bookworm
                                  :build-tool-version "2.13.1"})]
       (is (str/includes? install (str "COPY " lein/signing-key-file)))
       (is (str/includes? install (str "gpg --batch --import /tmp/"
                                       lein/signing-key-file)))
-      (is (str/includes? install (str "--recv-keys " lein/signing-key)))
-      (is (str/includes? install "bb refresh-lein-key")))))
+      (is (str/includes? install lein/signing-key))
+      (is (not (str/includes? install "--recv-keys"))))))
 
 (deftest contents-test
   (testing "includes 'FROM base-image'"
