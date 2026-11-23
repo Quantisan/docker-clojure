@@ -1,18 +1,17 @@
 (ns docker-clojure.dockerfile.lein
   (:require [docker-clojure.dockerfile.shared
-             :refer [copy-resource-file! install-distro-deps render-template
+             :refer [install-distro-deps render-template
                      uninstall-distro-build-deps]]))
 
 ;; Leiningen release tags are signed with this key (Phil Hagelberg).
 (def ^:const signing-key "9D13D9426A0814B3373CF5E3D8A8243577A7859F")
 
-;; Local copy of `signing-key` (exported with `--export-options export-minimal`)
-;; so builds don't depend on the keyserver being up. CI checks it against the
-;; keyserver (`bb check-lein-key`); `bb refresh-lein-key` updates it.
-(def ^:const signing-key-file "lein-signing-key.asc")
+;; Keyserver to fetch `signing-key` from. keys.openpgp.org is the one the
+;; docker-library maintainers prefer, and it serves this key with its user ID
+;; (which gpg needs in order to import it).
+(def ^:const keyserver "hkps://keys.openpgp.org")
 
-(defn prereqs [dir _variant]
-  (copy-resource-file! dir signing-key-file))
+(defn prereqs [_ _] nil)
 
 ;; Leiningen no longer publishes a standalone uberjar, so we build it from
 ;; source: clone the GPG-signed release tag, bootstrap leiningen-core's deps
@@ -57,7 +56,7 @@
     :lein-commit     (release-commit build-tool-version)
     :clojure-version bundled-clojure-version
     :gpg-key         signing-key
-    :gpg-key-file    signing-key-file
+    :keyserver       keyserver
     :install-deps    (install-deps variant)
     :uninstall-deps  (uninstall-build-deps variant)}))
 
