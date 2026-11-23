@@ -4,6 +4,8 @@ on:
   push:
     branches: [master]
   pull_request:
+  # For re-running master's CI by hand, e.g. when GitHub drops a push event
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -65,7 +67,8 @@ jobs:
       id: changes
       env:
         # Compare against what the change started from so that Dockerfiles
-        # committed by hand get built too.
+        # committed by hand get built too. Manual runs have no `before`, so
+        # they fall back to HEAD below.
         BASE: ${{ github.event_name == 'pull_request' && 'HEAD^1' || github.event.before }}
         BUILDS_PER_JOB: 8
       run: |
@@ -153,9 +156,12 @@ jobs:
 
     needs: [test, format, dockerfiles, build]
     # build is skipped when there's nothing to build, so don't require it to
-    # have succeeded, only that nothing failed
+    # have succeeded, only that nothing failed. Manual runs can target any
+    # branch, so only commit for master.
     if: >-
-      ${{ !failure() && !cancelled() && github.event_name == 'push'
+      ${{ !failure() && !cancelled()
+          && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+          && github.ref == 'refs/heads/master'
           && needs.dockerfiles.outputs.stale == 'true' }}
 
     runs-on: ubuntu-latest
