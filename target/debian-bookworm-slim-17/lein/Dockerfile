@@ -9,15 +9,12 @@ ENV LEIN_INSTALL=/usr/local/bin/
 
 WORKDIR /tmp
 
-COPY lein-signing-key.asc /tmp/lein-signing-key.asc
-
 # No standalone uberjar is published for this version, so build it from source.
 # Verify Leiningen's GPG-signed release tag and pin the expected commit, then
 # bootstrap leiningen-core's dependencies with Maven and run `lein uberjar`.
 #
-# Import Leiningen's signing key from the copy in this repo rather than a
-# keyserver, and check it's the pinned key. CI checks the copy against the
-# keyserver.
+# Fetch Leiningen's signing key and check that it's the only key imported and
+# matches the pinned fingerprint.
 RUN set -eux; \
 apt-get update && \
 apt-get install -y maven git gnupg && \
@@ -25,9 +22,8 @@ rm -rf /var/lib/apt/lists/* && \
 export GNUPGHOME="$(mktemp -d)" && \
 export LEIN_ROOT=1 && \
 mkdir -p $LEIN_INSTALL /usr/share/java /root/.lein && \
-gpg --batch --import /tmp/lein-signing-key.asc && \
+gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys 9D13D9426A0814B3373CF5E3D8A8243577A7859F && \
 [ "$(gpg --batch --with-colons --list-keys | awk -F: '$1 == "fpr" && prev == "pub" { print $10 } { prev = $1 }')" = "9D13D9426A0814B3373CF5E3D8A8243577A7859F" ] && \
-rm /tmp/lein-signing-key.asc && \
 git clone --depth 1 --branch $LEIN_VERSION https://codeberg.org/leiningen/leiningen.git && \
 cd leiningen && \
 git verify-tag $LEIN_VERSION && \
