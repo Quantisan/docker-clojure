@@ -9,8 +9,12 @@ on:
 jobs:
   generate-docker-manifest:
     runs-on: ubuntu-latest
-    # Only for CI runs of pushes to master, not PRs from a fork's master branch
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' }}
+    # Only for CI runs of pushes to master (or manual runs on it), not PRs from
+    # a fork's master branch
+    if: >-
+      ${{ github.event.workflow_run.conclusion == 'success'
+          && (github.event.workflow_run.event == 'push'
+              || github.event.workflow_run.event == 'workflow_dispatch') }}
     outputs:
       fresh: ${{ steps.dockerfiles.outputs.fresh }}
     steps:
